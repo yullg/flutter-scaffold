@@ -1,0 +1,7 @@
+/.dart_tool
+/.idea
+/.packages
+/build
+/*.iml
+/.flutter-plugins
+/.flutter-plugins-dependencies
