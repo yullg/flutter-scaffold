@@ -10,6 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  base:
+    path: ../base
+  sqflite: 2.0.0+3
+  http: 0.13.3
+  encrypt: 5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
