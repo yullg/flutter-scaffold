@@ -1,6 +1,9 @@
 import 'package:base/base.dart';
-import 'package:scaffold/scaffold.dart';
+import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
+
+import '../core/asset_encrypter.dart';
+import '../scaffold_module.dart';
 
 class DatabaseManager {
   static Database? _database;
@@ -10,7 +13,7 @@ class DatabaseManager {
       ScaffoldModule.config.database_name,
       version: ScaffoldModule.config.database_version,
       onCreate: (db, version) async {
-        String sqls = await loadEncryptedAsset("assets/sql/database.sql");
+        String sqls = await AssetEncrypter.decrypt(await rootBundle.loadString("assets/sql/database.sql"));
         for (String sql in sqls.split(";")) {
           if (StringHelper.hasText(sql)) {
             await db.execute(sql);

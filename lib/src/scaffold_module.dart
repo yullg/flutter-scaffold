@@ -1,4 +1,5 @@
 import 'app/client_configuration_manager.dart';
+import 'app/client_version_manager.dart';
 import 'app/database_manager.dart';
 import 'app/security_manager.dart';
 import 'core/scaffold_logger.dart';
@@ -14,6 +15,7 @@ class ScaffoldModule {
       _config = config;
       await DatabaseManager.initialize();
       await SecurityManager.initialize();
+      await ClientVersionManager.initialize();
       await ClientConfigurationManager.initialize();
     } catch (e, s) {
       ScaffoldLogger.fatal("ScaffoldModule initialize error", e, s);
@@ -24,6 +26,7 @@ class ScaffoldModule {
   static Future<void> destroy() async {
     try {
       await ClientConfigurationManager.destroy();
+      await ClientVersionManager.destroy();
       await SecurityManager.destroy();
       await DatabaseManager.destroy();
       _config = null;
