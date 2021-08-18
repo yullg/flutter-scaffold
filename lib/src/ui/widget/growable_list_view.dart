@@ -65,7 +65,22 @@ class GrowableListController<T> extends GetxController {
 
   GrowableListController({this.maxDataSize = -1});
 
+  void addAllData(Iterable<T> datas) {
+    bool isAtEnd = _isAtEnd;
+    if (maxDataSize == 0) {
+      _datas.clear();
+    } else if (maxDataSize > 0) {
+      if (_datas.length >= maxDataSize) {
+        _datas.removeRange(0, (maxDataSize + 1) ~/ 2);
+      }
+    }
+    _datas.addAll(datas);
+    update();
+    if (isAtEnd) _scrollToEnd();
+  }
+
   void addData(T data) {
+    bool isAtEnd = _isAtEnd;
     if (maxDataSize == 0) {
       _datas.clear();
     } else if (maxDataSize > 0) {
@@ -75,12 +90,14 @@ class GrowableListController<T> extends GetxController {
     }
     _datas.add(data);
     update();
-    if (_itemPositionsListener.itemPositions.value.any((element) => element.index == _datas.length - 2)) {
-      scrollToEnd();
-    }
+    if (isAtEnd) _scrollToEnd();
   }
 
-  void scrollToEnd() {
+  bool get _isAtEnd =>
+      _itemPositionsListener.itemPositions.value.isEmpty ||
+      _itemPositionsListener.itemPositions.value.any((element) => element.index == _datas.length - 1);
+
+  void _scrollToEnd() {
     Future.delayed(Duration(milliseconds: 100),
         () => _scrollController.scrollTo(index: _datas.length + 1, duration: Duration(milliseconds: 200), alignment: 1)).catchError((e, s) {
       ScaffoldLogger.warn("GrowableListView >>> scrollToEnd() error", e, s);
