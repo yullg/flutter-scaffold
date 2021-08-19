@@ -13,6 +13,7 @@ export 'src/scaffold_config.dart';
 export 'src/scaffold_module.dart';
 export 'src/ui/check_update.dart';
 export 'src/ui/page/client_message_page.dart';
+export 'src/ui/page/complain_page.dart';
 export 'src/ui/page/first_page.dart';
 export 'src/ui/widget/client_message_statistics_widget.dart';
 export 'src/ui/widget/default_error_view.dart';
