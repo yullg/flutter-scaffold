@@ -7,6 +7,7 @@ export 'src/bean/token.dart';
 export 'src/bll/authorization_service.dart';
 export 'src/core/asset_encrypter.dart';
 export 'src/core/exceptions.dart';
+export 'src/core/list_snippet.dart';
 export 'src/core/remote_server.dart';
 export 'src/scaffold_config.dart';
 export 'src/scaffold_module.dart';
