@@ -109,6 +109,4 @@ class AuthorizationService {
       rethrow;
     }
   }
-
-  AuthorizationService._();
 }
