@@ -14,8 +14,10 @@ class EasyFuturePagedListWidget<T> extends StatelessWidget {
   final _LoadMoreData<T> loadMoreData;
   final _DataToWidget<T> dataToWidget;
   final IndexedWidgetBuilder? separatorBuilder;
+  final EdgeInsetsGeometry? padding;
 
-  EasyFuturePagedListWidget({Key? key, required this.loadMoreData, required this.dataToWidget, this.separatorBuilder}) : super(key: key);
+  EasyFuturePagedListWidget({Key? key, required this.loadMoreData, required this.dataToWidget, this.separatorBuilder, this.padding})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) => RebuildWidget(
@@ -56,7 +58,7 @@ class EasyFuturePagedListWidget<T> extends StatelessWidget {
           }
         },
         child: EasyPagedListWidget<T>(
-            controllerAttribute: value, loadMoreData: loadMoreData, dataToWidget: dataToWidget, separatorBuilder: separatorBuilder),
+            controllerAttribute: value, loadMoreData: loadMoreData, dataToWidget: dataToWidget, separatorBuilder: separatorBuilder, padding: padding),
       );
 }
 

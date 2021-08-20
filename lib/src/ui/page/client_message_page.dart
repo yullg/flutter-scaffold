@@ -23,6 +23,7 @@ class ClientMessagePage extends StatelessWidget {
           loadMoreData: controller.loadMoreData,
           dataToWidget: buildMessageWidget,
           separatorBuilder: (context, index) => SizedBox(height: 10),
+          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
         ),
       ),
     );
@@ -32,11 +33,11 @@ class ClientMessagePage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(DateTimeHelper.smartFormat(message.time) ?? "", style: TextStyle(color: Colors.grey)),
+          SizedBox(height: 10),
           InkWell(
             child: Container(
               width: double.infinity,
-              margin: EdgeInsets.all(15),
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(5),

@@ -13,7 +13,7 @@ class ClientMessageStatisticsWidget extends StatelessWidget {
   Widget build(BuildContext context) => GetBuilder<_ClientMessageStatisticsController>(
         init: _ClientMessageStatisticsController(),
         builder: (controller) => FutureWidget<ClientMessageStatistics>(
-          asyncValueGetter: ClientMessageService.getStatistics,
+          asyncValueGetter: controller.getStatistics,
           valueWidgetBuilder: (context, statistics, child) => _statisticsWidget(controller, statistics),
           waitingWidgetBuilder: (context) => _statisticsWidget(controller, null),
           failedWidgetBuilder: (context, error, child) => _statisticsWidget(controller, null),
@@ -70,6 +70,10 @@ class _ClientMessageStatisticsController extends GetxController {
   }
 
   void onClientMessageNotify() => update();
+
+  Future<ClientMessageStatistics> getStatistics() {
+    return ClientMessageService.getStatistics();
+  }
 
   @override
   void onClose() {

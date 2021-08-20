@@ -12,13 +12,16 @@ class EasyPagedListWidget<T> extends StatelessWidget {
   final _LoadMoreData<T> loadMoreData;
   final _DataToWidget<T> dataToWidget;
   final IndexedWidgetBuilder? separatorBuilder;
+  final EdgeInsetsGeometry? padding;
 
-  EasyPagedListWidget({Key? key, this.controllerAttribute, required this.loadMoreData, required this.dataToWidget, this.separatorBuilder})
+  EasyPagedListWidget(
+      {Key? key, this.controllerAttribute, required this.loadMoreData, required this.dataToWidget, this.separatorBuilder, this.padding})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) => PagedListWidget(
         controllerBuilder: () => _EasyPagedListController<T>(controllerAttribute, loadMoreData, dataToWidget, separatorBuilder),
+        padding: padding,
       );
 }
 
