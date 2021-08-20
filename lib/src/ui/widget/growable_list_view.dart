@@ -98,8 +98,9 @@ class GrowableListController<T> extends GetxController {
       _itemPositionsListener.itemPositions.value.any((element) => element.index == _datas.length - 1);
 
   void _scrollToEnd() {
-    Future.delayed(Duration(milliseconds: 100),
-        () => _scrollController.scrollTo(index: _datas.length + 1, duration: Duration(milliseconds: 200), alignment: 1)).catchError((e, s) {
+    Future.delayed(
+            Duration(milliseconds: 100), () => _scrollController.scrollTo(index: _datas.length, duration: Duration(milliseconds: 200), alignment: 1))
+        .catchError((e, s) {
       ScaffoldLogger.warn("GrowableListView >>> scrollToEnd() error", e, s);
     });
   }
