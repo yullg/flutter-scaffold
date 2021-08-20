@@ -13,6 +13,7 @@ class ClientMessageStatisticsWidget extends StatelessWidget {
   Widget build(BuildContext context) => GetBuilder<_ClientMessageStatisticsController>(
         init: _ClientMessageStatisticsController(),
         builder: (controller) => FutureWidget<ClientMessageStatistics>(
+          key: ValueKey(controller.keyValue),
           asyncValueGetter: controller.getStatistics,
           valueWidgetBuilder: (context, statistics, child) => _statisticsWidget(controller, statistics),
           waitingWidgetBuilder: (context) => _statisticsWidget(controller, null),
@@ -57,19 +58,24 @@ class ClientMessageStatisticsWidget extends StatelessWidget {
           ],
         ),
         onTap: () {
-          Get.to(ClientMessagePage())?.whenComplete(() => controller.update());
+          Get.to(ClientMessagePage())?.whenComplete(() => controller.rebuildWidget());
         },
       );
 }
 
 class _ClientMessageStatisticsController extends GetxController {
+  int keyValue = 1;
+
   @override
   void onInit() {
     super.onInit();
-    ClientMessageManager.clientMessageNotifier.addListener(onClientMessageNotify);
+    ClientMessageManager.clientMessageNotifier.addListener(rebuildWidget);
   }
 
-  void onClientMessageNotify() => update();
+  void rebuildWidget() {
+    keyValue++;
+    update();
+  }
 
   Future<ClientMessageStatistics> getStatistics() {
     return ClientMessageService.getStatistics();
@@ -77,7 +83,7 @@ class _ClientMessageStatisticsController extends GetxController {
 
   @override
   void onClose() {
-    ClientMessageManager.clientMessageNotifier.removeListener(onClientMessageNotify);
+    ClientMessageManager.clientMessageNotifier.removeListener(rebuildWidget);
     super.onClose();
   }
 }
