@@ -27,4 +27,3 @@ export 'src/ui/widget/lockable_filled_button.dart';
 export 'src/ui/widget/lockable_icon_button.dart';
 export 'src/ui/widget/lockable_outlined_button.dart';
 export 'src/ui/widget/lockable_text_button.dart';
-export 'src/ui/widget/rebuild_widget.dart';

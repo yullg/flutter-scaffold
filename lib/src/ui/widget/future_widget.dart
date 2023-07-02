@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 
 class FutureWidget<T> extends StatefulWidget {
-  final Future<T>? future;
-  final Widget Function(BuildContext, T) valueWidgetBuilder;
+  final Future<T> future;
+  final Widget Function(BuildContext, T) builder;
   final WidgetBuilder waitingWidgetBuilder;
-  final Widget Function(BuildContext, Object) failedWidgetBuilder;
-  final WidgetBuilder noneWidgetBuilder;
+  final Widget Function(BuildContext, Object) errorWidgetBuilder;
 
   const FutureWidget({
     super.key,
     required this.future,
-    required this.valueWidgetBuilder,
+    required this.builder,
     this.waitingWidgetBuilder = _defaultWaitingWidgetBuilder,
-    this.failedWidgetBuilder = _defaultFailedWidgetBuilder,
-    this.noneWidgetBuilder = _defaultNoneWidgetBuilder,
+    this.errorWidgetBuilder = _defaultErrorWidgetBuilder,
   });
 
   @override
@@ -28,21 +26,14 @@ class _FutureWidgetState<T> extends State<FutureWidget<T>> {
           if (snapshot.connectionState != ConnectionState.done) {
             return widget.waitingWidgetBuilder(context);
           } else if (snapshot.hasError) {
-            return widget.failedWidgetBuilder(context, snapshot.error!);
-          } else if (!snapshot.hasData) {
-            return widget.noneWidgetBuilder(context);
+            return widget.errorWidgetBuilder(context, snapshot.error!);
           } else {
-            return widget.valueWidgetBuilder(context, snapshot.requireData);
+            return widget.builder(context, snapshot.data as T);
           }
         },
       );
 }
 
-Widget _defaultWaitingWidgetBuilder(BuildContext context) =>
-    const Center(child: CircularProgressIndicator());
+Widget _defaultWaitingWidgetBuilder(BuildContext context) => const Center(child: CircularProgressIndicator());
 
-Widget _defaultFailedWidgetBuilder(BuildContext context, Object error) =>
-    const SizedBox.expand();
-
-Widget _defaultNoneWidgetBuilder(BuildContext context) =>
-    const SizedBox.expand();
+Widget _defaultErrorWidgetBuilder(BuildContext context, Object error) => const SizedBox.expand();
