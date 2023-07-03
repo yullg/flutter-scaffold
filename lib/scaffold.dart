@@ -1,7 +1,7 @@
 export 'src/core/core_config.dart';
 export 'src/core/global_cache_manager.dart';
-export 'src/framework/base_presenter.dart';
 export 'src/framework/base_state.dart';
+export 'src/framework/base_view_model.dart';
 export 'src/helper/enum_helper.dart';
 export 'src/helper/string_helper.dart';
 export 'src/helper/toast_helper.dart';

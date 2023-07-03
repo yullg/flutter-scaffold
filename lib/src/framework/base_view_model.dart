@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class BasePresenter {
+class BaseViewModel {
   @mustCallSuper
   void initialize() {}
 

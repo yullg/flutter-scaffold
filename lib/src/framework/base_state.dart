@@ -1,20 +1,20 @@
 import 'package:flutter/widgets.dart';
 
-import 'base_presenter.dart';
+import 'base_view_model.dart';
 
-abstract class BaseState<T extends StatefulWidget, P extends BasePresenter>
+abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel>
     extends State<T> {
-  late final P presenter;
+  late final VM viewModel;
 
-  P newPresenter();
+  VM newViewModel();
 
   @override
   @protected
   @mustCallSuper
   void initState() {
     super.initState();
-    presenter = newPresenter();
-    presenter.initialize();
+    viewModel = newViewModel();
+    viewModel.initialize();
   }
 
   @override
@@ -22,7 +22,7 @@ abstract class BaseState<T extends StatefulWidget, P extends BasePresenter>
   @mustCallSuper
   void dispose() {
     try {
-      presenter.destroy();
+      viewModel.destroy();
     } finally {
       super.dispose();
     }
