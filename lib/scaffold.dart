@@ -5,6 +5,7 @@ export 'src/framework/base_view_model.dart';
 export 'src/helper/enum_helper.dart';
 export 'src/helper/string_helper.dart';
 export 'src/helper/toast_helper.dart';
+export 'src/helper/uri_helper.dart';
 export 'src/helper/uuid_helper.dart';
 export 'src/scaffold_config.dart';
 export 'src/scaffold_constants.dart';

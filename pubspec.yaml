@@ -4,13 +4,12 @@ version: 1.0.0
 homepage:
 
 environment:
-  sdk: '>=2.19.6 <3.0.0'
-  flutter: ">=2.5.0"
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.17.0
+  intl: any
   permission_handler: ^10.2.0
   path_provider: ^2.0.14
   path: ^1.8.2
