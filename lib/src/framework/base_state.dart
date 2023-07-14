@@ -2,8 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import 'base_view_model.dart';
 
-abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel>
-    extends State<T> {
+abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel> extends State<T> {
   late final VM viewModel;
 
   VM newViewModel();
@@ -25,6 +24,12 @@ abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel>
       viewModel.destroy();
     } finally {
       super.dispose();
+    }
+  }
+
+  void setStateIfMounted([VoidCallback? fn]) {
+    if (mounted) {
+      setState(fn ?? () {});
     }
   }
 }
