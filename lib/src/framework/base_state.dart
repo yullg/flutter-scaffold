@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import 'base_view_model.dart';
 
-abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel> extends State<T> {
+abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel<T>> extends State<T> {
   late final VM viewModel;
 
   VM newViewModel();
