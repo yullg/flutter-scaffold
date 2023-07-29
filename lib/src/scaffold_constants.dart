@@ -11,5 +11,8 @@ abstract class ScaffoldConstants {
 
   static const LOGGER_DIRECTORY_UPLOAD = "yg/log/upload";
 
+  static const VERIFICATION_CODE_SENDER_NAME_DEFAULT = "yg_verification_code_sender_default";
+  static const VERIFICATION_CODE_SENDER_INTERVAL_DEFAULT = 60;
+
   ScaffoldConstants._();
 }
