@@ -1,27 +1,4 @@
 class UriHelper {
-  static Uri merge(Uri uri,
-          {String? scheme,
-          String? userInfo,
-          String? host,
-          int? port,
-          String? path,
-          Map<String, dynamic>? queryParameters,
-          String? fragment}) =>
-      uri.replace(
-        scheme: scheme,
-        userInfo: userInfo,
-        host: host,
-        port: port,
-        path: path,
-        queryParameters: queryParameters != null
-            ? {
-                ...uri.queryParameters,
-                ...queryParameters,
-              }
-            : queryParameters,
-        fragment: fragment,
-      );
-
   static bool equals(Uri uri,
           {String? scheme,
           String? userInfo,
