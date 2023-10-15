@@ -24,17 +24,17 @@ class DomainVerificationPlugin {
   static Future<Map<String, int>?> getHostToStateMap(String packageName) async {
     if (Platform.isAndroid) {
       final result = await DefaultMethodChannel.invokeMethod("dvGetHostToStateMap", packageName);
-      return result.cast<String, int>();
+      return result?.cast<String, int>();
     }
-    return Future.value(null);
+    return null;
   }
 
   static Future<Map<String, int>?> getMyHostToStateMap() async {
     if (Platform.isAndroid) {
       final result = await DefaultMethodChannel.invokeMethod("dvGetMyHostToStateMap");
-      return result.cast<String, int>();
+      return result?.cast<String, int>();
     }
-    return Future.value(null);
+    return null;
   }
 
   DomainVerificationPlugin._();
