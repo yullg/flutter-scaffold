@@ -1,19 +1,23 @@
+/// [String]工具类
 class StringHelper {
-  /// 空字符
-  static const String EMPTY_STRING = "";
-
-  /// 半角空格
-  static const String EN_SPACE_STRING = "\u0020";
-
-  /// 全角空格
-  static const String EM_SPACE_STRING = "\u3000";
-
-  static bool hasLength(String? str) {
-    return (str != null && str.isNotEmpty);
+  /// 检查[str]是否为null或空("")。
+  static bool isEmpty(String? str) {
+    return str == null || str.isEmpty;
   }
 
-  static bool hasText(String? str) {
-    return (str != null && str.trim().isNotEmpty);
+  /// 检查[str]是否不为null且不为空("")。
+  static bool isNotEmpty(String? str) {
+    return !isEmpty(str);
+  }
+
+  /// 检查[str]是否为null，空("")或仅包含空白字符。
+  static bool isBlank(String? str) {
+    return str == null || str.trim().isEmpty;
+  }
+
+  /// 检查[str]是否不为null，不为空("")，也不仅包含空白字符。
+  static bool isNotBlank(String? str) {
+    return !isBlank(str);
   }
 
   StringHelper._();

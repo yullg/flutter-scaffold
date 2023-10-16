@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scaffold/scaffold.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,6 +13,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    ScaffoldInitializer().initialize(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

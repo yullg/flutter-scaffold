@@ -37,5 +37,19 @@ class DomainVerificationPlugin {
     return null;
   }
 
+  static Future<bool?> toSettings(String packageName) {
+    if (Platform.isAndroid) {
+      return DefaultMethodChannel.invokeMethod("dvToSettings", packageName);
+    }
+    return Future.value(null);
+  }
+
+  static Future<bool?> toMySettings() {
+    if (Platform.isAndroid) {
+      return DefaultMethodChannel.invokeMethod("dvToMySettings");
+    }
+    return Future.value(null);
+  }
+
   DomainVerificationPlugin._();
 }

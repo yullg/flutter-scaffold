@@ -40,6 +40,15 @@ class ScaffoldPlugin : FlutterPlugin, MethodCallHandler {
                 result.success(DomainVerificationUseCase.getMyHostToStateMap(context))
             }
 
+            "dvToSettings" -> {
+                val argument = call.arguments<String?>() as String
+                result.success(DomainVerificationUseCase.toSettings(context, argument))
+            }
+
+            "dvToMySettings" -> {
+                result.success(DomainVerificationUseCase.toMySettings(context))
+            }
+
             else -> {
                 result.notImplemented()
             }
