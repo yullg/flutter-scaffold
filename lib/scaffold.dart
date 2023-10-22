@@ -1,4 +1,5 @@
 export 'src/core/core_config.dart';
+export 'src/core/error.dart';
 export 'src/core/global_cache_manager.dart';
 export 'src/framework/base_state.dart';
 export 'src/framework/base_view_model.dart';
