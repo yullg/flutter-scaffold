@@ -1,3 +1,14 @@
+class ContextUnmountedError extends Error {
+  final Object? message;
+
+  ContextUnmountedError([this.message]);
+
+  @override
+  String toString() {
+    return 'ContextUnmountedError{message: ${Error.safeToString(message)}}';
+  }
+}
+
 class CancellationError extends Error {
   final Object? message;
 
