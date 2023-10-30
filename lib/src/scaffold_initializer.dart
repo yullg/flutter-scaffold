@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart' if (dart.library.html) 'package:intl/intl_browser.dart';
 
+import 'helper/sp_helper.dart';
 import 'internal/fallback_logger.dart';
 import 'internal/scaffold_logger.dart';
 import 'scaffold_config.dart';
@@ -12,6 +13,7 @@ class ScaffoldInitializer {
   Future<void> initialize(BuildContext context) async {
     try {
       await configure(ScaffoldConfig());
+      await SPHelper.initialize();
       await initializeIntl();
       await onInitialized();
       ScaffoldLogger.info("[ScaffoldInitializer] Initialize succeeded");
