@@ -49,6 +49,14 @@ class ScaffoldPlugin : FlutterPlugin, MethodCallHandler {
                 result.success(DomainVerificationUseCase.toMySettings(context))
             }
 
+            "scElapsedRealtime" -> {
+                result.success(SystemClockUserCase.elapsedRealtime())
+            }
+
+            "scUptimeMillis" -> {
+                result.success(SystemClockUserCase.uptimeMillis())
+            }
+
             else -> {
                 result.notImplemented()
             }

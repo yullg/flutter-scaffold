@@ -10,6 +10,7 @@ export 'src/helper/toast_helper.dart';
 export 'src/helper/uri_helper.dart';
 export 'src/helper/uuid_helper.dart';
 export 'src/plugin/domain_verification_plugin.dart';
+export 'src/plugin/system_clock_plugin.dart';
 export 'src/scaffold_config.dart';
 export 'src/scaffold_constants.dart';
 export 'src/scaffold_initializer.dart';
