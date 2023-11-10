@@ -15,7 +15,7 @@ class ScaffoldPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var channel: MethodChannel
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        context = flutterPluginBinding.getApplicationContext()
+        context = flutterPluginBinding.applicationContext
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "com.yullg.flutter.scaffold/default")
         channel.setMethodCallHandler(this)
     }
