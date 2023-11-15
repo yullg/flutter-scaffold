@@ -1,7 +1,13 @@
-class ContextUnmountedError extends Error {
-  final Object? message;
+abstract interface class VisibleError {
+  dynamic get visual;
+}
 
-  ContextUnmountedError([this.message]);
+class ContextUnmountedError extends Error implements VisibleError {
+  final Object? message;
+  @override
+  final dynamic visual;
+
+  ContextUnmountedError([this.message, this.visual]);
 
   @override
   String toString() {
@@ -9,10 +15,12 @@ class ContextUnmountedError extends Error {
   }
 }
 
-class CancellationError extends Error {
+class CancellationError extends Error implements VisibleError {
   final Object? message;
+  @override
+  final dynamic visual;
 
-  CancellationError([this.message]);
+  CancellationError([this.message, this.visual]);
 
   @override
   String toString() {
@@ -20,10 +28,12 @@ class CancellationError extends Error {
   }
 }
 
-class AuthenticationNotFoundError extends Error {
+class AuthenticationNotFoundError extends Error implements VisibleError {
   final Object? message;
+  @override
+  final dynamic visual;
 
-  AuthenticationNotFoundError([this.message]);
+  AuthenticationNotFoundError([this.message, this.visual]);
 
   @override
   String toString() {
@@ -31,12 +41,14 @@ class AuthenticationNotFoundError extends Error {
   }
 }
 
-class IncorrectResultSizeDatabaseError extends Error {
+class IncorrectResultSizeDatabaseError extends Error implements VisibleError {
   final Object? message;
   final int? expectedSize;
   final int? actualSize;
+  @override
+  final dynamic visual;
 
-  IncorrectResultSizeDatabaseError({this.message, this.expectedSize, this.actualSize});
+  IncorrectResultSizeDatabaseError({this.message, this.expectedSize, this.actualSize, this.visual});
 
   @override
   String toString() {
@@ -45,7 +57,7 @@ class IncorrectResultSizeDatabaseError extends Error {
 }
 
 class EmptyResultDatabaseError extends IncorrectResultSizeDatabaseError {
-  EmptyResultDatabaseError({super.message, super.expectedSize});
+  EmptyResultDatabaseError({super.message, super.expectedSize, super.visual});
 
   @override
   String toString() {
