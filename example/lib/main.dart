@@ -16,7 +16,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    ScaffoldInitializer().initialize(context);
+    ScaffoldInitializer.initialize(context);
   }
 
   @override

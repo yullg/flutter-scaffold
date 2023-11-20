@@ -15,129 +15,108 @@ class LogFileManager {
   static final _logFileNameRegExp = RegExp(r'^(.+)-(\d{4})(\d{2})(\d{2}).log$');
 
   static Future<File> createFileForLog(Log log) async {
-    final logFile = File(p.join(
-        (await StorageDirectory.CACHE.directory).absolute.path,
-        ScaffoldConstants.LOGGER_DIRECTORY,
-        "${log.name}-${_logFileNameTimeFormat.format(log.time)}.log"));
+    final logFile = File(p.join((await StorageDirectory.CACHE.directory).absolute.path,
+        ScaffoldConstants.LOGGER_DIRECTORY, "${log.name}-${_logFileNameTimeFormat.format(log.time)}.log"));
     await logFile.create(recursive: true);
     return logFile;
   }
 
   static Future<void> deleteExpiredLogFile() async {
     try {
-      ScaffoldLogger.info("[Logger - delete] Begin");
+      ScaffoldLogger.info("[logger] deleteExpiredLogFile() > begin");
       await _eachLogFile((logFile) async {
-        final minDateTime = DateTime.now().subtract(Duration(
-            days: ScaffoldConfig.logger.findLogFileMaxLife(logFile.name)));
+        final minDateTime =
+            DateTime.now().subtract(Duration(days: ScaffoldConfig.logger.findLogFileMaxLife(logFile.name)));
         if (logFile.time.isBefore(minDateTime)) {
           await logFile.file.delete();
           ScaffoldLogger.debug(
-              "[Logger - delete] Delete the expired log file: file = ${logFile.file}, expiredDate = ${minDateTime.toIso8601String()}");
+              "[logger] deleteExpiredLogFile() > Delete: file = ${logFile.file}, expiredDate = ${minDateTime.toIso8601String()}");
         }
       });
-      ScaffoldLogger.info("[Logger - delete] End");
+      ScaffoldLogger.info("[logger] deleteExpiredLogFile() > end");
     } catch (e, s) {
-      ScaffoldLogger.error("[Logger - delete] Failed", e, s);
+      ScaffoldLogger.error("[logger] deleteExpiredLogFile() > failed", e, s);
       rethrow;
     }
   }
 
   static Future<void> uploadAllLogFile() async {
     try {
-      ScaffoldLogger.info("[Logger - upload] Begin");
+      ScaffoldLogger.info("[logger] uploadAllLogFile() > begin");
       final uploader = ScaffoldConfig.logger.uploader;
       if (uploader == null) {
-        ScaffoldLogger.warn("[Logger - upload] Uploader is not provided");
+        ScaffoldLogger.warn("[logger] uploadAllLogFile() > Uploader is not provided");
         return;
       }
       await _eachUploadLogFile((logFile) async {
         try {
           await uploader.upload(logFile);
           await logFile.file.delete();
-          ScaffoldLogger.debug(
-              "[Logger - upload] Log file has been uploaded: ${logFile.file}");
+          ScaffoldLogger.debug("[logger] uploadAllLogFile() > Log file has been uploaded: ${logFile.file}");
         } catch (e, s) {
-          ScaffoldLogger.error(
-              "[Logger - upload] Failed to upload log file: ${logFile.file}",
-              e,
-              s);
+          ScaffoldLogger.error("[logger] uploadAllLogFile() > Failed to upload log file: ${logFile.file}", e, s);
         }
       });
       await _eachLogFile((logFile) async {
-        final uploadFile = File(p.join(
-            (await StorageDirectory.CACHE.directory).absolute.path,
-            ScaffoldConstants.LOGGER_DIRECTORY_UPLOAD,
-            p.basename(logFile.file.path)));
+        final uploadFile = File(p.join((await StorageDirectory.CACHE.directory).absolute.path,
+            ScaffoldConstants.LOGGER_DIRECTORY_UPLOAD, p.basename(logFile.file.path)));
         if (await uploadFile.exists()) {
           ScaffoldLogger.debug(
-              "[Logger - upload] Mark the file to upload: file = ${logFile.file}, result = conflict");
+              "[logger] uploadAllLogFile() > Mark the file to upload: file = ${logFile.file}, result = conflict");
         } else {
           await uploadFile.parent.create(recursive: true);
           await logFile.file.copy(uploadFile.path);
           await logFile.file.delete();
           ScaffoldLogger.debug(
-              "[Logger - upload] Mark the file to upload: file = ${logFile.file}, result = success");
+              "[logger] uploadAllLogFile() > Mark the file to upload: file = ${logFile.file}, result = success");
         }
       });
       await _eachUploadLogFile((logFile) async {
         try {
           await uploader.upload(logFile);
           await logFile.file.delete();
-          ScaffoldLogger.debug(
-              "[Logger - upload] Log file has been uploaded: ${logFile.file}");
+          ScaffoldLogger.debug("[logger] uploadAllLogFile() > Log file has been uploaded: ${logFile.file}");
         } catch (e, s) {
-          ScaffoldLogger.error(
-              "[Logger - upload] Failed to upload log file: ${logFile.file}",
-              e,
-              s);
+          ScaffoldLogger.error("[logger] uploadAllLogFile() > Failed to upload log file: ${logFile.file}", e, s);
         }
       });
-      ScaffoldLogger.info("[Logger - upload] End");
+      ScaffoldLogger.info("[logger] uploadAllLogFile() > end");
     } catch (e, s) {
-      ScaffoldLogger.error("[Logger - upload] Failed", e, s);
+      ScaffoldLogger.error("[logger] uploadAllLogFile() > failed", e, s);
       rethrow;
     }
   }
 
   static Future<void> _eachLogFile(Future<void> Function(LogFile) block) async {
-    final logDirectory = Directory(p.join(
-        (await StorageDirectory.CACHE.directory).absolute.path,
-        ScaffoldConstants.LOGGER_DIRECTORY));
+    final logDirectory =
+        Directory(p.join((await StorageDirectory.CACHE.directory).absolute.path, ScaffoldConstants.LOGGER_DIRECTORY));
     if (await logDirectory.exists()) {
-      await for (FileSystemEntity entity
-          in logDirectory.list(recursive: false, followLinks: false)) {
+      await for (FileSystemEntity entity in logDirectory.list(recursive: false, followLinks: false)) {
         if (entity is! File) continue;
         final fileName = p.basename(entity.path);
         final fileNameMatch = _logFileNameRegExp.firstMatch(fileName);
         if (fileNameMatch == null) continue;
         final name = fileNameMatch.group(1)!;
         final time = DateTime(
-            int.parse(fileNameMatch.group(2)!),
-            int.parse(fileNameMatch.group(3)!),
-            int.parse(fileNameMatch.group(4)!));
+            int.parse(fileNameMatch.group(2)!), int.parse(fileNameMatch.group(3)!), int.parse(fileNameMatch.group(4)!));
         final logFile = LogFile(name, time, entity);
         await block(logFile);
       }
     }
   }
 
-  static Future<void> _eachUploadLogFile(
-      Future<void> Function(LogFile) block) async {
-    final logDirectory = Directory(p.join(
-        (await StorageDirectory.CACHE.directory).absolute.path,
-        ScaffoldConstants.LOGGER_DIRECTORY_UPLOAD));
+  static Future<void> _eachUploadLogFile(Future<void> Function(LogFile) block) async {
+    final logDirectory = Directory(
+        p.join((await StorageDirectory.CACHE.directory).absolute.path, ScaffoldConstants.LOGGER_DIRECTORY_UPLOAD));
     if (await logDirectory.exists()) {
-      await for (FileSystemEntity entity
-          in logDirectory.list(recursive: false, followLinks: false)) {
+      await for (FileSystemEntity entity in logDirectory.list(recursive: false, followLinks: false)) {
         if (entity is! File) continue;
         final fileName = p.basename(entity.path);
         final fileNameMatch = _logFileNameRegExp.firstMatch(fileName);
         if (fileNameMatch == null) continue;
         final name = fileNameMatch.group(1)!;
         final time = DateTime(
-            int.parse(fileNameMatch.group(2)!),
-            int.parse(fileNameMatch.group(3)!),
-            int.parse(fileNameMatch.group(4)!));
+            int.parse(fileNameMatch.group(2)!), int.parse(fileNameMatch.group(3)!), int.parse(fileNameMatch.group(4)!));
         final logFile = LogFile(name, time, entity);
         await block(logFile);
       }

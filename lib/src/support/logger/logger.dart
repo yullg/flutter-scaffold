@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import '../../internal/fallback_logger.dart';
 import '../../scaffold_config.dart';
 import 'log.dart';
 import 'log_appender.dart';
@@ -11,11 +10,11 @@ class Logger {
 
   const Logger(this.name);
 
-  void trace(Object? message, [Object? error, StackTrace? trace]) => log(
-      Log(name, LogLevel.TRACE, message, error, trace, pid, DateTime.now()));
+  void trace(Object? message, [Object? error, StackTrace? trace]) =>
+      log(Log(name, LogLevel.TRACE, message, error, trace, pid, DateTime.now()));
 
-  void debug(Object? message, [Object? error, StackTrace? trace]) => log(
-      Log(name, LogLevel.DEBUG, message, error, trace, pid, DateTime.now()));
+  void debug(Object? message, [Object? error, StackTrace? trace]) =>
+      log(Log(name, LogLevel.DEBUG, message, error, trace, pid, DateTime.now()));
 
   void info(Object? message, [Object? error, StackTrace? trace]) =>
       log(Log(name, LogLevel.INFO, message, error, trace, pid, DateTime.now()));
@@ -23,11 +22,11 @@ class Logger {
   void warn(Object? message, [Object? error, StackTrace? trace]) =>
       log(Log(name, LogLevel.WARN, message, error, trace, pid, DateTime.now()));
 
-  void error(Object? message, [Object? error, StackTrace? trace]) => log(
-      Log(name, LogLevel.ERROR, message, error, trace, pid, DateTime.now()));
+  void error(Object? message, [Object? error, StackTrace? trace]) =>
+      log(Log(name, LogLevel.ERROR, message, error, trace, pid, DateTime.now()));
 
-  void fatal(Object? message, [Object? error, StackTrace? trace]) => log(
-      Log(name, LogLevel.FATAL, message, error, trace, pid, DateTime.now()));
+  void fatal(Object? message, [Object? error, StackTrace? trace]) =>
+      log(Log(name, LogLevel.FATAL, message, error, trace, pid, DateTime.now()));
 
   bool isTraceEnabled() => isEnabled(LogLevel.TRACE);
 
@@ -44,7 +43,7 @@ class Logger {
   /// 记录日志。
   void log(Log log) {
     LogAppender.doAppend(log).catchError((e, s) {
-      FallbackLogger.log("[Logger] Failed to append log", e, s);
+      // ignore
     });
   }
 
@@ -52,13 +51,10 @@ class Logger {
   bool isEnabled(LogLevel logLevel) {
     try {
       return (ScaffoldConfig.logger.findConsoleAppenderEnabled(name) &&
-              ScaffoldConfig.logger.findConsoleAppenderLevel(name).index <=
-                  logLevel.index) ||
+              ScaffoldConfig.logger.findConsoleAppenderLevel(name).index <= logLevel.index) ||
           (ScaffoldConfig.logger.findFileAppenderEnabled(name) &&
-              ScaffoldConfig.logger.findFileAppenderLevel(name).index <=
-                  logLevel.index);
-    } catch (e, s) {
-      FallbackLogger.log("[Logger] Failed to check enabled status", e, s);
+              ScaffoldConfig.logger.findFileAppenderLevel(name).index <= logLevel.index);
+    } catch (e) {
       return false;
     }
   }

@@ -3,19 +3,21 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart' if (dart.library.html) 'package:intl/intl_browser.dart';
 
 import 'helper/sp_helper.dart';
-import 'internal/fallback_logger.dart';
 import 'internal/scaffold_logger.dart';
 import 'scaffold_config.dart';
 import 'support/logger/log_file_manager.dart';
 
 /// 框架初始化器。
 class ScaffoldInitializer {
-  Future<void> initialize(BuildContext context) async {
+  static Future<void> initialize(
+    BuildContext context, {
+    void Function(ScaffoldConfig)? configure,
+  }) async {
     try {
-      await configure(ScaffoldConfig());
+      configure?.call(ScaffoldConfig());
       await SPHelper.initialize();
-      await initializeIntl();
-      await onInitialized();
+      await _initializeIntl();
+      await _onInitialized();
       ScaffoldLogger.info("[ScaffoldInitializer] Initialize succeeded");
     } catch (e, s) {
       ScaffoldLogger.fatal("[ScaffoldInitializer] Initialize failed", e, s);
@@ -23,16 +25,14 @@ class ScaffoldInitializer {
     }
   }
 
-  Future<void> configure(ScaffoldConfig config) async {}
-
-  Future<void> initializeIntl() async {
+  static Future<void> _initializeIntl() async {
     await findSystemLocale();
     await initializeDateFormatting();
   }
 
-  Future<void> onInitialized() async {
+  static Future<void> _onInitialized() async {
     LogFileManager.deleteExpiredLogFile().catchError((e, s) {
-      FallbackLogger.log("[Logger] Failed to delete log", e, s);
+      // ignore
     });
   }
 }

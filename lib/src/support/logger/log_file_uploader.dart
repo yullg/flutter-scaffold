@@ -1,5 +1,5 @@
 import 'log.dart';
 
-abstract class LogFileUploader {
+abstract interface class LogFileUploader {
   Future<void> upload(LogFile logFile);
 }
