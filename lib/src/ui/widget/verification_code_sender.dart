@@ -2,7 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:scaffold/scaffold.dart';
+
+import '../../helper/sp_helper.dart';
+import '../../scaffold_constants.dart';
+import 'lockable_elevated_button.dart';
+import 'lockable_filled_button.dart';
+import 'lockable_outlined_button.dart';
+import 'lockable_text_button.dart';
 
 enum _Mode { elevated, filled, outlined, text }
 
@@ -78,7 +84,7 @@ class _VerificationCodeSenderState extends State<VerificationCodeSender> {
   @override
   void initState() {
     super.initState();
-    widget.loadLastSendTime?.call(widget.name).then((value) {
+    (widget.loadLastSendTime ?? defaultLoadLastSendTime).call(widget.name).then((value) {
       lastSendTime = value;
       refreshLockedSecondsThenRebuild();
     });
@@ -136,16 +142,28 @@ class _VerificationCodeSenderState extends State<VerificationCodeSender> {
   AsyncCallback? newButtonOnPressed(BuildContext context) => lockedSeconds != null
       ? null
       : () async {
+          final nowTime = DateTime.now();
           await widget.onPressed().then((value) async {
-            final nowTime = DateTime.now();
-            await widget.saveLastSendTime?.call(widget.name, nowTime);
-            lastSendTime = nowTime;
+            await (widget.saveLastSendTime ?? defaultSaveLastSendTime).call(widget.name, nowTime);
           }).catchError((e) {
             // nothing
           }).whenComplete(() {
+            lastSendTime = nowTime;
             refreshLockedSecondsThenRebuild();
           });
         };
+
+  Future<DateTime?> defaultLoadLastSendTime(String name) async {
+    final lastSendTime = SPHelper.getInt(name);
+    if (lastSendTime != null) {
+      return DateTime.fromMillisecondsSinceEpoch(lastSendTime);
+    }
+    return null;
+  }
+
+  Future<void> defaultSaveLastSendTime(String name, DateTime dateTime) async {
+    await SPHelper.setInt(name, dateTime.millisecondsSinceEpoch);
+  }
 
   @override
   void dispose() {
