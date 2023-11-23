@@ -2,18 +2,18 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-import '../../scaffold_config.dart';
+import '../../scaffold_module.dart';
 import 'log.dart';
 import 'log_file_manager.dart';
 
 class LogAppender {
   static Future<void> doAppend(Log log) async {
-    if (ScaffoldConfig.logger.findConsoleAppenderEnabled(log.name) &&
-        ScaffoldConfig.logger.findConsoleAppenderLevel(log.name).index <= log.level.index) {
+    if (ScaffoldModule.config.findLoggerConsoleAppenderEnabled(log.name) &&
+        ScaffoldModule.config.findLoggerConsoleAppenderLevel(log.name).index <= log.level.index) {
       _doAppendConsoleLog(log);
     }
-    if (ScaffoldConfig.logger.findFileAppenderEnabled(log.name) &&
-        ScaffoldConfig.logger.findFileAppenderLevel(log.name).index <= log.level.index) {
+    if (ScaffoldModule.config.findLoggerFileAppenderEnabled(log.name) &&
+        ScaffoldModule.config.findLoggerFileAppenderLevel(log.name).index <= log.level.index) {
       await _doAppendFileLog(log);
     }
   }

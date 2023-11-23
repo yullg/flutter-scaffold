@@ -8,13 +8,17 @@ import 'scaffold_config.dart';
 import 'support/logger/log_file_manager.dart';
 
 /// 框架初始化器。
-class ScaffoldInitializer {
+class ScaffoldModule {
+  static late ScaffoldConfig _config;
+
+  static ScaffoldConfig get config => _config;
+
   static Future<void> initialize(
     BuildContext context, {
-    void Function(ScaffoldConfig)? configure,
+    ScaffoldConfig? config,
   }) async {
     try {
-      configure?.call(ScaffoldConfig());
+      _config = config ?? ScaffoldConfig();
       await SPHelper.initialize();
       await _initializeIntl();
       await _onInitialized();

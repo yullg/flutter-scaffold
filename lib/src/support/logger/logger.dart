@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import '../../scaffold_config.dart';
+import '../../scaffold_module.dart';
 import 'log.dart';
 import 'log_appender.dart';
 
@@ -50,10 +50,10 @@ class Logger {
   /// 检查指定的日志级别是否启用。
   bool isEnabled(LogLevel logLevel) {
     try {
-      return (ScaffoldConfig.logger.findConsoleAppenderEnabled(name) &&
-              ScaffoldConfig.logger.findConsoleAppenderLevel(name).index <= logLevel.index) ||
-          (ScaffoldConfig.logger.findFileAppenderEnabled(name) &&
-              ScaffoldConfig.logger.findFileAppenderLevel(name).index <= logLevel.index);
+      return (ScaffoldModule.config.findLoggerConsoleAppenderEnabled(name) &&
+              ScaffoldModule.config.findLoggerConsoleAppenderLevel(name).index <= logLevel.index) ||
+          (ScaffoldModule.config.findLoggerFileAppenderEnabled(name) &&
+              ScaffoldModule.config.findLoggerFileAppenderLevel(name).index <= logLevel.index);
     } catch (e) {
       return false;
     }

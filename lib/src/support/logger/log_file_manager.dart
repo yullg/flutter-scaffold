@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 
 import '../../internal/scaffold_logger.dart';
-import '../../scaffold_config.dart';
 import '../../scaffold_constants.dart';
+import '../../scaffold_module.dart';
 import '../storage/storage_directory.dart';
 import 'log.dart';
 
@@ -26,7 +26,7 @@ class LogFileManager {
       ScaffoldLogger.info("[logger] deleteExpiredLogFile() > begin");
       await _eachLogFile((logFile) async {
         final minDateTime =
-            DateTime.now().subtract(Duration(days: ScaffoldConfig.logger.findLogFileMaxLife(logFile.name)));
+            DateTime.now().subtract(Duration(days: ScaffoldModule.config.findLoggerLogFileMaxLife(logFile.name)));
         if (logFile.time.isBefore(minDateTime)) {
           await logFile.file.delete();
           ScaffoldLogger.debug(
@@ -43,7 +43,7 @@ class LogFileManager {
   static Future<void> uploadAllLogFile() async {
     try {
       ScaffoldLogger.info("[logger] uploadAllLogFile() > begin");
-      final uploader = ScaffoldConfig.logger.uploader;
+      final uploader = ScaffoldModule.config.loggerUploader;
       if (uploader == null) {
         ScaffoldLogger.warn("[logger] uploadAllLogFile() > Uploader is not provided");
         return;
