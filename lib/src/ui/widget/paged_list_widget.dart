@@ -37,8 +37,7 @@ class PagedListWidget<T> extends StatelessWidget {
             );
           },
           separatorBuilder: (BuildContext context, int index) {
-            return separatorBuilder?.call(context, index) ??
-                const SizedBox.shrink();
+            return separatorBuilder?.call(context, index) ?? const SizedBox.shrink();
           },
         ),
       );

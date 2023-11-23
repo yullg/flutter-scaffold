@@ -13,55 +13,55 @@ class LockableFilledButton extends StatefulWidget {
   final Widget? lockedLabel;
   final bool tonal;
 
-  const LockableFilledButton(
-      {super.key,
-      required this.onPressed,
-      this.onLongPress,
-      this.style,
-      required Widget this.child,
-      this.lockedChild})
-      : icon = null,
+  const LockableFilledButton({
+    super.key,
+    required this.onPressed,
+    this.onLongPress,
+    this.style,
+    required Widget this.child,
+    this.lockedChild,
+  })  : icon = null,
         lockedIcon = null,
         label = null,
         lockedLabel = null,
         tonal = false;
 
-  const LockableFilledButton.icon(
-      {super.key,
-      required this.onPressed,
-      this.onLongPress,
-      this.style,
-      required Widget this.icon,
-      this.lockedIcon,
-      required Widget this.label,
-      this.lockedLabel})
-      : child = null,
+  const LockableFilledButton.icon({
+    super.key,
+    required this.onPressed,
+    this.onLongPress,
+    this.style,
+    required Widget this.icon,
+    this.lockedIcon,
+    required Widget this.label,
+    this.lockedLabel,
+  })  : child = null,
         lockedChild = null,
         tonal = false;
 
-  const LockableFilledButton.tonal(
-      {super.key,
-      required this.onPressed,
-      this.onLongPress,
-      this.style,
-      required Widget this.child,
-      this.lockedChild})
-      : icon = null,
+  const LockableFilledButton.tonal({
+    super.key,
+    required this.onPressed,
+    this.onLongPress,
+    this.style,
+    required Widget this.child,
+    this.lockedChild,
+  })  : icon = null,
         lockedIcon = null,
         label = null,
         lockedLabel = null,
         tonal = true;
 
-  const LockableFilledButton.tonalIcon(
-      {super.key,
-      required this.onPressed,
-      this.onLongPress,
-      this.style,
-      required Widget this.icon,
-      this.lockedIcon,
-      required Widget this.label,
-      this.lockedLabel})
-      : child = null,
+  const LockableFilledButton.tonalIcon({
+    super.key,
+    required this.onPressed,
+    this.onLongPress,
+    this.style,
+    required Widget this.icon,
+    this.lockedIcon,
+    required Widget this.label,
+    this.lockedLabel,
+  })  : child = null,
         lockedChild = null,
         tonal = true;
 

@@ -8,8 +8,7 @@ class SinglePermissionResult {
   /// 是否拒绝且不再响应授权请求。
   final bool deniedForever;
 
-  const SinglePermissionResult(
-      this.permission, this.granted, this.deniedForever);
+  const SinglePermissionResult(this.permission, this.granted, this.deniedForever);
 }
 
 /// 多权限授权结果。

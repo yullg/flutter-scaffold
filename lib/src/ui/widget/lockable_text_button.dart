@@ -12,28 +12,28 @@ class LockableTextButton extends StatefulWidget {
   final Widget? label;
   final Widget? lockedLabel;
 
-  const LockableTextButton(
-      {super.key,
-      required this.onPressed,
-      this.onLongPress,
-      this.style,
-      required Widget this.child,
-      this.lockedChild})
-      : icon = null,
+  const LockableTextButton({
+    super.key,
+    required this.onPressed,
+    this.onLongPress,
+    this.style,
+    required Widget this.child,
+    this.lockedChild,
+  })  : icon = null,
         lockedIcon = null,
         label = null,
         lockedLabel = null;
 
-  const LockableTextButton.icon(
-      {super.key,
-      required this.onPressed,
-      this.onLongPress,
-      this.style,
-      required Widget this.icon,
-      this.lockedIcon,
-      required Widget this.label,
-      this.lockedLabel})
-      : child = null,
+  const LockableTextButton.icon({
+    super.key,
+    required this.onPressed,
+    this.onLongPress,
+    this.style,
+    required Widget this.icon,
+    this.lockedIcon,
+    required Widget this.label,
+    this.lockedLabel,
+  })  : child = null,
         lockedChild = null;
 
   @override

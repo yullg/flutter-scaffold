@@ -14,8 +14,7 @@ class StorageFile {
   const StorageFile(this.storageDirectory, this.relativePath);
 
   /// 获取存储文件的[File]表示形式。
-  Future<File> get file async =>
-      File(p.join((await storageDirectory.directory).path, relativePath));
+  Future<File> get file async => File(p.join((await storageDirectory.directory).path, relativePath));
 
   @override
   bool operator ==(Object other) =>
@@ -42,8 +41,6 @@ class StorageFile {
       throw ArgumentError('Source is not a string of StorageFile: $source');
     }
     return StorageFile(
-        EnumHelper.fromString(
-            StorageDirectory.values, source.substring(0, index)),
-        source.substring(index + 1));
+        EnumHelper.fromString(StorageDirectory.values, source.substring(0, index)), source.substring(index + 1));
   }
 }

@@ -11,8 +11,7 @@ class Log {
   final int processId;
   final DateTime time;
 
-  const Log(this.name, this.level, this.message, this.error, this.trace,
-      this.processId, this.time);
+  const Log(this.name, this.level, this.message, this.error, this.trace, this.processId, this.time);
 
   @override
   bool operator ==(Object other) =>

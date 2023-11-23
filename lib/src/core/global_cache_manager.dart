@@ -13,9 +13,7 @@ class GlobalCacheManager extends cm.CacheManager with cm.ImageCacheManager {
   GlobalCacheManager._()
       : super(cm.Config(
           ScaffoldConstants.CACHE_MANAGER_KEY_GLOBAL,
-          stalePeriod:
-              Duration(days: ScaffoldConfig.core.globalCacheManagerStalePeriod),
-          maxNrOfCacheObjects:
-              ScaffoldConfig.core.globalCacheManagerMaxNrOfCacheObjects,
+          stalePeriod: Duration(days: ScaffoldConfig.core.globalCacheManagerStalePeriod),
+          maxNrOfCacheObjects: ScaffoldConfig.core.globalCacheManagerMaxNrOfCacheObjects,
         ));
 }

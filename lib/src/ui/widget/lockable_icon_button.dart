@@ -15,20 +15,21 @@ class LockableIconButton extends StatefulWidget {
   final Widget icon;
   final Widget? lockedIcon;
 
-  const LockableIconButton(
-      {super.key,
-      this.iconSize,
-      this.visualDensity,
-      this.padding,
-      this.alignment,
-      this.color,
-      this.disabledColor,
-      this.tooltip,
-      this.constraints,
-      this.style,
-      required this.onPressed,
-      required this.icon,
-      this.lockedIcon});
+  const LockableIconButton({
+    super.key,
+    this.iconSize,
+    this.visualDensity,
+    this.padding,
+    this.alignment,
+    this.color,
+    this.disabledColor,
+    this.tooltip,
+    this.constraints,
+    this.style,
+    required this.onPressed,
+    required this.icon,
+    this.lockedIcon,
+  });
 
   @override
   State<StatefulWidget> createState() => _LockableIconButtonState();

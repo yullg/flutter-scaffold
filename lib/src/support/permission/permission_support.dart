@@ -6,43 +6,35 @@ import 'permission_result.dart';
 /// 提供权限授权流程。
 class PermissionSupport {
   /// 单权限授权检查。
-  static Future<SinglePermissionResult> checkPermission(
-      Permission permission) async {
+  static Future<SinglePermissionResult> checkPermission(Permission permission) async {
     var status = await _toPhPermission(permission).status;
-    return SinglePermissionResult(
-        permission, status.isGranted, status.isPermanentlyDenied);
+    return SinglePermissionResult(permission, status.isGranted, status.isPermanentlyDenied);
   }
 
   /// 单权限授权请求。
-  static Future<SinglePermissionResult> requestPermission(
-      Permission permission) async {
+  static Future<SinglePermissionResult> requestPermission(Permission permission) async {
     var status = await _toPhPermission(permission).request();
-    return SinglePermissionResult(
-        permission, status.isGranted, status.isPermanentlyDenied);
+    return SinglePermissionResult(permission, status.isGranted, status.isPermanentlyDenied);
   }
 
   /// 多权限授权检查。
-  static Future<MultiplePermissionResult> checkPermissions(
-      Iterable<Permission> permissions) async {
+  static Future<MultiplePermissionResult> checkPermissions(Iterable<Permission> permissions) async {
     var resultMap = <Permission, SinglePermissionResult>{};
     for (final permission in permissions) {
       var status = await _toPhPermission(permission).status;
-      resultMap[permission] = SinglePermissionResult(
-          permission, status.isGranted, status.isPermanentlyDenied);
+      resultMap[permission] = SinglePermissionResult(permission, status.isGranted, status.isPermanentlyDenied);
     }
     return MultiplePermissionResult(resultMap);
   }
 
   /// 多权限授权请求。
-  static Future<MultiplePermissionResult> requestPermissions(
-      Iterable<Permission> permissions) async {
-    var statusMap =
-        await permissions.map((e) => _toPhPermission(e)).toList().request();
+  static Future<MultiplePermissionResult> requestPermissions(Iterable<Permission> permissions) async {
+    var statusMap = await permissions.map((e) => _toPhPermission(e)).toList().request();
     var resultMap = <Permission, SinglePermissionResult>{};
     for (final entry in statusMap.entries) {
       var permission = _toPermission(entry.key);
-      resultMap[permission] = SinglePermissionResult(
-          permission, entry.value.isGranted, entry.value.isPermanentlyDenied);
+      resultMap[permission] =
+          SinglePermissionResult(permission, entry.value.isGranted, entry.value.isPermanentlyDenied);
     }
     return MultiplePermissionResult(resultMap);
   }
@@ -82,8 +74,7 @@ const Map<Permission, ph.Permission> _PERMISSION_MAP = {
   Permission.CAMERA: ph.Permission.camera,
   Permission.CONTACTS: ph.Permission.contacts,
   Permission.CRITICAL_ALERTS: ph.Permission.criticalAlerts,
-  Permission.IGNORE_BATTERY_OPTIMIZATIONS:
-      ph.Permission.ignoreBatteryOptimizations,
+  Permission.IGNORE_BATTERY_OPTIMIZATIONS: ph.Permission.ignoreBatteryOptimizations,
   Permission.LOCATION: ph.Permission.location,
   Permission.LOCATION_ALWAYS: ph.Permission.locationAlways,
   Permission.LOCATION_WHEN_IN_USE: ph.Permission.locationWhenInUse,

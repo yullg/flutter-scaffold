@@ -19,8 +19,7 @@ class ScaffoldConfig {
     return this;
   }
 
-  @Deprecated(
-      "This constructor is forced to be exposed because of syntax restrictions,"
+  @Deprecated("This constructor is forced to be exposed because of syntax restrictions,"
       " but you should never use it.")
   ScaffoldConfig();
 }
