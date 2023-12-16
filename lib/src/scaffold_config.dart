@@ -16,7 +16,7 @@ class ScaffoldConfig {
   ScaffoldConfig({
     this.globalCacheManagerStalePeriod = 30,
     this.globalCacheManagerMaxNrOfCacheObjects = 99999,
-    this.loggerConsoleAppenderEnabled = true,
+    this.loggerConsoleAppenderEnabled = false,
     this.loggerConsoleAppenderLevel = LogLevel.TRACE,
     this.loggerFileAppenderEnabled = true,
     this.loggerFileAppenderLevel = LogLevel.WARN,

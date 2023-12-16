@@ -1,7 +1,10 @@
+import 'package:async/async.dart';
 import 'package:flutter/widgets.dart';
 
+import 'base_state.dart';
+
 class BaseViewModel<T extends StatefulWidget> {
-  final State<T> _state;
+  final BaseState<T, BaseViewModel<T>> _state;
 
   const BaseViewModel(this._state);
 
@@ -11,8 +14,13 @@ class BaseViewModel<T extends StatefulWidget> {
 
   T get widget => _state.widget;
 
+  ResultFuture<void> get asyncInitializeFuture => _state.asyncInitializeFuture;
+
   @mustCallSuper
   void initialize() {}
+
+  @mustCallSuper
+  Future<void> asyncInitialize() async {}
 
   @mustCallSuper
   void destroy() {}

@@ -29,8 +29,11 @@ enum Permission {
   /// See [ph.Permission.bluetoothScan]
   BLUETOOTH_SCAN,
 
-  /// See [ph.Permission.calendar]
-  CALENDAR,
+  /// See [ph.Permission.calendarFullAccess]
+  CALENDAR_FULL_ACCESS,
+
+  /// See [ph.Permission.calendarWriteOnly]
+  CALENDAR_WRITE_ONLY,
 
   /// See [ph.Permission.camera]
   CAMERA,
@@ -88,6 +91,9 @@ enum Permission {
 
   /// See [ph.Permission.sensors]
   SENSORS,
+
+  /// See [ph.Permission.sensorsAlways]
+  SENSORS_ALWAYS,
 
   /// See [ph.Permission.sms]
   SMS,

@@ -6,9 +6,9 @@ class SinglePermissionResult {
   final bool granted;
 
   /// 是否拒绝且不再响应授权请求。
-  final bool deniedForever;
+  final bool permanentlyDenied;
 
-  const SinglePermissionResult(this.permission, this.granted, this.deniedForever);
+  const SinglePermissionResult(this.permission, this.granted, this.permanentlyDenied);
 }
 
 /// 多权限授权结果。
@@ -39,9 +39,8 @@ class MultiplePermissionResult {
 
   /// 是否所有权限都已经拒绝且不再响应授权请求。
   bool get allDeniedForever {
-    if (permissionResultMap.isEmpty) return false;
     for (final permissionResult in permissionResultMap.values) {
-      if (!permissionResult.deniedForever) {
+      if (!permissionResult.permanentlyDenied) {
         return false;
       }
     }
@@ -51,7 +50,7 @@ class MultiplePermissionResult {
   /// 是否至少有一个权限拒绝且不再响应授权请求。
   bool get anyDeniedForever {
     for (final permissionResult in permissionResultMap.values) {
-      if (permissionResult.deniedForever) {
+      if (permissionResult.permanentlyDenied) {
         return true;
       }
     }

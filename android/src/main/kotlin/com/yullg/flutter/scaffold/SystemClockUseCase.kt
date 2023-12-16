@@ -2,7 +2,7 @@ package com.yullg.flutter.scaffold
 
 import android.os.SystemClock
 
-object SystemClockUserCase {
+object SystemClockUseCase {
 
     fun elapsedRealtime(): Long {
         return SystemClock.elapsedRealtime();

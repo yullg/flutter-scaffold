@@ -1,60 +1,102 @@
 package com.yullg.flutter.scaffold
 
-import android.content.Context
-import androidx.annotation.NonNull
+import android.content.Intent
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 
 /** ScaffoldPlugin */
-class ScaffoldPlugin : FlutterPlugin, MethodCallHandler {
+class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
+    PluginRegistry.ActivityResultListener {
 
-    private lateinit var context: Context
-    private lateinit var channel: MethodChannel
+    private var flutterPluginBinding: FlutterPlugin.FlutterPluginBinding? = null
+    private var activityPluginBinding: ActivityPluginBinding? = null
+    private var channel: MethodChannel? = null
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        context = flutterPluginBinding.applicationContext
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "com.yullg.flutter.scaffold/default")
-        channel.setMethodCallHandler(this)
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        this.flutterPluginBinding = binding
+        channel = MethodChannel(
+            binding.binaryMessenger, "com.yullg.flutter.scaffold/default"
+        ).apply {
+            setMethodCallHandler(this@ScaffoldPlugin)
+        }
     }
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        binding.addActivityResultListener(this)
+        this.activityPluginBinding = binding
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        binding.addActivityResultListener(this)
+        this.activityPluginBinding = binding
+    }
+
+    override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "dvIsLinkHandlingAllowed" -> {
-                val argument = call.arguments<String?>() as String
-                result.success(DomainVerificationUseCase.isLinkHandlingAllowed(context, argument))
+                flutterPluginBinding?.applicationContext?.let {
+                    result.success(
+                        DomainVerificationUseCase.isLinkHandlingAllowed(
+                            it,
+                            call.arguments()!!
+                        )
+                    )
+                }
             }
 
             "dvIsMyLinkHandlingAllowed" -> {
-                result.success(DomainVerificationUseCase.isMyLinkHandlingAllowed(context))
+                flutterPluginBinding?.applicationContext?.let {
+                    result.success(DomainVerificationUseCase.isMyLinkHandlingAllowed(it))
+                }
             }
 
             "dvGetHostToStateMap" -> {
-                val argument = call.arguments<String?>() as String
-                result.success(DomainVerificationUseCase.getHostToStateMap(context, argument))
+                flutterPluginBinding?.applicationContext?.let {
+                    result.success(
+                        DomainVerificationUseCase.getHostToStateMap(
+                            it,
+                            call.arguments()!!
+                        )
+                    )
+                }
             }
 
             "dvGetMyHostToStateMap" -> {
-                result.success(DomainVerificationUseCase.getMyHostToStateMap(context))
+                flutterPluginBinding?.applicationContext?.let {
+                    result.success(DomainVerificationUseCase.getMyHostToStateMap(it))
+                }
             }
 
             "dvToSettings" -> {
-                val argument = call.arguments<String?>() as String
-                result.success(DomainVerificationUseCase.toSettings(context, argument))
+                flutterPluginBinding?.applicationContext?.let {
+                    result.success(DomainVerificationUseCase.toSettings(it, call.arguments()!!))
+                }
             }
 
             "dvToMySettings" -> {
-                result.success(DomainVerificationUseCase.toMySettings(context))
+                flutterPluginBinding?.applicationContext?.let {
+                    result.success(DomainVerificationUseCase.toMySettings(it))
+                }
             }
 
             "scElapsedRealtime" -> {
-                result.success(SystemClockUserCase.elapsedRealtime())
+                result.success(SystemClockUseCase.elapsedRealtime())
             }
 
             "scUptimeMillis" -> {
-                result.success(SystemClockUserCase.uptimeMillis())
+                result.success(SystemClockUseCase.uptimeMillis())
+            }
+
+            "safOpenDocument" -> {
+                activityPluginBinding?.activity?.let {
+                    StorageAccessFrameworkUseCase.openDocument(it, result, call.arguments()!!)
+                }
             }
 
             else -> {
@@ -63,7 +105,24 @@ class ScaffoldPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+        return StorageAccessFrameworkUseCase.onActivityResult(requestCode, resultCode, data)
     }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        this.activityPluginBinding?.removeActivityResultListener(this)
+        this.activityPluginBinding = null
+    }
+
+    override fun onDetachedFromActivity() {
+        this.activityPluginBinding?.removeActivityResultListener(this)
+        this.activityPluginBinding = null
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        this.channel?.setMethodCallHandler(null)
+        this.channel = null
+        this.flutterPluginBinding = null
+    }
+
 }
