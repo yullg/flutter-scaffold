@@ -25,8 +25,8 @@ class VerificationCodeSender extends StatefulWidget {
 
   const VerificationCodeSender.elevated({
     super.key,
-    this.name = ScaffoldConstants.VERIFICATION_CODE_SENDER_NAME_DEFAULT,
-    this.interval = ScaffoldConstants.VERIFICATION_CODE_SENDER_INTERVAL_DEFAULT,
+    this.name = ScaffoldConstants.kVerificationCodeSenderNameDefault,
+    this.interval = ScaffoldConstants.kVerificationCodeSenderIntervalDefault,
     required this.onPressed,
     required this.childBuilder,
     this.lockedChild,
@@ -37,8 +37,8 @@ class VerificationCodeSender extends StatefulWidget {
 
   const VerificationCodeSender.filled({
     super.key,
-    this.name = ScaffoldConstants.VERIFICATION_CODE_SENDER_NAME_DEFAULT,
-    this.interval = ScaffoldConstants.VERIFICATION_CODE_SENDER_INTERVAL_DEFAULT,
+    this.name = ScaffoldConstants.kVerificationCodeSenderNameDefault,
+    this.interval = ScaffoldConstants.kVerificationCodeSenderIntervalDefault,
     required this.onPressed,
     required this.childBuilder,
     this.lockedChild,
@@ -49,8 +49,8 @@ class VerificationCodeSender extends StatefulWidget {
 
   const VerificationCodeSender.outlined({
     super.key,
-    this.name = ScaffoldConstants.VERIFICATION_CODE_SENDER_NAME_DEFAULT,
-    this.interval = ScaffoldConstants.VERIFICATION_CODE_SENDER_INTERVAL_DEFAULT,
+    this.name = ScaffoldConstants.kVerificationCodeSenderNameDefault,
+    this.interval = ScaffoldConstants.kVerificationCodeSenderIntervalDefault,
     required this.onPressed,
     required this.childBuilder,
     this.lockedChild,
@@ -61,8 +61,8 @@ class VerificationCodeSender extends StatefulWidget {
 
   const VerificationCodeSender.text({
     super.key,
-    this.name = ScaffoldConstants.VERIFICATION_CODE_SENDER_NAME_DEFAULT,
-    this.interval = ScaffoldConstants.VERIFICATION_CODE_SENDER_INTERVAL_DEFAULT,
+    this.name = ScaffoldConstants.kVerificationCodeSenderNameDefault,
+    this.interval = ScaffoldConstants.kVerificationCodeSenderIntervalDefault,
     required this.onPressed,
     required this.childBuilder,
     this.lockedChild,

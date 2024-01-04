@@ -15,7 +15,7 @@ class LogFileManager {
   static final _logFileNameRegExp = RegExp(r'^(.+)-(\d{4})(\d{2})(\d{2}).log$');
 
   static Future<File> createFileForLog(Log log) async {
-    final logFile = File(p.join((await StorageType.CACHE.directory).absolute.path, ScaffoldConstants.LOGGER_DIRECTORY,
+    final logFile = File(p.join((await StorageType.cache.directory).absolute.path, ScaffoldConstants.kLoggerDirectory,
         "${log.name}-${_logFileNameTimeFormat.format(log.time)}.log"));
     await logFile.create(recursive: true);
     return logFile;
@@ -58,8 +58,8 @@ class LogFileManager {
         }
       });
       await _eachLogFile((logFile) async {
-        final uploadFile = File(p.join((await StorageType.CACHE.directory).absolute.path,
-            ScaffoldConstants.LOGGER_DIRECTORY_UPLOAD, p.basename(logFile.file.path)));
+        final uploadFile = File(p.join((await StorageType.cache.directory).absolute.path,
+            ScaffoldConstants.kLoggerDirectoryUpload, p.basename(logFile.file.path)));
         if (await uploadFile.exists()) {
           ScaffoldLogger.debug(
               "[logger] uploadAllLogFile() > Mark the file to upload: file = ${logFile.file}, result = conflict");
@@ -89,7 +89,7 @@ class LogFileManager {
 
   static Future<void> _eachLogFile(Future<void> Function(LogFile) block) async {
     final logDirectory =
-        Directory(p.join((await StorageType.CACHE.directory).absolute.path, ScaffoldConstants.LOGGER_DIRECTORY));
+        Directory(p.join((await StorageType.cache.directory).absolute.path, ScaffoldConstants.kLoggerDirectory));
     if (await logDirectory.exists()) {
       await for (FileSystemEntity entity in logDirectory.list(recursive: false, followLinks: false)) {
         if (entity is! File) continue;
@@ -107,7 +107,7 @@ class LogFileManager {
 
   static Future<void> _eachUploadLogFile(Future<void> Function(LogFile) block) async {
     final logDirectory =
-        Directory(p.join((await StorageType.CACHE.directory).absolute.path, ScaffoldConstants.LOGGER_DIRECTORY_UPLOAD));
+        Directory(p.join((await StorageType.cache.directory).absolute.path, ScaffoldConstants.kLoggerDirectoryUpload));
     if (await logDirectory.exists()) {
       await for (FileSystemEntity entity in logDirectory.list(recursive: false, followLinks: false)) {
         if (entity is! File) continue;

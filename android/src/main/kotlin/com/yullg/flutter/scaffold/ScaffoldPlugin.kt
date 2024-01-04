@@ -10,7 +10,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 
-/** ScaffoldPlugin */
 class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     PluginRegistry.ActivityResultListener {
 
@@ -18,10 +17,30 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     private var activityPluginBinding: ActivityPluginBinding? = null
     private var channel: MethodChannel? = null
 
+    private val domainVerificationUseCase: DomainVerificationUseCase
+    private val activityResultContractsUseCase: ActivityResultContractsUseCase
+    private val contentResolverUseCase: ContentResolverUseCase
+
+    init {
+        domainVerificationUseCase = DomainVerificationUseCase(
+            flutterPluginBinding = { flutterPluginBinding },
+            activityPluginBinding = { activityPluginBinding },
+        )
+        activityResultContractsUseCase = ActivityResultContractsUseCase(
+            flutterPluginBinding = { flutterPluginBinding },
+            activityPluginBinding = { activityPluginBinding },
+        )
+        contentResolverUseCase = ContentResolverUseCase(
+            flutterPluginBinding = { flutterPluginBinding },
+            activityPluginBinding = { activityPluginBinding },
+        )
+    }
+
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         this.flutterPluginBinding = binding
         channel = MethodChannel(
-            binding.binaryMessenger, "com.yullg.flutter.scaffold/default"
+            binding.binaryMessenger,
+            "com.yullg.flutter.scaffold/default"
         ).apply {
             setMethodCallHandler(this@ScaffoldPlugin)
         }
@@ -38,65 +57,38 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
+        val useCaseContext = UseCaseContext(call, result)
         when (call.method) {
             "dvIsLinkHandlingAllowed" -> {
-                flutterPluginBinding?.applicationContext?.let {
-                    result.success(
-                        DomainVerificationUseCase.isLinkHandlingAllowed(
-                            it,
-                            call.arguments()!!
-                        )
-                    )
-                }
-            }
-
-            "dvIsMyLinkHandlingAllowed" -> {
-                flutterPluginBinding?.applicationContext?.let {
-                    result.success(DomainVerificationUseCase.isMyLinkHandlingAllowed(it))
-                }
+                domainVerificationUseCase.isLinkHandlingAllowed(useCaseContext)
             }
 
             "dvGetHostToStateMap" -> {
-                flutterPluginBinding?.applicationContext?.let {
-                    result.success(
-                        DomainVerificationUseCase.getHostToStateMap(
-                            it,
-                            call.arguments()!!
-                        )
-                    )
-                }
-            }
-
-            "dvGetMyHostToStateMap" -> {
-                flutterPluginBinding?.applicationContext?.let {
-                    result.success(DomainVerificationUseCase.getMyHostToStateMap(it))
-                }
+                domainVerificationUseCase.getHostToStateMap(useCaseContext)
             }
 
             "dvToSettings" -> {
-                flutterPluginBinding?.applicationContext?.let {
-                    result.success(DomainVerificationUseCase.toSettings(it, call.arguments()!!))
-                }
+                domainVerificationUseCase.toSettings(useCaseContext)
             }
 
-            "dvToMySettings" -> {
-                flutterPluginBinding?.applicationContext?.let {
-                    result.success(DomainVerificationUseCase.toMySettings(it))
-                }
+            "arcCreateDocument" -> {
+                activityResultContractsUseCase.createDocument(useCaseContext)
             }
 
-            "scElapsedRealtime" -> {
-                result.success(SystemClockUseCase.elapsedRealtime())
+            "arcOpenDocument" -> {
+                activityResultContractsUseCase.openDocument(useCaseContext)
             }
 
-            "scUptimeMillis" -> {
-                result.success(SystemClockUseCase.uptimeMillis())
+            "crWriteFromFile" -> {
+                contentResolverUseCase.writeFromFile(useCaseContext)
             }
 
-            "safOpenDocument" -> {
-                activityPluginBinding?.activity?.let {
-                    StorageAccessFrameworkUseCase.openDocument(it, result, call.arguments()!!)
-                }
+            "crReadToFile" -> {
+                contentResolverUseCase.readToFile(useCaseContext)
+            }
+
+            "crGetExtensionFromContentUri" -> {
+                contentResolverUseCase.getExtensionFromContentUri(useCaseContext)
             }
 
             else -> {
@@ -105,9 +97,13 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        return StorageAccessFrameworkUseCase.onActivityResult(requestCode, resultCode, data)
-    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean =
+        when {
+            activityResultContractsUseCase.matches(requestCode) ->
+                activityResultContractsUseCase.onActivityResult(requestCode, resultCode, data)
+
+            else -> false
+        }
 
     override fun onDetachedFromActivityForConfigChanges() {
         this.activityPluginBinding?.removeActivityResultListener(this)
@@ -123,6 +119,7 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
         this.channel?.setMethodCallHandler(null)
         this.channel = null
         this.flutterPluginBinding = null
+        this.activityPluginBinding = null
     }
 
 }

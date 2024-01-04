@@ -1,6 +1,6 @@
 import 'dart:io';
 
-enum LogLevel { TRACE, DEBUG, INFO, WARN, ERROR, FATAL }
+enum LogLevel { trace, debug, info, warn, error, fatal }
 
 class Log {
   final String name;

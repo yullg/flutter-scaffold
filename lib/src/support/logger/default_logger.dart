@@ -3,7 +3,7 @@ import 'log.dart';
 import 'logger.dart';
 
 class DefaultLogger {
-  static const _logger = Logger(ScaffoldConstants.LOGGER_NAME_DEFAULT);
+  static const _logger = Logger(ScaffoldConstants.kLoggerNameDefault);
 
   static String get name => _logger.name;
 

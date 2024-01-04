@@ -3,7 +3,7 @@ import '../support/logger/log.dart';
 import '../support/logger/logger.dart';
 
 class ScaffoldLogger {
-  static const _logger = Logger(ScaffoldConstants.LOGGER_NAME_SCAFFOLD);
+  static const _logger = Logger(ScaffoldConstants.kLoggerNameScaffold);
 
   static String get name => _logger.name;
 

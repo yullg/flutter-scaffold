@@ -3,113 +3,113 @@ import 'package:permission_handler/permission_handler.dart' as ph;
 /// 定义可以检查和请求的权限。
 enum Permission {
   /// See [ph.Permission.accessMediaLocation]
-  ACCESS_MEDIA_LOCATION,
+  accessMediaLocation,
 
   /// See [ph.Permission.accessNotificationPolicy]
-  ACCESS_NOTIFICATION_POLICY,
+  accessNotificationPolicy,
 
   /// See [ph.Permission.activityRecognition]
-  ACTIVITY_RECOGNITION,
+  activityRecognition,
 
   /// See [ph.Permission.appTrackingTransparency]
-  APP_TRACKING_TRANSPARENCY,
+  appTrackingTransparency,
 
   /// See [ph.Permission.audio]
-  AUDIO,
+  audio,
 
   /// See [ph.Permission.bluetooth]
-  BLUETOOTH,
+  bluetooth,
 
   /// See [ph.Permission.bluetoothAdvertise]
-  BLUETOOTH_ADVERTISE,
+  bluetoothAdvertise,
 
   /// See [ph.Permission.bluetoothConnect]
-  BLUETOOTH_CONNECT,
+  bluetoothConnect,
 
   /// See [ph.Permission.bluetoothScan]
-  BLUETOOTH_SCAN,
+  bluetoothScan,
 
   /// See [ph.Permission.calendarFullAccess]
-  CALENDAR_FULL_ACCESS,
+  calendarFullAccess,
 
   /// See [ph.Permission.calendarWriteOnly]
-  CALENDAR_WRITE_ONLY,
+  calendarWriteOnly,
 
   /// See [ph.Permission.camera]
-  CAMERA,
+  camera,
 
   /// See [ph.Permission.contacts]
-  CONTACTS,
+  contacts,
 
   /// See [ph.Permission.criticalAlerts]
-  CRITICAL_ALERTS,
+  criticalAlerts,
 
   /// See [ph.Permission.ignoreBatteryOptimizations]
-  IGNORE_BATTERY_OPTIMIZATIONS,
+  ignoreBatteryOptimizations,
 
   /// See [ph.Permission.location]
-  LOCATION,
+  location,
 
   /// See [ph.Permission.locationAlways]
-  LOCATION_ALWAYS,
+  locationAlways,
 
   /// See [ph.Permission.locationWhenInUse]
-  LOCATION_WHEN_IN_USE,
+  locationWhenInUse,
 
   /// See [ph.Permission.manageExternalStorage]
-  MANAGE_EXTERNAL_STORAGE,
+  manageExternalStorage,
 
   /// See [ph.Permission.mediaLibrary]
-  MEDIA_LIBRARY,
+  mediaLibrary,
 
   /// See [ph.Permission.microphone]
-  MICROPHONE,
+  microphone,
 
   /// See [ph.Permission.nearbyWifiDevices]
-  NEARBY_WIFI_DEVICES,
+  nearbyWifiDevices,
 
   /// See [ph.Permission.notification]
-  NOTIFICATION,
+  notification,
 
   /// See [ph.Permission.phone]
-  PHONE,
+  phone,
 
   /// See [ph.Permission.photos]
-  PHOTOS,
+  photos,
 
   /// See [ph.Permission.photosAddOnly]
-  PHOTOS_ADD_ONLY,
+  photosAddOnly,
 
   /// See [ph.Permission.reminders]
-  REMINDERS,
+  reminders,
 
   /// See [ph.Permission.requestInstallPackages]
-  REQUEST_INSTALL_PACKAGES,
+  requestInstallPackages,
 
   /// See [ph.Permission.scheduleExactAlarm]
-  SCHEDULE_EXACT_ALARM,
+  scheduleExactAlarm,
 
   /// See [ph.Permission.sensors]
-  SENSORS,
+  sensors,
 
   /// See [ph.Permission.sensorsAlways]
-  SENSORS_ALWAYS,
+  sensorsAlways,
 
   /// See [ph.Permission.sms]
-  SMS,
+  sms,
 
   /// See [ph.Permission.speech]
-  SPEECH,
+  speech,
 
   /// See [ph.Permission.storage]
-  STORAGE,
+  storage,
 
   /// See [ph.Permission.systemAlertWindow]
-  SYSTEM_ALERT_WINDOW,
+  systemAlertWindow,
 
   /// See [ph.Permission.videos]
-  VIDEOS,
+  videos,
 
   /// See [ph.Permission.unknown]
-  UNKNOWN,
+  unknown,
 }

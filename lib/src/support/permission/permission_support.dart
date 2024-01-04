@@ -40,7 +40,7 @@ class PermissionSupport {
   }
 
   static ph.Permission _toPhPermission(Permission permission) {
-    for (final entry in _PERMISSION_MAP.entries) {
+    for (final entry in _kPermissionMap.entries) {
       if (entry.key == permission) {
         return entry.value;
       }
@@ -49,7 +49,7 @@ class PermissionSupport {
   }
 
   static Permission _toPermission(ph.Permission phPermission) {
-    for (final entry in _PERMISSION_MAP.entries) {
+    for (final entry in _kPermissionMap.entries) {
       if (entry.value == phPermission) {
         return entry.key;
       }
@@ -60,42 +60,42 @@ class PermissionSupport {
   PermissionSupport._();
 }
 
-const Map<Permission, ph.Permission> _PERMISSION_MAP = {
-  Permission.ACCESS_MEDIA_LOCATION: ph.Permission.accessMediaLocation,
-  Permission.ACCESS_NOTIFICATION_POLICY: ph.Permission.accessNotificationPolicy,
-  Permission.ACTIVITY_RECOGNITION: ph.Permission.activityRecognition,
-  Permission.APP_TRACKING_TRANSPARENCY: ph.Permission.appTrackingTransparency,
-  Permission.AUDIO: ph.Permission.audio,
-  Permission.BLUETOOTH: ph.Permission.bluetooth,
-  Permission.BLUETOOTH_ADVERTISE: ph.Permission.bluetoothAdvertise,
-  Permission.BLUETOOTH_CONNECT: ph.Permission.bluetoothConnect,
-  Permission.BLUETOOTH_SCAN: ph.Permission.bluetoothScan,
-  Permission.CALENDAR_FULL_ACCESS: ph.Permission.calendarFullAccess,
-  Permission.CALENDAR_WRITE_ONLY: ph.Permission.calendarWriteOnly,
-  Permission.CAMERA: ph.Permission.camera,
-  Permission.CONTACTS: ph.Permission.contacts,
-  Permission.CRITICAL_ALERTS: ph.Permission.criticalAlerts,
-  Permission.IGNORE_BATTERY_OPTIMIZATIONS: ph.Permission.ignoreBatteryOptimizations,
-  Permission.LOCATION: ph.Permission.location,
-  Permission.LOCATION_ALWAYS: ph.Permission.locationAlways,
-  Permission.LOCATION_WHEN_IN_USE: ph.Permission.locationWhenInUse,
-  Permission.MANAGE_EXTERNAL_STORAGE: ph.Permission.manageExternalStorage,
-  Permission.MEDIA_LIBRARY: ph.Permission.mediaLibrary,
-  Permission.MICROPHONE: ph.Permission.microphone,
-  Permission.NEARBY_WIFI_DEVICES: ph.Permission.nearbyWifiDevices,
-  Permission.NOTIFICATION: ph.Permission.notification,
-  Permission.PHONE: ph.Permission.phone,
-  Permission.PHOTOS: ph.Permission.photos,
-  Permission.PHOTOS_ADD_ONLY: ph.Permission.photosAddOnly,
-  Permission.REMINDERS: ph.Permission.reminders,
-  Permission.REQUEST_INSTALL_PACKAGES: ph.Permission.requestInstallPackages,
-  Permission.SCHEDULE_EXACT_ALARM: ph.Permission.scheduleExactAlarm,
-  Permission.SENSORS: ph.Permission.sensors,
-  Permission.SENSORS_ALWAYS: ph.Permission.sensorsAlways,
-  Permission.SMS: ph.Permission.sms,
-  Permission.SPEECH: ph.Permission.speech,
-  Permission.STORAGE: ph.Permission.storage,
-  Permission.SYSTEM_ALERT_WINDOW: ph.Permission.systemAlertWindow,
-  Permission.VIDEOS: ph.Permission.videos,
-  Permission.UNKNOWN: ph.Permission.unknown,
+const Map<Permission, ph.Permission> _kPermissionMap = {
+  Permission.accessMediaLocation: ph.Permission.accessMediaLocation,
+  Permission.accessNotificationPolicy: ph.Permission.accessNotificationPolicy,
+  Permission.activityRecognition: ph.Permission.activityRecognition,
+  Permission.appTrackingTransparency: ph.Permission.appTrackingTransparency,
+  Permission.audio: ph.Permission.audio,
+  Permission.bluetooth: ph.Permission.bluetooth,
+  Permission.bluetoothAdvertise: ph.Permission.bluetoothAdvertise,
+  Permission.bluetoothConnect: ph.Permission.bluetoothConnect,
+  Permission.bluetoothScan: ph.Permission.bluetoothScan,
+  Permission.calendarFullAccess: ph.Permission.calendarFullAccess,
+  Permission.calendarWriteOnly: ph.Permission.calendarWriteOnly,
+  Permission.camera: ph.Permission.camera,
+  Permission.contacts: ph.Permission.contacts,
+  Permission.criticalAlerts: ph.Permission.criticalAlerts,
+  Permission.ignoreBatteryOptimizations: ph.Permission.ignoreBatteryOptimizations,
+  Permission.location: ph.Permission.location,
+  Permission.locationAlways: ph.Permission.locationAlways,
+  Permission.locationWhenInUse: ph.Permission.locationWhenInUse,
+  Permission.manageExternalStorage: ph.Permission.manageExternalStorage,
+  Permission.mediaLibrary: ph.Permission.mediaLibrary,
+  Permission.microphone: ph.Permission.microphone,
+  Permission.nearbyWifiDevices: ph.Permission.nearbyWifiDevices,
+  Permission.notification: ph.Permission.notification,
+  Permission.phone: ph.Permission.phone,
+  Permission.photos: ph.Permission.photos,
+  Permission.photosAddOnly: ph.Permission.photosAddOnly,
+  Permission.reminders: ph.Permission.reminders,
+  Permission.requestInstallPackages: ph.Permission.requestInstallPackages,
+  Permission.scheduleExactAlarm: ph.Permission.scheduleExactAlarm,
+  Permission.sensors: ph.Permission.sensors,
+  Permission.sensorsAlways: ph.Permission.sensorsAlways,
+  Permission.sms: ph.Permission.sms,
+  Permission.speech: ph.Permission.speech,
+  Permission.storage: ph.Permission.storage,
+  Permission.systemAlertWindow: ph.Permission.systemAlertWindow,
+  Permission.videos: ph.Permission.videos,
+  Permission.unknown: ph.Permission.unknown,
 };
