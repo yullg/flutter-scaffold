@@ -35,6 +35,7 @@ export 'src/support/storage/storage_support.dart';
 export 'src/support/storage/storage_type.dart';
 export 'src/ui/widget/easy_list_tile.dart';
 export 'src/ui/widget/future_widget.dart';
+export 'src/ui/widget/loading_dialog.dart';
 export 'src/ui/widget/lockable_elevated_button.dart';
 export 'src/ui/widget/lockable_filled_button.dart';
 export 'src/ui/widget/lockable_icon_button.dart';

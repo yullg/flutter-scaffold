@@ -16,6 +16,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
   final _documents = <String>[];
+  final _loadingDialog = LoadingDialog();
 
   @override
   _MyAppViewModel newViewModel() => _MyAppViewModel(this);
@@ -150,6 +151,27 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                     ),
                   ],
                 ),
+              _buildHeader("LoadingDialog"),
+              EasyListTile(
+                nameText: "show()",
+                onTap: () {
+                  _loadingDialog.cancelable = true;
+                  _loadingDialog.progress = null;
+                  _loadingDialog.message = "test" * 10;
+                  _loadingDialog.show(context);
+                  Future.delayed(const Duration(seconds: 3)).then((value) {
+                    _loadingDialog.progress = 0.8;
+                    _loadingDialog.message = "test";
+                  });
+                },
+              ),
+              _buildDivider(),
+              EasyListTile(
+                nameText: "dismiss()",
+                onTap: () {
+                  _loadingDialog.dismiss();
+                },
+              ),
             ],
           ),
         ),
@@ -173,6 +195,12 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
       );
 
   Widget _buildDivider() => const Divider(height: 1);
+
+  @override
+  void dispose() {
+    _loadingDialog.dispose();
+    super.dispose();
+  }
 }
 
 class _MyAppViewModel extends BaseViewModel<MyApp> {
