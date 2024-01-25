@@ -156,7 +156,7 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                 nameText: "show()",
                 onTap: () {
                   _loadingDialog.resetMetadata();
-                  _loadingDialog.cancelable = true;
+                  _loadingDialog.barrierDismissible = true;
                   _loadingDialog.message = "test" * 10;
                   _loadingDialog.show(context);
                   Future.delayed(const Duration(seconds: 3)).then((value) {

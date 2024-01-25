@@ -3,26 +3,15 @@ import 'package:flutter/material.dart';
 enum LoadingDialogMode { circular, linear }
 
 class LoadingDialog {
-  LoadingDialogMode _mode;
-  bool _cancelable;
+  LoadingDialogMode _mode = LoadingDialogMode.circular;
+  bool _barrierDismissible = false;
 
   final _progressValueNotifier = ValueNotifier<double?>(null);
   final _messageValueNotifier = ValueNotifier<String?>(null);
 
-  LoadingDialog({
-    LoadingDialogMode mode = LoadingDialogMode.circular,
-    bool cancelable = false,
-    double? progress,
-    String? message,
-  })  : _mode = mode,
-        _cancelable = cancelable {
-    _progressValueNotifier.value = progress;
-    _messageValueNotifier.value = message;
-  }
-
   void resetMetadata() {
     _mode = LoadingDialogMode.circular;
-    _cancelable = false;
+    _barrierDismissible = false;
     _progressValueNotifier.value = null;
     _messageValueNotifier.value = null;
   }
@@ -31,10 +20,8 @@ class LoadingDialog {
     _mode = value;
   }
 
-  /// 点击barrier是否会取消对话框。默认为false。
-  /// PS: 在[OverlayEntry]中无法使用[PopScope]，因此没有办法响应系统返回手势，此逻辑需要在外部另行处理。
-  set cancelable(bool value) {
-    _cancelable = value;
+  set barrierDismissible(bool value) {
+    _barrierDismissible = value;
   }
 
   set progress(double? value) {
@@ -58,7 +45,7 @@ class LoadingDialog {
           children: [
             ModalBarrier(
               color: Colors.black54,
-              dismissible: _cancelable,
+              dismissible: _barrierDismissible,
               onDismiss: () => dismiss(),
             ),
             Center(
