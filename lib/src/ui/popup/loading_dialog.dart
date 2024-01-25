@@ -3,18 +3,36 @@ import 'package:flutter/material.dart';
 enum LoadingDialogMode { circular, linear }
 
 class LoadingDialog {
+  LoadingDialogMode _mode;
+  bool _cancelable;
+
   final _progressValueNotifier = ValueNotifier<double?>(null);
   final _messageValueNotifier = ValueNotifier<String?>(null);
 
-  LoadingDialogMode _mode = LoadingDialogMode.circular;
-  bool _cancelable = false;
+  LoadingDialog({
+    LoadingDialogMode mode = LoadingDialogMode.circular,
+    bool cancelable = false,
+    double? progress,
+    String? message,
+  })  : _mode = mode,
+        _cancelable = cancelable {
+    _progressValueNotifier.value = progress;
+    _messageValueNotifier.value = message;
+  }
+
+  void resetMetadata() {
+    _mode = LoadingDialogMode.circular;
+    _cancelable = false;
+    _progressValueNotifier.value = null;
+    _messageValueNotifier.value = null;
+  }
 
   set mode(LoadingDialogMode value) {
     _mode = value;
   }
 
-  /// 轻击barrier是否会取消对话框。默认为false。
-  /// PS: 在[OverlayEntry]中无法使用[PopScope]，因此没有办法响应系统返回手势，此逻辑需要在外部单独处理。
+  /// 点击barrier是否会取消对话框。默认为false。
+  /// PS: 在[OverlayEntry]中无法使用[PopScope]，因此没有办法响应系统返回手势，此逻辑需要在外部另行处理。
   set cancelable(bool value) {
     _cancelable = value;
   }
@@ -31,15 +49,15 @@ class LoadingDialog {
 
   get isShowing => _overlayEntry != null;
 
-  void show(BuildContext context) {
-    if (_overlayEntry != null) return;
+  void show(BuildContext context, {bool rootOverlay = false}) {
+    if (isShowing) return;
     final overlayEntry = OverlayEntry(builder: (BuildContext context) {
       return Material(
         type: MaterialType.transparency,
         child: Stack(
           children: [
             ModalBarrier(
-              color: Colors.black12,
+              color: Colors.black54,
               dismissible: _cancelable,
               onDismiss: () => dismiss(),
             ),
@@ -134,7 +152,7 @@ class LoadingDialog {
         ),
       );
     });
-    Overlay.of(context).insert(overlayEntry);
+    Overlay.of(context, rootOverlay: rootOverlay).insert(overlayEntry);
     _overlayEntry = overlayEntry;
   }
 

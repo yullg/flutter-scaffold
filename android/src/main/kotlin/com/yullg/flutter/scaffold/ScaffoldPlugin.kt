@@ -20,6 +20,7 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     private val domainVerificationUseCase: DomainVerificationUseCase
     private val activityResultContractsUseCase: ActivityResultContractsUseCase
     private val contentResolverUseCase: ContentResolverUseCase
+    private val toastUseCase: ToastUseCase
 
     init {
         domainVerificationUseCase = DomainVerificationUseCase(
@@ -31,6 +32,10 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
             activityPluginBinding = { activityPluginBinding },
         )
         contentResolverUseCase = ContentResolverUseCase(
+            flutterPluginBinding = { flutterPluginBinding },
+            activityPluginBinding = { activityPluginBinding },
+        )
+        toastUseCase = ToastUseCase(
             flutterPluginBinding = { flutterPluginBinding },
             activityPluginBinding = { activityPluginBinding },
         )
@@ -89,6 +94,10 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 
             "crGetExtensionFromContentUri" -> {
                 contentResolverUseCase.getExtensionFromContentUri(useCaseContext)
+            }
+
+            "toastShow" -> {
+                toastUseCase.show(useCaseContext)
             }
 
             else -> {

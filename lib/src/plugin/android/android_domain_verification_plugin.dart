@@ -19,8 +19,8 @@ class AndroidDomainVerificationPlugin {
 
   static Future<void> toSettings({
     String? packageName,
-  }) {
-    return DefaultMethodChannel.invokeMethod("dvToSettings", packageName);
+  }) async {
+    await DefaultMethodChannel.invokeMethod("dvToSettings", packageName);
   }
 
   AndroidDomainVerificationPlugin._();

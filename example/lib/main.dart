@@ -44,7 +44,7 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                     setStateIfMounted();
                   }, onError: (e, s) {
                     DefaultLogger.error("import() > failed", e, s);
-                    ToastHelper.showLong("import() > $e");
+                    Toast.showLong(context, "import() > $e");
                   });
                 },
               ),
@@ -59,11 +59,11 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                       name: "document-export",
                     ).then((value) {
                       _documents.clear();
-                      ToastHelper.showLong("export() > $value");
+                      Toast.showLong(context, "export() > $value");
                       setStateIfMounted();
                     }, onError: (e, s) {
                       DefaultLogger.error("export() > failed", e, s);
-                      ToastHelper.showLong("export() > $e");
+                      Toast.showLong(context, "export() > $e");
                     });
                   },
                 ),
@@ -84,11 +84,11 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                   SystemClockPlugin.elapsedRealtime().then((value) {
                     DefaultLogger.info(
                         "elapsedRealtime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
-                    ToastHelper.showLong(
+                    Toast.showLong(context,
                         "elapsedRealtime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
                   }, onError: (e, s) {
                     DefaultLogger.error("elapsedRealtime() > failed", e, s);
-                    ToastHelper.showLong("elapsedRealtime() > $e");
+                    Toast.showLong(context, "elapsedRealtime() > $e");
                   });
                 },
               ),
@@ -99,11 +99,11 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                 onTap: () {
                   SystemClockPlugin.uptime().then((value) {
                     DefaultLogger.info("uptime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
-                    ToastHelper.showLong(
-                        "uptime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
+                    Toast.showLong(
+                        context, "uptime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
                   }, onError: (e, s) {
                     DefaultLogger.error("uptime() > failed", e, s);
-                    ToastHelper.showLong("uptime() > $e");
+                    Toast.showLong(context, "uptime() > $e");
                   });
                 },
               ),
@@ -117,10 +117,10 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                       onTap: () {
                         AndroidDomainVerificationPlugin.isLinkHandlingAllowed().then((value) {
                           DefaultLogger.info("isLinkHandlingAllowed() > $value");
-                          ToastHelper.showLong("isLinkHandlingAllowed() > $value");
+                          Toast.showLong(context, "isLinkHandlingAllowed() > $value");
                         }, onError: (e, s) {
                           DefaultLogger.error("isLinkHandlingAllowed() > failed", e, s);
-                          ToastHelper.showLong("isLinkHandlingAllowed() > $e");
+                          Toast.showLong(context, "isLinkHandlingAllowed() > $e");
                         });
                       },
                     ),
@@ -130,10 +130,10 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                       onTap: () {
                         AndroidDomainVerificationPlugin.getHostToStateMap().then((value) {
                           DefaultLogger.info("getHostToStateMap() > $value");
-                          ToastHelper.showLong("getHostToStateMap() > $value");
+                          Toast.showLong(context, "getHostToStateMap() > $value");
                         }, onError: (e, s) {
                           DefaultLogger.error("getHostToStateMap() > failed", e, s);
-                          ToastHelper.showLong("getHostToStateMap() > $e");
+                          Toast.showLong(context, "getHostToStateMap() > $e");
                         });
                       },
                     ),
@@ -142,10 +142,10 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                       nameText: "toSettings()",
                       onTap: () {
                         AndroidDomainVerificationPlugin.toSettings().then((_) {
-                          ToastHelper.showLong("toSettings() > success");
+                          Toast.showLong(context, "toSettings() > success");
                         }, onError: (e, s) {
                           DefaultLogger.error("toSettings() > failed", e, s);
-                          ToastHelper.showLong("toSettings() > $e");
+                          Toast.showLong(context, "toSettings() > $e");
                         });
                       },
                     ),
@@ -155,8 +155,8 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
               EasyListTile(
                 nameText: "show()",
                 onTap: () {
+                  _loadingDialog.resetMetadata();
                   _loadingDialog.cancelable = true;
-                  _loadingDialog.progress = null;
                   _loadingDialog.message = "test" * 10;
                   _loadingDialog.show(context);
                   Future.delayed(const Duration(seconds: 3)).then((value) {
