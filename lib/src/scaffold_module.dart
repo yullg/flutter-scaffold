@@ -6,6 +6,7 @@ import 'helper/sp_helper.dart';
 import 'internal/scaffold_logger.dart';
 import 'scaffold_config.dart';
 import 'support/logger/log_file_manager.dart';
+import 'support/logger/logger.dart';
 
 /// 框架初始化器。
 class ScaffoldModule {
@@ -22,9 +23,11 @@ class ScaffoldModule {
       await SPHelper.initialize();
       await _initializeIntl();
       await _onInitialized();
-      ScaffoldLogger.info("[ScaffoldInitializer] Initialize succeeded");
+      ScaffoldLogger.info(
+          Logger.message(library: "scaffold_module", part: "Initializer", what: "Initialize succeeded"));
     } catch (e, s) {
-      ScaffoldLogger.fatal("[ScaffoldInitializer] Initialize failed", e, s);
+      ScaffoldLogger.fatal(
+          Logger.message(library: "scaffold_module", part: "Initializer", what: "Initialize failed"), e, s);
       rethrow;
     }
   }

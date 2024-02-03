@@ -58,4 +58,45 @@ class Logger {
       return false;
     }
   }
+
+  /// 生成日志消息的便捷方法，同时也为日志消息约定一致的格式。
+  static String message({
+    String library = "undefined",
+    String part = "Undefined",
+    required String what,
+    List<Object?>? args,
+    Map<String, Object?>? namedArgs,
+    Object? result = const _NoValueGiven(),
+  }) {
+    final sb = StringBuffer("[$library] $part - $what");
+
+    /// 防止toString()抛出异常
+    String safeToString(Object? obj) {
+      try {
+        return obj.toString();
+      } catch (e) {
+        return "*${obj.runtimeType}*";
+      }
+    }
+
+    final argStringList = <String>[];
+    args?.forEach((element) {
+      argStringList.add(safeToString(element));
+    });
+    namedArgs?.forEach((key, value) {
+      argStringList.add("$key: ${safeToString(value)}");
+    });
+    if (argStringList.isNotEmpty) {
+      sb.write(" < ");
+      sb.writeAll(argStringList, ", ");
+    }
+    if (result is! _NoValueGiven) {
+      sb.write(" > ${safeToString(result)}");
+    }
+    return sb.toString();
+  }
+}
+
+class _NoValueGiven {
+  const _NoValueGiven();
 }
