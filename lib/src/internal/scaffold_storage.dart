@@ -2,8 +2,8 @@ import 'package:get_storage/get_storage.dart';
 
 import '../scaffold_constants.dart';
 
-class SPHelper {
-  static GetStorage get _sp => GetStorage(ScaffoldConstants.kGetStorageNameSP);
+class ScaffoldStorage {
+  static GetStorage get _sp => GetStorage(ScaffoldConstants.kGetStorageNameScaffold);
 
   static Set<String> getKeys() => Set.of(_sp.getKeys());
 
@@ -31,5 +31,5 @@ class SPHelper {
 
   static Future<void> clear() => _sp.erase();
 
-  SPHelper._();
+  ScaffoldStorage._();
 }

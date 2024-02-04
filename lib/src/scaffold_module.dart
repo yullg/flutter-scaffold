@@ -1,10 +1,11 @@
 import 'package:flutter/widgets.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl_standalone.dart' if (dart.library.html) 'package:intl/intl_browser.dart';
 
-import 'helper/sp_helper.dart';
 import 'internal/scaffold_logger.dart';
 import 'scaffold_config.dart';
+import 'scaffold_constants.dart';
 import 'support/logger/log_file_manager.dart';
 import 'support/logger/logger.dart';
 
@@ -20,7 +21,8 @@ class ScaffoldModule {
   }) async {
     try {
       _config = config ?? ScaffoldConfig();
-      await SPHelper.initialize();
+      await GetStorage.init(ScaffoldConstants.kGetStorageNameScaffold);
+      await GetStorage.init(ScaffoldConstants.kGetStorageNameSP);
       await _initializeIntl();
       await _onInitialized();
       ScaffoldLogger.info(
