@@ -4,6 +4,7 @@ export 'src/core/sex.dart';
 export 'src/framework/base_state.dart';
 export 'src/framework/base_view_model.dart';
 export 'src/helper/enum_helper.dart';
+export 'src/helper/guid_helper.dart';
 export 'src/helper/process_helper.dart';
 export 'src/helper/settings_helper.dart';
 export 'src/helper/sp_helper.dart';
