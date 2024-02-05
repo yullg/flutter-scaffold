@@ -13,6 +13,7 @@ dependencies:
   async: ^2.11.0
   path: ^1.8.3
   uuid: ^4.2.1
+  dio: ^5.4.0
   get_storage: ^2.1.1
   path_provider: ^2.1.1
   permission_handler: ^11.1.0
