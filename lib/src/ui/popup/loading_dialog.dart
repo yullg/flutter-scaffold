@@ -3,17 +3,36 @@ import 'package:flutter/material.dart';
 enum LoadingDialogMode { circular, linear }
 
 class LoadingDialog {
-  LoadingDialogMode _mode = LoadingDialogMode.circular;
-  bool _barrierDismissible = false;
+  final LoadingDialogMode _initialMode;
+  final bool _initialBarrierDismissible;
+  final double? _initialProgress;
+  final String? _initialMessage;
 
+  LoadingDialogMode _mode;
+  bool _barrierDismissible;
   final _progressValueNotifier = ValueNotifier<double?>(null);
   final _messageValueNotifier = ValueNotifier<String?>(null);
 
+  LoadingDialog({
+    LoadingDialogMode mode = LoadingDialogMode.circular,
+    bool barrierDismissible = false,
+    double? progress,
+    String? message,
+  })  : _initialMode = mode,
+        _initialBarrierDismissible = barrierDismissible,
+        _initialProgress = progress,
+        _initialMessage = message,
+        _mode = mode,
+        _barrierDismissible = barrierDismissible {
+    _progressValueNotifier.value = progress;
+    _messageValueNotifier.value = message;
+  }
+
   void resetMetadata() {
-    _mode = LoadingDialogMode.circular;
-    _barrierDismissible = false;
-    _progressValueNotifier.value = null;
-    _messageValueNotifier.value = null;
+    _mode = _initialMode;
+    _barrierDismissible = _initialBarrierDismissible;
+    _progressValueNotifier.value = _initialProgress;
+    _messageValueNotifier.value = _initialMessage;
   }
 
   set mode(LoadingDialogMode value) {

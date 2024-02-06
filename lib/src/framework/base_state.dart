@@ -1,9 +1,11 @@
 import 'package:async/async.dart';
 import 'package:flutter/widgets.dart';
 
+import '../ui/popup/loading_dialog.dart';
 import 'base_view_model.dart';
 
 abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel<T>> extends State<T> {
+  late final LoadingDialog defaultLoadingDialog;
   late final VM viewModel;
   late final ResultFuture<void> asyncInitializeFuture;
 
@@ -14,6 +16,7 @@ abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel<T>> 
   @mustCallSuper
   void initState() {
     super.initState();
+    defaultLoadingDialog = LoadingDialog();
     viewModel = newViewModel();
     viewModel.initialize();
     asyncInitializeFuture = ResultFuture<void>(viewModel.asyncInitialize());
@@ -25,6 +28,7 @@ abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel<T>> 
   void dispose() {
     try {
       viewModel.destroy();
+      defaultLoadingDialog.dispose();
     } finally {
       super.dispose();
     }

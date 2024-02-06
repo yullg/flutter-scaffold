@@ -34,6 +34,6 @@ class _FutureWidgetState<T> extends State<FutureWidget<T>> {
       );
 }
 
-Widget _defaultWaitingWidgetBuilder(BuildContext context) => const CircularProgressIndicator();
+Widget _defaultWaitingWidgetBuilder(BuildContext context) => const SizedBox.shrink();
 
 Widget _defaultErrorWidgetBuilder(BuildContext context, Object error) => const SizedBox.shrink();
