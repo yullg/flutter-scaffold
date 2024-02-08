@@ -20,16 +20,15 @@ class ScaffoldModule {
     ScaffoldConfig? config,
   }) async {
     try {
+      ScaffoldLogger.info(Logger.message(library: "scaffold_module", part: "Initialize", what: "begin"));
       _config = config ?? ScaffoldConfig();
       await GetStorage.init(ScaffoldConstants.kGetStorageNameScaffold);
       await GetStorage.init(ScaffoldConstants.kGetStorageNameSP);
       await _initializeIntl();
       await _onInitialized();
-      ScaffoldLogger.info(
-          Logger.message(library: "scaffold_module", part: "Initializer", what: "Initialize succeeded"));
+      ScaffoldLogger.info(Logger.message(library: "scaffold_module", part: "Initialize", what: "end"));
     } catch (e, s) {
-      ScaffoldLogger.fatal(
-          Logger.message(library: "scaffold_module", part: "Initializer", what: "Initialize failed"), e, s);
+      ScaffoldLogger.fatal(Logger.message(library: "scaffold_module", part: "Initialize", what: "failed"), e, s);
       rethrow;
     }
   }

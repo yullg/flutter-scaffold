@@ -62,13 +62,21 @@ class Logger {
   /// 生成日志消息的便捷方法，同时也为日志消息约定一致的格式。
   static String message({
     String library = "undefined",
-    String part = "Undefined",
-    required String what,
+    String? part,
+    String? what,
     List<Object?>? args,
     Map<String, Object?>? namedArgs,
     Object? result = const _NoValueGiven(),
   }) {
-    final sb = StringBuffer("[$library] $part - $what");
+    final sb = StringBuffer("[$library]");
+
+    if (part != null) {
+      sb.write(" $part");
+    }
+
+    if (what != null) {
+      sb.write(" - $what");
+    }
 
     /// 防止toString()抛出异常
     String safeToString(Object? obj) {
@@ -90,9 +98,11 @@ class Logger {
       sb.write(" < ");
       sb.writeAll(argStringList, ", ");
     }
+
     if (result is! _NoValueGiven) {
       sb.write(" > ${safeToString(result)}");
     }
+
     return sb.toString();
   }
 }
