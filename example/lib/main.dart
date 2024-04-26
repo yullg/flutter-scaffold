@@ -30,7 +30,7 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
           title: const Text('Plugin example app'),
         ),
         body: FutureWidget<void>(
-          future: viewModel.asyncInitializeFuture,
+          future: asyncInitializeFuture,
           waitingWidgetBuilder: (context) => const Center(child: CircularProgressIndicator()),
           builder: (context, _) => ListView(
             children: <Widget>[

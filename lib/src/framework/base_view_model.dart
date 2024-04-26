@@ -1,4 +1,3 @@
-import 'package:async/async.dart';
 import 'package:flutter/widgets.dart';
 
 import 'base_state.dart';
@@ -13,8 +12,6 @@ class BaseViewModel<T extends StatefulWidget> {
   bool get mounted => _state.mounted;
 
   T get widget => _state.widget;
-
-  ResultFuture<void> get asyncInitializeFuture => _state.asyncInitializeFuture;
 
   @mustCallSuper
   void initialize() {}

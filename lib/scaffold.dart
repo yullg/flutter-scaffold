@@ -1,6 +1,8 @@
 export 'src/core/error.dart';
 export 'src/core/global_cache_manager.dart';
+export 'src/core/pair.dart';
 export 'src/core/sex.dart';
+export 'src/core/triple.dart';
 export 'src/framework/base_state.dart';
 export 'src/framework/base_view_model.dart';
 export 'src/helper/enum_helper.dart';
