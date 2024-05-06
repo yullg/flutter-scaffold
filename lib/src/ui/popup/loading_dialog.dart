@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 enum LoadingDialogMode { circular, linear }
@@ -75,80 +77,92 @@ class LoadingDialog {
                   color: Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minWidth: 150,
-                    minHeight: 150,
-                  ),
-                  child: switch (_mode) {
-                    LoadingDialogMode.circular => Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ValueListenableBuilder<double?>(
-                            valueListenable: _progressValueNotifier,
-                            builder: (BuildContext context, double? value, Widget? child) {
-                              return CircularProgressIndicator(
-                                value: value,
-                                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                              );
-                            },
-                          ),
-                          ValueListenableBuilder<String?>(
-                            valueListenable: _messageValueNotifier,
-                            builder: (BuildContext context, String? value, Widget? child) {
-                              if (value != null) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 32),
-                                  child: Text(
-                                    value,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                    ),
-                                  ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) => switch (_mode) {
+                    LoadingDialogMode.circular => ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minWidth: 100,
+                          minHeight: 100,
+                          maxWidth: min(300, constraints.maxWidth),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ValueListenableBuilder<double?>(
+                              valueListenable: _progressValueNotifier,
+                              builder: (BuildContext context, double? value, Widget? child) {
+                                return CircularProgressIndicator(
+                                  value: value,
+                                  strokeCap: StrokeCap.round,
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                                 );
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            },
-                          ),
-                        ],
+                              },
+                            ),
+                            ValueListenableBuilder<String?>(
+                              valueListenable: _messageValueNotifier,
+                              builder: (BuildContext context, String? value, Widget? child) {
+                                if (value != null) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 16),
+                                    child: Text(
+                                      value,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                    LoadingDialogMode.linear => Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ValueListenableBuilder<double?>(
-                            valueListenable: _progressValueNotifier,
-                            builder: (BuildContext context, double? value, Widget? child) {
-                              return LinearProgressIndicator(
-                                value: value,
-                                minHeight: 8,
-                                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                              );
-                            },
-                          ),
-                          ValueListenableBuilder<String?>(
-                            valueListenable: _messageValueNotifier,
-                            builder: (BuildContext context, String? value, Widget? child) {
-                              if (value != null) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 32),
-                                  child: Text(
-                                    value,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                    ),
-                                  ),
+                    LoadingDialogMode.linear => ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minWidth: 100,
+                          minHeight: 100,
+                          maxWidth: min(300, constraints.maxWidth),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ValueListenableBuilder<double?>(
+                              valueListenable: _progressValueNotifier,
+                              builder: (BuildContext context, double? value, Widget? child) {
+                                return LinearProgressIndicator(
+                                  value: value,
+                                  minHeight: 8,
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                                 );
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            },
-                          ),
-                        ],
+                              },
+                            ),
+                            ValueListenableBuilder<String?>(
+                              valueListenable: _messageValueNotifier,
+                              builder: (BuildContext context, String? value, Widget? child) {
+                                if (value != null) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 16),
+                                    child: Text(
+                                      value,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                   },
                 ),

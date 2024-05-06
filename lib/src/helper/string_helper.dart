@@ -25,9 +25,9 @@ class StringHelper {
   /// 截取[str]从[start]（包含）到[end]（排除）的部分。
   /// 当[start]和[end]参数值超出有效范围时会被自动纠正。
   static String trySubstring(String str, int start, [int? end]) {
-    start = min(start, str.length);
+    start = max(min(start, str.length), 0);
     if (end != null) {
-      end = min(end, str.length);
+      end = max(min(end, str.length), 0);
       if (end < start) {
         end = null;
       }

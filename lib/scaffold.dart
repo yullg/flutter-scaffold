@@ -6,6 +6,7 @@ export 'src/core/triple.dart';
 export 'src/framework/base_state.dart';
 export 'src/framework/base_view_model.dart';
 export 'src/helper/enum_helper.dart';
+export 'src/helper/format_helper.dart';
 export 'src/helper/guid_helper.dart';
 export 'src/helper/network_time_helper.dart';
 export 'src/helper/process_helper.dart';
