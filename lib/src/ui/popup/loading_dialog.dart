@@ -55,7 +55,7 @@ class LoadingDialog {
 
   OverlayEntry? _overlayEntry;
 
-  get isShowing => _overlayEntry != null;
+  bool get isShowing => _overlayEntry != null;
 
   void show(BuildContext context, {bool rootOverlay = false}) {
     if (isShowing) return;

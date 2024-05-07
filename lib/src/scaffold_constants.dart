@@ -1,6 +1,4 @@
 abstract class ScaffoldConstants {
-  static const kChannelNameDefault = "com.yullg.flutter.scaffold/default";
-
   static const kCacheManagerKeyGlobal = "yg_cache_manager_global";
 
   static const kGetStorageNameScaffold = "yg_get_storage_scaffold";

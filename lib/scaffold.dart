@@ -49,4 +49,5 @@ export 'src/ui/widget/lockable_outlined_button.dart';
 export 'src/ui/widget/lockable_text_button.dart';
 export 'src/ui/widget/paged_list_widget.dart';
 export 'src/ui/widget/scrollable_column.dart';
+export 'src/ui/widget/scrollable_row.dart';
 export 'src/ui/widget/verification_code_sender.dart';

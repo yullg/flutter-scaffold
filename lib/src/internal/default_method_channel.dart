@@ -1,9 +1,7 @@
 import 'package:flutter/services.dart';
 
-import '../scaffold_constants.dart';
-
 class DefaultMethodChannel {
-  static const _methodChannel = MethodChannel(ScaffoldConstants.kChannelNameDefault);
+  static const _methodChannel = MethodChannel("com.yullg.flutter.scaffold/default");
 
   static Future<T?> invokeMethod<T>(String method, [dynamic arguments]) {
     return _methodChannel.invokeMethod<T>(method, arguments);
