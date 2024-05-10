@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../../core/no_value_given.dart';
 import '../../scaffold_module.dart';
 import 'log.dart';
 import 'log_appender.dart';
@@ -66,7 +67,7 @@ class Logger {
     String? what,
     List<Object?>? args,
     Map<String, Object?>? namedArgs,
-    Object? result = const _NoValueGiven(),
+    Object? result = const NoValueGiven(),
   }) {
     final sb = StringBuffer("[$library]");
 
@@ -99,14 +100,10 @@ class Logger {
       sb.writeAll(argStringList, ", ");
     }
 
-    if (result is! _NoValueGiven) {
+    if (result is! NoValueGiven) {
       sb.write(" > ${safeToString(result)}");
     }
 
     return sb.toString();
   }
-}
-
-class _NoValueGiven {
-  const _NoValueGiven();
 }

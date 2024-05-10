@@ -15,10 +15,6 @@ extension ExtensionTakeUnless<T> on T {
 }
 
 extension ExtensionList<T> on List<T> {
-  T? get firstOrNull => isNotEmpty ? first : null;
-
-  T? get lastOrNull => isNotEmpty ? last : null;
-
   T? firstWhereOrNull(bool Function(T element) test) {
     for (final element in this) {
       if (test(element)) {

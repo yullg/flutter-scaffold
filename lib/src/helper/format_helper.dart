@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:intl/intl.dart';
 
+import '../core/no_value_given.dart';
+
 class FormatHelper {
   static int parseInt(Object source, {int? radix}) {
     if (source is num) return source.toInt();
@@ -73,38 +75,122 @@ class FormatHelper {
     }
   }
 
-  static Duration parseDuration(
-          {Object days = 0,
-          Object hours = 0,
-          Object minutes = 0,
-          Object seconds = 0,
-          Object milliseconds = 0,
-          Object microseconds = 0}) =>
-      Duration(
-        days: parseInt(days),
-        hours: parseInt(hours),
-        minutes: parseInt(minutes),
-        seconds: parseInt(seconds),
-        milliseconds: parseInt(milliseconds),
-        microseconds: parseInt(microseconds),
-      );
-
-  static Duration? tryParseDuration(
-      {Object? days, Object? hours, Object? minutes, Object? seconds, Object? milliseconds, Object? microseconds}) {
-    if (days == null &&
-        hours == null &&
-        minutes == null &&
-        seconds == null &&
-        milliseconds == null &&
-        microseconds == null) return null;
+  static Duration parseDuration({
+    Object? days,
+    Object? hours,
+    Object? minutes,
+    Object? seconds,
+    Object? milliseconds,
+    Object? microseconds,
+  }) {
     return Duration(
-      days: tryParseInt(days) ?? 0,
-      hours: tryParseInt(hours) ?? 0,
-      minutes: tryParseInt(minutes) ?? 0,
-      seconds: tryParseInt(seconds) ?? 0,
-      milliseconds: tryParseInt(milliseconds) ?? 0,
-      microseconds: tryParseInt(microseconds) ?? 0,
+      days: days != null ? parseInt(days) : 0,
+      hours: hours != null ? parseInt(hours) : 0,
+      minutes: minutes != null ? parseInt(minutes) : 0,
+      seconds: seconds != null ? parseInt(seconds) : 0,
+      milliseconds: milliseconds != null ? parseInt(milliseconds) : 0,
+      microseconds: microseconds != null ? parseInt(microseconds) : 0,
     );
+  }
+
+  static Duration? tryParseDuration({
+    Object? days,
+    Object? hours,
+    Object? minutes,
+    Object? seconds,
+    Object? milliseconds,
+    Object? microseconds,
+  }) {
+    try {
+      return parseDuration(
+        days: days,
+        hours: hours,
+        minutes: minutes,
+        seconds: seconds,
+        milliseconds: milliseconds,
+        microseconds: microseconds,
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static DateTime parseDateTime({
+    Object millisecondsSinceEpoch = const NoValueGiven(),
+    Object microsecondsSinceEpoch = const NoValueGiven(),
+    Object year = const NoValueGiven(),
+    Object? month,
+    Object? day,
+    Object? hour,
+    Object? minute,
+    Object? second,
+    Object? millisecond,
+    Object? microsecond,
+    bool isUtc = false,
+  }) {
+    if (millisecondsSinceEpoch is! NoValueGiven) {
+      return DateTime.fromMillisecondsSinceEpoch(parseInt(millisecondsSinceEpoch), isUtc: isUtc);
+    } else if (microsecondsSinceEpoch is! NoValueGiven) {
+      return DateTime.fromMicrosecondsSinceEpoch(parseInt(microsecondsSinceEpoch), isUtc: isUtc);
+    } else if (year is! NoValueGiven) {
+      if (isUtc) {
+        return DateTime.utc(
+          parseInt(year),
+          month != null ? parseInt(month) : 1,
+          day != null ? parseInt(day) : 1,
+          hour != null ? parseInt(hour) : 0,
+          minute != null ? parseInt(minute) : 0,
+          second != null ? parseInt(second) : 0,
+          millisecond != null ? parseInt(millisecond) : 0,
+          microsecond != null ? parseInt(microsecond) : 0,
+        );
+      } else {
+        return DateTime(
+          parseInt(year),
+          month != null ? parseInt(month) : 1,
+          day != null ? parseInt(day) : 1,
+          hour != null ? parseInt(hour) : 0,
+          minute != null ? parseInt(minute) : 0,
+          second != null ? parseInt(second) : 0,
+          millisecond != null ? parseInt(millisecond) : 0,
+          microsecond != null ? parseInt(microsecond) : 0,
+        );
+      }
+    }
+    throw ArgumentError("millisecondsSinceEpoch, microsecondsSinceEpoch and year must not all be null");
+  }
+
+  static DateTime? tryParseDateTime({
+    Object? millisecondsSinceEpoch,
+    Object? microsecondsSinceEpoch,
+    Object? year,
+    Object? month,
+    Object? day,
+    Object? hour,
+    Object? minute,
+    Object? second,
+    Object? millisecond,
+    Object? microsecond,
+    bool isUtc = false,
+  }) {
+    if (millisecondsSinceEpoch == null && microsecondsSinceEpoch == null && year == null) return null;
+    try {
+      return parseDateTime(
+        millisecondsSinceEpoch: millisecondsSinceEpoch ?? const NoValueGiven(),
+        microsecondsSinceEpoch: microsecondsSinceEpoch ?? const NoValueGiven(),
+        year: year ?? const NoValueGiven(),
+        month: month,
+        day: day,
+        hour: hour,
+        minute: minute,
+        second: second,
+        millisecond: millisecond,
+        microsecond: microsecond,
+        isUtc: isUtc,
+      );
+    } catch (e) {
+      return null;
+    }
   }
 
   static String printNum(num number, {int minFractionDigits = 0, int maxFractionDigits = 3, String? locale}) {

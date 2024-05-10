@@ -1,5 +1,6 @@
 export 'src/core/error.dart';
 export 'src/core/global_cache_manager.dart';
+export 'src/core/no_value_given.dart';
 export 'src/core/pair.dart';
 export 'src/core/sex.dart';
 export 'src/core/triple.dart';
