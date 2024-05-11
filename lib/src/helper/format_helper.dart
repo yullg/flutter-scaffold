@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:intl/intl.dart';
@@ -116,6 +117,7 @@ class FormatHelper {
   }
 
   static DateTime parseDateTime({
+    Object httpDate = const NoValueGiven(),
     Object millisecondsSinceEpoch = const NoValueGiven(),
     Object microsecondsSinceEpoch = const NoValueGiven(),
     Object year = const NoValueGiven(),
@@ -128,7 +130,10 @@ class FormatHelper {
     Object? microsecond,
     bool isUtc = false,
   }) {
-    if (millisecondsSinceEpoch is! NoValueGiven) {
+    if (httpDate is! NoValueGiven) {
+      if (httpDate is DateTime) return httpDate;
+      return HttpDate.parse(httpDate.toString());
+    } else if (millisecondsSinceEpoch is! NoValueGiven) {
       return DateTime.fromMillisecondsSinceEpoch(parseInt(millisecondsSinceEpoch), isUtc: isUtc);
     } else if (microsecondsSinceEpoch is! NoValueGiven) {
       return DateTime.fromMicrosecondsSinceEpoch(parseInt(microsecondsSinceEpoch), isUtc: isUtc);
@@ -161,6 +166,7 @@ class FormatHelper {
   }
 
   static DateTime? tryParseDateTime({
+    Object? httpDate,
     Object? millisecondsSinceEpoch,
     Object? microsecondsSinceEpoch,
     Object? year,
@@ -173,9 +179,12 @@ class FormatHelper {
     Object? microsecond,
     bool isUtc = false,
   }) {
-    if (millisecondsSinceEpoch == null && microsecondsSinceEpoch == null && year == null) return null;
+    if (httpDate == null && millisecondsSinceEpoch == null && microsecondsSinceEpoch == null && year == null) {
+      return null;
+    }
     try {
       return parseDateTime(
+        httpDate: httpDate ?? const NoValueGiven(),
         millisecondsSinceEpoch: millisecondsSinceEpoch ?? const NoValueGiven(),
         microsecondsSinceEpoch: microsecondsSinceEpoch ?? const NoValueGiven(),
         year: year ?? const NoValueGiven(),
