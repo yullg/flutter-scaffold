@@ -32,4 +32,12 @@ extension ExtensionList<T> on List<T> {
     }
     return null;
   }
+
+  void sortedBy<R extends Comparable<R>>(R Function(T element) selector) {
+    sort((a, b) => Comparable.compare(selector(a), selector(b)));
+  }
+
+  void sortedByDescending<R extends Comparable<R>>(R Function(T element) selector) {
+    sort((a, b) => Comparable.compare(selector(b), selector(a)));
+  }
 }
