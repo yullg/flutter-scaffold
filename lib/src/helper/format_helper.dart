@@ -203,9 +203,14 @@ class FormatHelper {
   }
 
   static String printNum(num number, {int minFractionDigits = 0, int maxFractionDigits = 3, String? locale}) {
-    final subtractNumber = 1 / pow(10, maxFractionDigits + 1) * 5;
+    final operand = 1 / pow(10, maxFractionDigits + 1) * 5;
+    if (number >= 0) {
+      number = max(number - operand, 0);
+    } else {
+      number = min(number + operand, -0);
+    }
     final pattern = "0.${'0' * minFractionDigits}${'#' * (maxFractionDigits - minFractionDigits)}";
-    return NumberFormat(pattern, locale).format(number - subtractNumber);
+    return NumberFormat(pattern, locale).format(number);
   }
 
   FormatHelper._();
