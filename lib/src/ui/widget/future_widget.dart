@@ -1,39 +1,30 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-class FutureWidget<T> extends StatefulWidget {
+class FutureWidget<T> extends StatelessWidget {
   final Future<T> future;
   final Widget Function(BuildContext, T) builder;
-  final WidgetBuilder waitingWidgetBuilder;
-  final Widget Function(BuildContext, Object) errorWidgetBuilder;
+  final WidgetBuilder? waitingWidgetBuilder;
+  final Widget Function(BuildContext, Object)? errorWidgetBuilder;
 
   const FutureWidget({
     super.key,
     required this.future,
     required this.builder,
-    this.waitingWidgetBuilder = _defaultWaitingWidgetBuilder,
-    this.errorWidgetBuilder = _defaultErrorWidgetBuilder,
+    this.waitingWidgetBuilder,
+    this.errorWidgetBuilder,
   });
 
   @override
-  State<StatefulWidget> createState() => _FutureWidgetState<T>();
-}
-
-class _FutureWidgetState<T> extends State<FutureWidget<T>> {
-  @override
   Widget build(BuildContext context) => FutureBuilder(
-        future: widget.future,
+        future: future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return widget.waitingWidgetBuilder(context);
+            return waitingWidgetBuilder?.call(context) ?? const SizedBox.shrink();
           } else if (snapshot.hasError) {
-            return widget.errorWidgetBuilder(context, snapshot.error!);
+            return errorWidgetBuilder?.call(context, snapshot.error!) ?? const SizedBox.shrink();
           } else {
-            return widget.builder(context, snapshot.data as T);
+            return builder(context, snapshot.data as T);
           }
         },
       );
 }
-
-Widget _defaultWaitingWidgetBuilder(BuildContext context) => const SizedBox.shrink();
-
-Widget _defaultErrorWidgetBuilder(BuildContext context, Object error) => const SizedBox.shrink();
