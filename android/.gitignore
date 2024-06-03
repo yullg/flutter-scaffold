@@ -1,8 +1,5 @@
 /*
-!/gradle/
 !/src/
 !/.gitignore
 !/build.gradle
-!/gradlew
-!/gradlew.bat
 !/settings.gradle
