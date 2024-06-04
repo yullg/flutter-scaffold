@@ -1,14 +1,14 @@
 import 'package:async/async.dart';
 import 'package:flutter/widgets.dart';
 
-import '../ui/popup/loading_dialog.dart';
 import 'base_view_model.dart';
+import 'generic_state.dart';
 
-abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel<T>> extends State<T> {
-  late final LoadingDialog defaultLoadingDialog;
+abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel<T>> extends GenericState<T> {
   late final VM viewModel;
   late final ResultFuture<void> asyncInitializeFuture;
 
+  @protected
   VM newViewModel();
 
   @override
@@ -16,7 +16,6 @@ abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel<T>> 
   @mustCallSuper
   void initState() {
     super.initState();
-    defaultLoadingDialog = LoadingDialog();
     viewModel = newViewModel();
     viewModel.initialize();
     asyncInitializeFuture = ResultFuture<void>(viewModel.asyncInitialize());
@@ -28,15 +27,8 @@ abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel<T>> 
   void dispose() {
     try {
       viewModel.destroy();
-      defaultLoadingDialog.dispose();
     } finally {
       super.dispose();
-    }
-  }
-
-  void setStateIfMounted([VoidCallback? fn]) {
-    if (mounted) {
-      setState(fn ?? () {});
     }
   }
 }

@@ -6,6 +6,7 @@ export 'src/core/sex.dart';
 export 'src/core/triple.dart';
 export 'src/framework/base_state.dart';
 export 'src/framework/base_view_model.dart';
+export 'src/framework/generic_state.dart';
 export 'src/helper/enum_helper.dart';
 export 'src/helper/format_helper.dart';
 export 'src/helper/guid_helper.dart';
