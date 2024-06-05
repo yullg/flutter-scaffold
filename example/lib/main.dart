@@ -31,7 +31,7 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
         ),
         body: FutureWidget<void>(
           future: asyncInitializeFuture,
-          waitingWidgetBuilder: (context) => const Center(child: CircularProgressIndicator()),
+          waitingBuilder: (context) => const Center(child: CircularProgressIndicator()),
           builder: (context, _) => ListView(
             children: <Widget>[
               _buildHeader("DocumentManagerPlugin"),

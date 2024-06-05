@@ -2,16 +2,16 @@ import 'package:flutter/widgets.dart';
 
 class FutureWidget<T> extends StatelessWidget {
   final Future<T> future;
-  final Widget Function(BuildContext, T) builder;
-  final WidgetBuilder? waitingWidgetBuilder;
-  final Widget Function(BuildContext, Object)? errorWidgetBuilder;
+  final Widget Function(BuildContext context, T data) builder;
+  final WidgetBuilder? waitingBuilder;
+  final Widget Function(BuildContext context, Object error)? errorBuilder;
 
   const FutureWidget({
     super.key,
     required this.future,
     required this.builder,
-    this.waitingWidgetBuilder,
-    this.errorWidgetBuilder,
+    this.waitingBuilder,
+    this.errorBuilder,
   });
 
   @override
@@ -19,9 +19,9 @@ class FutureWidget<T> extends StatelessWidget {
         future: future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return waitingWidgetBuilder?.call(context) ?? const SizedBox.shrink();
+            return waitingBuilder?.call(context) ?? const SizedBox.shrink();
           } else if (snapshot.hasError) {
-            return errorWidgetBuilder?.call(context, snapshot.error!) ?? const SizedBox.shrink();
+            return errorBuilder?.call(context, snapshot.error!) ?? const SizedBox.shrink();
           } else {
             return builder(context, snapshot.data as T);
           }
