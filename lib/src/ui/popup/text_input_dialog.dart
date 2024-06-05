@@ -18,18 +18,21 @@ Future<List<String>?> showTextInputDialog({
 }) {
   return showCupertinoDialog<List<String>>(
     context: context,
-    builder: (context) => _IosTextInputDialog(
-      title: title ?? titleText?.let((it) => Text(it)),
-      message: message ?? messageText?.let((it) => Text(it)),
-      fields: fields,
-      actionNo: actionNo ?? actionNoText?.let((it) => Text(it)),
-      actionOk: actionOk ?? actionOkText?.let((it) => Text(it)),
-      onActionNoPressed: () {
-        Navigator.of(context, rootNavigator: useRootNavigator).pop();
-      },
-      onActionOkPressed: (fieldTextList) {
-        Navigator.of(context, rootNavigator: useRootNavigator).pop(fieldTextList);
-      },
+    builder: (context) => PopScope(
+      canPop: isDismissible,
+      child: _IosTextInputDialog(
+        title: title ?? titleText?.let((it) => Text(it)),
+        message: message ?? messageText?.let((it) => Text(it)),
+        fields: fields,
+        actionNo: actionNo ?? actionNoText?.let((it) => Text(it)),
+        actionOk: actionOk ?? actionOkText?.let((it) => Text(it)),
+        onActionNoPressed: () {
+          Navigator.of(context, rootNavigator: useRootNavigator).pop();
+        },
+        onActionOkPressed: (fieldTextList) {
+          Navigator.of(context, rootNavigator: useRootNavigator).pop(fieldTextList);
+        },
+      ),
     ),
     useRootNavigator: useRootNavigator,
     barrierDismissible: isDismissible,

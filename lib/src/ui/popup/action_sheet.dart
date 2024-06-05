@@ -16,31 +16,34 @@ Future<T?> showActionSheet<T>({
 }) {
   return showCupertinoModalPopup<T>(
     context: context,
-    builder: (context) => CupertinoActionSheet(
-      title: title ?? titleText?.let((it) => Text(it)),
-      message: message ?? messageText?.let((it) => Text(it)),
-      actions: entries
-          .map((entry) => CupertinoActionSheetAction(
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: useRootNavigator).pop(entry.value);
-                },
-                isDefaultAction: entry.isDefaultAction,
-                isDestructiveAction: entry.isDestructiveAction,
-                child: entry.child ?? Text(entry.childText ?? entry.value.toString()),
-              ))
-          .toList(growable: false),
-      cancelButton: cancel?.let((it) => CupertinoActionSheetAction(
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: useRootNavigator).pop();
-                },
-                child: it,
-              )) ??
-          cancelText?.let((it) => CupertinoActionSheetAction(
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: useRootNavigator).pop();
-                },
-                child: Text(it),
-              )),
+    builder: (context) => PopScope(
+      canPop: isDismissible,
+      child: CupertinoActionSheet(
+        title: title ?? titleText?.let((it) => Text(it)),
+        message: message ?? messageText?.let((it) => Text(it)),
+        actions: entries
+            .map((entry) => CupertinoActionSheetAction(
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: useRootNavigator).pop(entry.value);
+                  },
+                  isDefaultAction: entry.isDefaultAction,
+                  isDestructiveAction: entry.isDestructiveAction,
+                  child: entry.child ?? Text(entry.childText ?? entry.value.toString()),
+                ))
+            .toList(growable: false),
+        cancelButton: cancel?.let((it) => CupertinoActionSheetAction(
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: useRootNavigator).pop();
+                  },
+                  child: it,
+                )) ??
+            cancelText?.let((it) => CupertinoActionSheetAction(
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: useRootNavigator).pop();
+                  },
+                  child: Text(it),
+                )),
+      ),
     ),
     useRootNavigator: useRootNavigator,
     barrierDismissible: isDismissible,
