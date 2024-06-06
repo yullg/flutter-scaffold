@@ -20,8 +20,8 @@ android {
     defaultConfig {
         minSdkVersion 25
     }
+}
 
-    dependencies {
-        implementation "androidx.activity:activity-ktx:1.7.2"
-    }
+dependencies {
+    implementation "androidx.activity:activity-ktx:1.7.2"
 }
