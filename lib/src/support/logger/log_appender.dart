@@ -19,16 +19,25 @@ class LogAppender {
   }
 
   static void _doAppendConsoleLog(Log log) {
-    StringBuffer sb = StringBuffer(
-        "${log.processId}\t${log.name}\t${log.level.name}\t${log.time.toIso8601String()}\t${log.message ?? '---'}");
+    final sb = StringBuffer("${log.processId}\t${log.name}\t${log.level.name}\t${log.time.toIso8601String()}");
+    if (log.message != null) {
+      sb.write("\t${log.message}");
+    }
     if (log.error != null) {
       sb.write("\t${log.error}");
     }
-    if (log.trace != null) {
-      sb.writeln();
-      sb.write(log.trace);
+    final message = sb.toString();
+    final messageLines = message.split('\n');
+    for (final messageLine in messageLines) {
+      if (messageLine.length >= 800) {
+        debugPrintThrottled(messageLine, wrapWidth: 150);
+      } else {
+        debugPrintThrottled(messageLine);
+      }
     }
-    debugPrintThrottled(sb.toString().trim());
+    if (log.trace != null) {
+      debugPrintThrottled(log.trace.toString());
+    }
   }
 
   static Future<void> _doAppendFileLog(Log log) async {
