@@ -20,6 +20,7 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     private val domainVerificationUseCase: DomainVerificationUseCase
     private val activityResultContractsUseCase: ActivityResultContractsUseCase
     private val contentResolverUseCase: ContentResolverUseCase
+    private val packageInstallUseCase: PackageInstallUseCase
     private val toastUseCase: ToastUseCase
 
     init {
@@ -32,6 +33,10 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
             activityPluginBinding = { activityPluginBinding },
         )
         contentResolverUseCase = ContentResolverUseCase(
+            flutterPluginBinding = { flutterPluginBinding },
+            activityPluginBinding = { activityPluginBinding },
+        )
+        packageInstallUseCase = PackageInstallUseCase(
             flutterPluginBinding = { flutterPluginBinding },
             activityPluginBinding = { activityPluginBinding },
         )
@@ -94,6 +99,10 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 
             "crGetExtensionFromContentUri" -> {
                 contentResolverUseCase.getExtensionFromContentUri(useCaseContext)
+            }
+
+            "piInstall" -> {
+                packageInstallUseCase.install(useCaseContext)
             }
 
             "toastShow" -> {

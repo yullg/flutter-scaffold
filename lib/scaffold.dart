@@ -20,6 +20,7 @@ export 'src/helper/uuid_helper.dart';
 export 'src/plugin/android/android_activity_result_contracts_plugin.dart';
 export 'src/plugin/android/android_content_resolver_plugin.dart';
 export 'src/plugin/android/android_domain_verification_plugin.dart';
+export 'src/plugin/android/android_package_install_plugin.dart';
 export 'src/plugin/android/android_toast_plugin.dart';
 export 'src/plugin/document_manager_plugin.dart';
 export 'src/plugin/ios/ios_document_picker_plugin.dart';

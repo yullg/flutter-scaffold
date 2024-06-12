@@ -1,3 +1,10 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 layout.buildDirectory.set(file("../build"))
 subprojects {
     project.layout.buildDirectory.set(file("${rootProject.layout.buildDirectory.get()}/${project.name}"))

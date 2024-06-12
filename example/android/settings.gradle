@@ -22,13 +22,5 @@ plugins {
     id "org.jetbrains.kotlin.android" version "1.9.23" apply false
 }
 
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
 rootProject.name = "scaffold_example"
 include ":app"
