@@ -41,3 +41,9 @@ extension ExtensionList<T> on List<T> {
     sort((a, b) => Comparable.compare(selector(b), selector(a)));
   }
 }
+
+extension ExtensionFuture<T> on Future<T> {
+  Future<void> asyncIgnore() => then<void>(_ignore, onError: _ignore);
+
+  static void _ignore(Object? _, [Object? __]) {}
+}
