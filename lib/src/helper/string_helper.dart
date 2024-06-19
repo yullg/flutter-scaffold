@@ -35,5 +35,11 @@ class StringHelper {
     return str.substring(start, end);
   }
 
+  /// 删除[str]两端的空白字符，如果删除后为空("")或[str]为null，则返回null。
+  static String? trimToNull(String? str) {
+    str = str?.trim();
+    return str == null || str.isEmpty ? null : str;
+  }
+
   StringHelper._();
 }

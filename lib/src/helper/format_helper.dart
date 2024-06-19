@@ -202,12 +202,15 @@ class FormatHelper {
     }
   }
 
-  static String printNum(num number, {int minFractionDigits = 0, int maxFractionDigits = 3, String? locale}) {
-    final operand = 1 / pow(10, maxFractionDigits + 1) * 5;
-    if (number >= 0) {
-      number = max(number - operand, 0);
-    } else {
-      number = min(number + operand, -0);
+  static String printNum(num number,
+      {int minFractionDigits = 0, int maxFractionDigits = 3, bool round = true, String? locale}) {
+    if (!round) {
+      final operand = 1 / pow(10, maxFractionDigits + 1) * 5;
+      if (number >= 0) {
+        number = max(number - operand, 0);
+      } else {
+        number = min(number + operand, -0);
+      }
     }
     final pattern = "0.${'0' * minFractionDigits}${'#' * (maxFractionDigits - minFractionDigits)}";
     return NumberFormat(pattern, locale).format(number);
