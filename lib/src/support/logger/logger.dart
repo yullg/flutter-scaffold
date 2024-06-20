@@ -43,9 +43,7 @@ class Logger {
 
   /// 记录日志。
   void log(Log log) {
-    LogAppender.doAppend(log).catchError((e, s) {
-      // ignore
-    });
+    LogAppender.doAppend(log).ignore();
   }
 
   /// 检查指定的日志级别是否启用。

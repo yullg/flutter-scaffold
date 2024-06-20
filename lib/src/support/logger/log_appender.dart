@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
@@ -30,7 +31,9 @@ class LogAppender {
     final messageLines = message.split('\n');
     for (final messageLine in messageLines) {
       if (messageLine.length >= 800) {
-        debugPrintThrottled(messageLine, wrapWidth: 150);
+        for (int i = 0, length = messageLine.length; i < length; i += 150) {
+          debugPrintThrottled(messageLine.substring(i, min(i + 150, length)));
+        }
       } else {
         debugPrintThrottled(messageLine);
       }
@@ -41,8 +44,10 @@ class LogAppender {
   }
 
   static Future<void> _doAppendFileLog(Log log) async {
-    StringBuffer sb = StringBuffer(
-        "${log.processId}\t${log.name}\t${log.level.name}\t${log.time.toIso8601String()}\t${log.message ?? '---'}");
+    final sb = StringBuffer("${log.processId}\t${log.name}\t${log.level.name}\t${log.time.toIso8601String()}");
+    if (log.message != null) {
+      sb.write("\t${log.message}");
+    }
     if (log.error != null) {
       sb.write("\t${log.error}");
     }
