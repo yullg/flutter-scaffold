@@ -41,6 +41,7 @@ export 'src/support/storage/storage_directory.dart';
 export 'src/support/storage/storage_file.dart';
 export 'src/support/storage/storage_support.dart';
 export 'src/support/storage/storage_type.dart';
+export 'src/ui/paged_controller.dart';
 export 'src/ui/popup/action_sheet.dart';
 export 'src/ui/popup/alert_dialog.dart';
 export 'src/ui/popup/loading_dialog.dart';

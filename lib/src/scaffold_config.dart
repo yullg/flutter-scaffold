@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import 'support/logger/log.dart';
 import 'support/logger/log_file_uploader.dart';
 
@@ -16,7 +18,7 @@ class ScaffoldConfig {
   ScaffoldConfig({
     this.globalCacheManagerStalePeriod = 30,
     this.globalCacheManagerMaxNrOfCacheObjects = 99999,
-    this.loggerConsoleAppenderEnabled = false,
+    this.loggerConsoleAppenderEnabled = kDebugMode,
     this.loggerConsoleAppenderLevel = LogLevel.trace,
     this.loggerFileAppenderEnabled = true,
     this.loggerFileAppenderLevel = LogLevel.warn,
