@@ -61,4 +61,10 @@ abstract class PagedController<T> extends ChangeNotifier {
   /// 从给定的偏移量[offset]处开始加载数据，当没有更多数据时返回`null`。
   @protected
   Future<List<T>?> doLoadMoreData(int offset);
+
+  @override
+  @mustCallSuper
+  void dispose() {
+    super.dispose();
+  }
 }

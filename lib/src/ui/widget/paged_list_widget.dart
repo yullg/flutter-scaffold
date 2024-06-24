@@ -33,7 +33,9 @@ class PagedListWidget<T> extends StatelessWidget {
             } else {
               switch (controller.status) {
                 case PagedControllerStatus.idle:
-                  controller.loadMoreData();
+                  Future.microtask(() {
+                    controller.loadMoreData();
+                  });
                   return loadingBuilder?.call(context);
                 case PagedControllerStatus.loading:
                   return loadingBuilder?.call(context);
@@ -86,7 +88,9 @@ class PagedSliverListWidget<T> extends StatelessWidget {
             } else {
               switch (controller.status) {
                 case PagedControllerStatus.idle:
-                  controller.loadMoreData();
+                  Future.microtask(() {
+                    controller.loadMoreData();
+                  });
                   return loadingBuilder?.call(context);
                 case PagedControllerStatus.loading:
                   return loadingBuilder?.call(context);
