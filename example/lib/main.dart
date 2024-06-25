@@ -38,14 +38,14 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
               EasyListTile(
                 nameText: "import()",
                 onTap: () {
-                  DocumentManagerPlugin.import().then((paths) {
-                    _documents.clear();
-                    _documents.addAll(paths);
-                    setStateIfMounted();
-                  }, onError: (e, s) {
-                    DefaultLogger.error("import() > failed", e, s);
-                    Toast.showLong(context, "import() > $e");
-                  });
+                  // DocumentManagerPlugin.import().then((paths) {
+                  //   _documents.clear();
+                  //   _documents.addAll(paths);
+                  //   setStateIfMounted();
+                  // }, onError: (e, s) {
+                  //   DefaultLogger.error("import() > failed", e, s);
+                  //   Toast.showLong(context, "import() > $e");
+                  // });
                 },
               ),
               if (_documents.isNotEmpty) _buildDivider(),

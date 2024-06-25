@@ -68,3 +68,12 @@ abstract class PagedController<T> extends ChangeNotifier {
     super.dispose();
   }
 }
+
+class DefaultPagedController<T> extends PagedController<T> {
+  final Future<List<T>?> Function(int offset) doLoadMoreDataFunc;
+
+  DefaultPagedController({required this.doLoadMoreDataFunc});
+
+  @override
+  Future<List<T>?> doLoadMoreData(int offset) => doLoadMoreDataFunc(offset);
+}

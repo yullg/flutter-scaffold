@@ -1,6 +1,8 @@
-import '../../internal/default_method_channel.dart';
+import 'package:flutter/services.dart';
 
 class AndroidDomainVerificationPlugin {
+  static const _methodChannel = MethodChannel("com.yullg.flutter.scaffold/domain_verification");
+
   static const int kDomainStateNone = 0;
   static const int kDomainStateSelected = 1;
   static const int kDomainStateVerified = 2;
@@ -8,19 +10,19 @@ class AndroidDomainVerificationPlugin {
   static Future<bool?> isLinkHandlingAllowed({
     String? packageName,
   }) {
-    return DefaultMethodChannel.invokeMethod("dvIsLinkHandlingAllowed", packageName);
+    return _methodChannel.invokeMethod<bool>("isLinkHandlingAllowed", packageName);
   }
 
   static Future<Map<String, int>?> getHostToStateMap({
     String? packageName,
   }) {
-    return DefaultMethodChannel.invokeMapMethod("dvGetHostToStateMap", packageName);
+    return _methodChannel.invokeMapMethod<String, int>("getHostToStateMap", packageName);
   }
 
   static Future<void> toSettings({
     String? packageName,
   }) async {
-    await DefaultMethodChannel.invokeMethod("dvToSettings", packageName);
+    await _methodChannel.invokeMethod("toSettings", packageName);
   }
 
   AndroidDomainVerificationPlugin._();

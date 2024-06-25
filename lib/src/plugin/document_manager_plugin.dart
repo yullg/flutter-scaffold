@@ -11,56 +11,56 @@ import 'ios/ios_document_picker_plugin.dart';
 import 'ios/ios_file_manager_plugin.dart';
 
 class DocumentManagerPlugin {
-  static Future<List<String>> import({
-    List<DocumentType> documentTypes = const [DocumentType.all],
-    bool allowsMultipleSelection = false,
-  }) async {
-    if (Platform.isAndroid) {
-      final uris = await AndroidActivityResultContractsPlugin.openDocument(
-        mimeTypes: documentTypes.map((e) => e.mimeType).toList(growable: false),
-        allowsMultipleSelection: allowsMultipleSelection,
-      );
-      final paths = <String>[];
-      for (final uri in uris) {
-        final extension = await AndroidContentResolverPlugin.getExtensionFromContentUri(contentUri: uri);
-        final path = p.join(
-          (await StorageType.cache.directory).path,
-          ScaffoldConstants.kDocumentManagerDirectory,
-          "${UuidHelper.v4()}${extension != null ? ".$extension" : ""}",
-        );
-        await File(path).create(recursive: true);
-        await AndroidContentResolverPlugin.readToFile(
-          atContentUri: uri,
-          toFilePath: path,
-        );
-        paths.add(path);
-      }
-      return paths;
-    } else if (Platform.isIOS) {
-      final uris = await IosDocumentPickerPlugin.importDocument(
-        allowedUTIs: documentTypes.map((e) => e.utType).toList(growable: false),
-        allowsMultipleSelection: allowsMultipleSelection,
-      );
-      final paths = <String>[];
-      for (final uri in uris) {
-        final path = p.join(
-          (await StorageType.cache.directory).path,
-          ScaffoldConstants.kDocumentManagerDirectory,
-          "${UuidHelper.v4()}${p.extension(uri)}",
-        );
-        await File(path).parent.create(recursive: true);
-        await IosFileManagerPlugin.copy(
-          atUrl: uri,
-          toUrl: Uri.file(path).toString(),
-          isSecurityScoped: true,
-        );
-        paths.add(path);
-      }
-      return paths;
-    } else {
-      throw UnsupportedError("Platform not supported: ${Platform.operatingSystem}");
-    }
-  }
+  // static Future<List<String>> import({
+  //   List<DocumentType> documentTypes = const [DocumentType.all],
+  //   bool allowsMultipleSelection = false,
+  // }) async {
+  //   if (Platform.isAndroid) {
+  //     final uris = await AndroidActivityResultContractsPlugin.openDocument(
+  //       mimeTypes: documentTypes.map((e) => e.mimeType).toList(growable: false),
+  //       allowsMultipleSelection: allowsMultipleSelection,
+  //     );
+  //     final paths = <String>[];
+  //     for (final uri in uris) {
+  //       final extension = await AndroidContentResolverPlugin.getExtensionFromContentUri(contentUri: uri);
+  //       final path = p.join(
+  //         (await StorageType.cache.directory).path,
+  //         ScaffoldConstants.kDocumentManagerDirectory,
+  //         "${UuidHelper.v4()}${extension != null ? ".$extension" : ""}",
+  //       );
+  //       await File(path).create(recursive: true);
+  //       await AndroidContentResolverPlugin.contentUriToFile(
+  //         atContentUri: uri,
+  //         toFilePath: path,
+  //       );
+  //       paths.add(path);
+  //     }
+  //     return paths;
+  //   } else if (Platform.isIOS) {
+  //     final uris = await IosDocumentPickerPlugin.importDocument(
+  //       allowedUTIs: documentTypes.map((e) => e.utType).toList(growable: false),
+  //       allowsMultipleSelection: allowsMultipleSelection,
+  //     );
+  //     final paths = <String>[];
+  //     for (final uri in uris) {
+  //       final path = p.join(
+  //         (await StorageType.cache.directory).path,
+  //         ScaffoldConstants.kDocumentManagerDirectory,
+  //         "${UuidHelper.v4()}${p.extension(uri)}",
+  //       );
+  //       await File(path).parent.create(recursive: true);
+  //       await IosFileManagerPlugin.copy(
+  //         atUrl: uri,
+  //         toUrl: Uri.file(path).toString(),
+  //         isSecurityScoped: true,
+  //       );
+  //       paths.add(path);
+  //     }
+  //     return paths;
+  //   } else {
+  //     throw UnsupportedError("Platform not supported: ${Platform.operatingSystem}");
+  //   }
+  // }
 
   static Future<bool> export({
     required DocumentType documentType,
@@ -73,9 +73,9 @@ class DocumentManagerPlugin {
         name: name,
       );
       if (uri == null) return false;
-      await AndroidContentResolverPlugin.writeFromFile(
-        atFilePath: path,
-        toContentUri: uri,
+      await AndroidContentResolverPlugin.copyFileToContentUri(
+        file: File(path),
+        contentUri: uri,
       );
       return true;
     } else if (Platform.isIOS) {

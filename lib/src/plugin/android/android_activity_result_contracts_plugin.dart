@@ -1,24 +1,40 @@
-import '../../internal/default_method_channel.dart';
+import 'package:flutter/services.dart';
 
 class AndroidActivityResultContractsPlugin {
-  static Future<String?> createDocument({
+  static const _methodChannel = MethodChannel("com.yullg.flutter.scaffold/activity_result_contracts");
+
+  static Future<Uri?> createDocument({
     required String mimeType,
     required String name,
   }) {
-    return DefaultMethodChannel.invokeMethod("arcCreateDocument", {
+    return _methodChannel.invokeMethod<String>("createDocument", {
       "mimeType": mimeType,
       "name": name,
-    });
+    }).then((value) => value != null ? Uri.parse(value) : null);
   }
 
-  static Future<List<String>> openDocument({
+  static Future<Uri?> openDocument({
     required List<String> mimeTypes,
-    bool allowsMultipleSelection = false,
   }) {
-    return DefaultMethodChannel.invokeListMethod<String>("arcOpenDocument", {
+    return _methodChannel.invokeMethod<String>("openDocument", {
       "mimeTypes": mimeTypes,
-      "allowsMultipleSelection": allowsMultipleSelection,
-    }).then((value) => value ?? List<String>.empty());
+    }).then((value) => value != null ? Uri.parse(value) : null);
+  }
+
+  static Future<Uri?> openDocumentTree({
+    Uri? initialLocation,
+  }) {
+    return _methodChannel.invokeMethod<String>("openDocumentTree", {
+      "initialLocation": initialLocation?.toString(),
+    }).then((value) => value != null ? Uri.parse(value) : null);
+  }
+
+  static Future<List<Uri>> openMultipleDocuments({
+    required List<String> mimeTypes,
+  }) {
+    return _methodChannel.invokeListMethod<String>("openMultipleDocuments", {
+      "mimeTypes": mimeTypes,
+    }).then((value) => value != null ? value.map((e) => Uri.parse(e)).toList() : List<Uri>.empty());
   }
 
   AndroidActivityResultContractsPlugin._();

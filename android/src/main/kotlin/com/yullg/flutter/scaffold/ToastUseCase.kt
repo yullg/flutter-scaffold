@@ -1,28 +1,35 @@
 package com.yullg.flutter.scaffold
 
 import android.widget.Toast
-import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
 
-class ToastUseCase(
-    flutterPluginBinding: () -> FlutterPlugin.FlutterPluginBinding?,
-    activityPluginBinding: () -> ActivityPluginBinding?,
-) : UseCase(flutterPluginBinding, activityPluginBinding) {
+class ToastUseCase : BaseUseCase(
+    methodChannelName = "com.yullg.flutter.scaffold/toast",
+) {
 
     private var toast: Toast? = null
 
-    fun show(useCaseContext: UseCaseContext) {
-        val text = useCaseContext.call.argument<String>("text")!!
-        val longTime = useCaseContext.call.argument<Boolean>("longTime")!!
-        toast?.cancel()
-        toast = Toast.makeText(
-            requiredFlutterPluginBinding.applicationContext,
-            text,
-            if (longTime) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
-        ).apply {
-            show()
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        when (call.method) {
+            "show" -> {
+                val text = call.argument<String>("text")!!
+                val longTime = call.argument<Boolean>("longTime")!!
+                toast?.cancel()
+                toast = Toast.makeText(
+                    requiredFlutterPluginBinding.applicationContext,
+                    text,
+                    if (longTime) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
+                ).apply {
+                    show()
+                }
+                result.success(null)
+            }
+
+            else -> {
+                result.notImplemented()
+            }
         }
-        useCaseContext.result.success(null)
     }
 
 }
