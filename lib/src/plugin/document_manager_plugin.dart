@@ -2,89 +2,108 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import '../helper/string_helper.dart';
 import '../helper/uuid_helper.dart';
+import '../lang/extensions.dart';
 import '../scaffold_constants.dart';
 import '../support/storage/storage_type.dart';
 import 'android/android_activity_result_contracts_plugin.dart';
 import 'android/android_content_resolver_plugin.dart';
 import 'ios/ios_document_picker_plugin.dart';
 import 'ios/ios_file_manager_plugin.dart';
+import 'ios/ios_url_plugin.dart';
 
 class DocumentManagerPlugin {
-  // static Future<List<String>> import({
-  //   List<DocumentType> documentTypes = const [DocumentType.all],
-  //   bool allowsMultipleSelection = false,
-  // }) async {
-  //   if (Platform.isAndroid) {
-  //     final uris = await AndroidActivityResultContractsPlugin.openDocument(
-  //       mimeTypes: documentTypes.map((e) => e.mimeType).toList(growable: false),
-  //       allowsMultipleSelection: allowsMultipleSelection,
-  //     );
-  //     final paths = <String>[];
-  //     for (final uri in uris) {
-  //       final extension = await AndroidContentResolverPlugin.getExtensionFromContentUri(contentUri: uri);
-  //       final path = p.join(
-  //         (await StorageType.cache.directory).path,
-  //         ScaffoldConstants.kDocumentManagerDirectory,
-  //         "${UuidHelper.v4()}${extension != null ? ".$extension" : ""}",
-  //       );
-  //       await File(path).create(recursive: true);
-  //       await AndroidContentResolverPlugin.contentUriToFile(
-  //         atContentUri: uri,
-  //         toFilePath: path,
-  //       );
-  //       paths.add(path);
-  //     }
-  //     return paths;
-  //   } else if (Platform.isIOS) {
-  //     final uris = await IosDocumentPickerPlugin.importDocument(
-  //       allowedUTIs: documentTypes.map((e) => e.utType).toList(growable: false),
-  //       allowsMultipleSelection: allowsMultipleSelection,
-  //     );
-  //     final paths = <String>[];
-  //     for (final uri in uris) {
-  //       final path = p.join(
-  //         (await StorageType.cache.directory).path,
-  //         ScaffoldConstants.kDocumentManagerDirectory,
-  //         "${UuidHelper.v4()}${p.extension(uri)}",
-  //       );
-  //       await File(path).parent.create(recursive: true);
-  //       await IosFileManagerPlugin.copy(
-  //         atUrl: uri,
-  //         toUrl: Uri.file(path).toString(),
-  //         isSecurityScoped: true,
-  //       );
-  //       paths.add(path);
-  //     }
-  //     return paths;
-  //   } else {
-  //     throw UnsupportedError("Platform not supported: ${Platform.operatingSystem}");
-  //   }
-  // }
-
-  static Future<bool> export({
-    required DocumentType documentType,
-    required String path,
-    required String name,
+  static Future<List<File>> import({
+    List<DocumentType> documentTypes = const [DocumentType.all],
+    bool allowsMultipleSelection = false,
   }) async {
     if (Platform.isAndroid) {
-      final uri = await AndroidActivityResultContractsPlugin.createDocument(
-        mimeType: documentType.mimeType,
-        name: name,
-      );
-      if (uri == null) return false;
-      await AndroidContentResolverPlugin.copyFileToContentUri(
-        file: File(path),
-        contentUri: uri,
-      );
-      return true;
-    } else if (Platform.isIOS) {
-      final uris = await IosDocumentPickerPlugin.exportDocument(
-        urls: [Uri.file(path).toString()],
-      );
-      return uris.isNotEmpty;
+      final uris = allowsMultipleSelection
+          ? await AndroidActivityResultContractsPlugin.openMultipleDocuments(
+              mimeTypes: documentTypes.map((e) => e.mimeType).toList(),
+            )
+          : await AndroidActivityResultContractsPlugin.openDocument(
+              mimeTypes: documentTypes.map((e) => e.mimeType).toList(),
+            ).then((value) => [if (value != null) value]);
+      final files = <File>[];
+      final cacheDirectoryPath = (await StorageType.cache.directory).path;
+      for (final uri in uris) {
+        final contentUriMetadata = await AndroidContentResolverPlugin.getMetadata(uri);
+        final path = p.join(
+          cacheDirectoryPath,
+          ScaffoldConstants.kDocumentManagerDirectory,
+          UuidHelper.v4(),
+          StringHelper.trimToNull(contentUriMetadata.displayName) ?? UuidHelper.v4(),
+        );
+        final file = File(path);
+        await AndroidContentResolverPlugin.copyContentUriToFile(
+          contentUri: uri,
+          file: file,
+        );
+        files.add(file);
+      }
+      return files;
     } else {
-      throw UnsupportedError("Platform not supported: ${Platform.operatingSystem}");
+      final uris = await IosDocumentPickerPlugin.import(
+        forOpeningContentTypes: documentTypes.map((e) => e.utType).toList(growable: false),
+        asCopy: false,
+        allowsMultipleSelection: allowsMultipleSelection,
+        shouldShowFileExtensions: true,
+      );
+      final files = <File>[];
+      final cacheDirectoryPath = (await StorageType.cache.directory).path;
+      for (final uri in uris) {
+        final path = p.join(
+          cacheDirectoryPath,
+          ScaffoldConstants.kDocumentManagerDirectory,
+          UuidHelper.v4(),
+          StringHelper.trimToNull(uri.pathSegments.lastOrNull) ?? UuidHelper.v4(),
+        );
+        try {
+          await IosUrlPlugin.startAccessingSecurityScopedResource(uri).asyncIgnore();
+          await IosFileManagerPlugin.copyItem(
+            at: uri,
+            to: Uri.file(path),
+          );
+        } finally {
+          await IosUrlPlugin.stopAccessingSecurityScopedResource(uri).asyncIgnore();
+        }
+        files.add(File(path));
+      }
+      return files;
+    }
+  }
+
+  static Future<List<Uri>> export({
+    required List<File> files,
+    Uri? initialLocation,
+  }) async {
+    if (Platform.isAndroid) {
+      final uris = <Uri>[];
+      if (files.isNotEmpty) {
+        final uri = await AndroidActivityResultContractsPlugin.openDocumentTree(
+          initialLocation: initialLocation,
+        );
+        if (uri != null) {
+          for (final file in files) {
+            await AndroidContentResolverPlugin.copyFileToTreeUri(
+              file: file,
+              treeUri: uri,
+            ).then((value) {
+              uris.add(value);
+            });
+          }
+        }
+      }
+      return uris;
+    } else {
+      final uris = await IosDocumentPickerPlugin.export(
+        forExporting: files.map((file) => Uri.file(file.absolute.path)).toList(),
+        asCopy: true,
+        shouldShowFileExtensions: true,
+      );
+      return uris;
     }
   }
 
@@ -92,6 +111,8 @@ class DocumentManagerPlugin {
 }
 
 class DocumentType {
+  static const all = DocumentType(mimeType: "*/*", utType: "public.item");
+
   final String mimeType;
   final String utType;
 
@@ -100,5 +121,16 @@ class DocumentType {
     required this.utType,
   });
 
-  static const all = DocumentType(mimeType: "*/*", utType: "public.item");
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DocumentType && runtimeType == other.runtimeType && mimeType == other.mimeType && utType == other.utType;
+
+  @override
+  int get hashCode => mimeType.hashCode ^ utType.hashCode;
+
+  @override
+  String toString() {
+    return 'DocumentType{mimeType: $mimeType, utType: $utType}';
+  }
 }

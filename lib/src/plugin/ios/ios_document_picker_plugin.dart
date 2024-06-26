@@ -1,26 +1,36 @@
-import '../../internal/default_method_channel.dart';
+import 'package:flutter/services.dart';
 
 class IosDocumentPickerPlugin {
-  static Future<List<String>> importDocument({
-    required List<String> allowedUTIs,
-    bool asCopy = false,
-    bool allowsMultipleSelection = false,
+  static const _methodChannel = MethodChannel("com.yullg.flutter.scaffold/document_picker");
+
+  static Future<List<Uri>> import({
+    required List<String> forOpeningContentTypes,
+    required bool asCopy,
+    Uri? directoryURL,
+    bool? allowsMultipleSelection,
+    bool? shouldShowFileExtensions,
   }) {
-    return DefaultMethodChannel.invokeListMethod<String>("dpImportDocument", {
-      "allowedUTIs": allowedUTIs,
+    return _methodChannel.invokeListMethod<String>("import", {
+      "forOpeningContentTypes": forOpeningContentTypes,
       "asCopy": asCopy,
+      "directoryURL": directoryURL?.toString(),
       "allowsMultipleSelection": allowsMultipleSelection,
-    }).then((value) => value ?? List<String>.empty());
+      "shouldShowFileExtensions": shouldShowFileExtensions,
+    }).then<List<Uri>>((value) => value != null ? value.map((e) => Uri.parse(e)).toList() : List<Uri>.empty());
   }
 
-  static Future<List<String>> exportDocument({
-    required List<String> urls,
-    bool asCopy = true,
+  static Future<List<Uri>> export({
+    required List<Uri> forExporting,
+    required bool asCopy,
+    Uri? directoryURL,
+    bool? shouldShowFileExtensions,
   }) {
-    return DefaultMethodChannel.invokeListMethod<String>("dpExportDocument", {
-      "urls": urls,
+    return _methodChannel.invokeListMethod<String>("export", {
+      "forExporting": forExporting.map((e) => e.toString()).toList(growable: false),
       "asCopy": asCopy,
-    }).then((value) => value ?? List<String>.empty());
+      "directoryURL": directoryURL?.toString(),
+      "shouldShowFileExtensions": shouldShowFileExtensions,
+    }).then<List<Uri>>((value) => value != null ? value.map((e) => Uri.parse(e)).toList() : List<Uri>.empty());
   }
 
   IosDocumentPickerPlugin._();

@@ -18,7 +18,7 @@ class PackageInstallUseCase : BaseUseCase(
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "install" -> {
-                val uri = Uri.parse(call.argument("uri"))
+                val uri = Uri.parse(call.argument<String>("uri")!!)
                 GlobalScope.launch(Dispatchers.IO) {
                     var session: PackageInstaller.Session? = null
                     try {

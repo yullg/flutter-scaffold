@@ -1,6 +1,6 @@
 class Utils{
     
-    static func rootViewController() -> UIViewController?{
+    static func rootViewController() -> UIViewController throws {
         if #available(iOS 13.0, *) {
             for scene in UIApplication.shared.connectedScenes {
                 if let windowScene = scene as? UIWindowScene {

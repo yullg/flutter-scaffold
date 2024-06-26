@@ -1,6 +1,7 @@
 package com.yullg.flutter.scaffold
 
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import androidx.documentfile.provider.DocumentFile
 import io.flutter.plugin.common.MethodCall
@@ -16,6 +17,42 @@ class ContentResolverUseCase : BaseUseCase(
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
+            "getMetadata" -> {
+                val contentUri = Uri.parse(call.arguments<String>()!!)
+                GlobalScope.launch(Dispatchers.Default) {
+                    try {
+                        val contentResolver =
+                            requiredFlutterPluginBinding.applicationContext.contentResolver
+                        val mimeType = contentResolver.getType(contentUri)
+                        var displayName: String? = null
+                        var size: Long? = null
+                        contentResolver.query(
+                            contentUri,
+                            arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE),
+                            null,
+                            null,
+                            null
+                        )?.use { cursor ->
+                            if (cursor.moveToFirst()) {
+                                displayName =
+                                    cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+                                size =
+                                    cursor.getLong(cursor.getColumnIndexOrThrow(OpenableColumns.SIZE))
+                            }
+                        }
+                        result.success(
+                            mapOf(
+                                "mimeType" to mimeType,
+                                "displayName" to displayName,
+                                "size" to size
+                            )
+                        )
+                    } catch (e: Throwable) {
+                        result.error(ERROR_CODE, e.message, null)
+                    }
+                }
+            }
+
             "copyFileToContentUri" -> {
                 val file = File(call.argument<String>("file")!!)
                 val contentUri = Uri.parse(call.argument<String>("contentUri")!!)
@@ -43,6 +80,7 @@ class ContentResolverUseCase : BaseUseCase(
                         requiredFlutterPluginBinding.applicationContext.contentResolver.openInputStream(
                             contentUri
                         )?.use { inputStream ->
+                            file.parentFile?.mkdirs()
                             file.outputStream().use { outputStream ->
                                 inputStream.copyTo(outputStream)
                             }
@@ -52,15 +90,6 @@ class ContentResolverUseCase : BaseUseCase(
                         result.error(ERROR_CODE, e.message, null)
                     }
                 }
-            }
-
-            "getType" -> {
-                val contentUri = Uri.parse(call.arguments<String>()!!)
-                val mimeType =
-                    requiredFlutterPluginBinding.applicationContext.contentResolver.getType(
-                        contentUri
-                    )
-                result.success(mimeType)
             }
 
             "createSubTreeUri" -> {
@@ -96,7 +125,7 @@ class ContentResolverUseCase : BaseUseCase(
                                 inputStream.copyTo(outputStream)
                             }
                         }
-                        result.success(null)
+                        result.success(subDocumentFile.uri.toString())
                     } catch (e: Throwable) {
                         result.error(ERROR_CODE, e.message, null)
                     }
@@ -130,10 +159,8 @@ class ContentResolverUseCase : BaseUseCase(
         val files = directory.listFiles() ?: return
         for (file in files) {
             if (file.isDirectory) {
-                val subDocumentFile = documentFile.createDirectory(file.name)
-                if (subDocumentFile != null) {
-                    doCopyDirectoryToTreeUri(file, subDocumentFile)
-                }
+                val subDocumentFile = documentFile.createDirectory(file.name)!!
+                doCopyDirectoryToTreeUri(file, subDocumentFile)
             } else if (file.isFile) {
                 val subDocumentFile = documentFile.createFile(
                     getMimeTypeFromExtension(file.extension),

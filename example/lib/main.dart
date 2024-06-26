@@ -15,7 +15,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
-  final _documents = <String>[];
+  final _documents = <File>[];
   final _loadingDialog = LoadingDialog();
 
   @override
@@ -38,14 +38,16 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
               EasyListTile(
                 nameText: "import()",
                 onTap: () {
-                  // DocumentManagerPlugin.import().then((paths) {
-                  //   _documents.clear();
-                  //   _documents.addAll(paths);
-                  //   setStateIfMounted();
-                  // }, onError: (e, s) {
-                  //   DefaultLogger.error("import() > failed", e, s);
-                  //   Toast.showLong(context, "import() > $e");
-                  // });
+                  DocumentManagerPlugin.import(
+                    allowsMultipleSelection: true,
+                  ).then((files) {
+                    _documents.clear();
+                    _documents.addAll(files);
+                    setStateIfMounted();
+                  }, onError: (e, s) {
+                    DefaultLogger.error("import() > failed", e, s);
+                    Toast.showLong(context, "import() > $e");
+                  });
                 },
               ),
               if (_documents.isNotEmpty) _buildDivider(),
@@ -54,9 +56,7 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                   nameText: "export()",
                   onTap: () {
                     DocumentManagerPlugin.export(
-                      documentType: DocumentType.all,
-                      path: _documents.first,
-                      name: "document-export",
+                      files: _documents,
                     ).then((value) {
                       _documents.clear();
                       Toast.showLong(context, "export() > $value");
@@ -74,7 +74,7 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                     "${i + 1}",
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  nameText: _documents[i],
+                  nameText: _documents[i].path,
                 ),
               _buildHeader("SystemClockPlugin"),
               EasyListTile(

@@ -25,6 +25,7 @@ export 'src/plugin/android/android_toast_plugin.dart';
 export 'src/plugin/document_manager_plugin.dart';
 export 'src/plugin/ios/ios_document_picker_plugin.dart';
 export 'src/plugin/ios/ios_file_manager_plugin.dart';
+export 'src/plugin/ios/ios_url_plugin.dart';
 export 'src/plugin/system_clock_plugin.dart';
 export 'src/scaffold_config.dart';
 export 'src/scaffold_constants.dart';
