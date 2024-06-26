@@ -26,7 +26,7 @@ class IosDocumentPickerPlugin {
     bool? shouldShowFileExtensions,
   }) {
     return _methodChannel.invokeListMethod<String>("export", {
-      "forExporting": forExporting.map((e) => e.toString()).toList(growable: false),
+      "forExporting": forExporting.map((e) => e.toString()).toList(),
       "asCopy": asCopy,
       "directoryURL": directoryURL?.toString(),
       "shouldShowFileExtensions": shouldShowFileExtensions,
