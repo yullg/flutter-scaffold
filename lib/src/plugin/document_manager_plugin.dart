@@ -14,6 +14,24 @@ import 'ios/ios_file_manager_plugin.dart';
 import 'ios/ios_url_plugin.dart';
 
 class DocumentManagerPlugin {
+  static Future<Uri?> openDocumentTree({
+    Uri? initialLocation,
+  }) {
+    if (Platform.isAndroid) {
+      return AndroidActivityResultContractsPlugin.openDocumentTree(
+        initialLocation: initialLocation,
+      );
+    } else {
+      return IosDocumentPickerPlugin.import(
+        forOpeningContentTypes: <String>["public.directory"],
+        asCopy: false,
+        directoryURL: initialLocation,
+        allowsMultipleSelection: false,
+        shouldShowFileExtensions: true,
+      ).then((value) => value.firstOrNull);
+    }
+  }
+
   static Future<List<File>> import({
     List<DocumentType> documentTypes = const [DocumentType.all],
     bool allowsMultipleSelection = false,

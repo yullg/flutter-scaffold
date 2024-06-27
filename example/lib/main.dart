@@ -15,6 +15,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
+  Uri? _treeUri;
   final _documents = <File>[];
   final _loadingDialog = LoadingDialog();
 
@@ -35,6 +36,17 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
           builder: (context, _) => ListView(
             children: <Widget>[
               _buildHeader("DocumentManagerPlugin"),
+              EasyListTile(
+                nameText: "openDocumentTree()",
+                descriptionText: _treeUri?.toString(),
+                onTap: () {
+                  DocumentManagerPlugin.openDocumentTree(initialLocation: _treeUri).then((value) {
+                    setStateIfMounted(() {
+                      _treeUri = value;
+                    });
+                  });
+                },
+              ),
               EasyListTile(
                 nameText: "import()",
                 onTap: () {
