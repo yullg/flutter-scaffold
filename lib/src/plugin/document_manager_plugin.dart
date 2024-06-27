@@ -23,7 +23,7 @@ class DocumentManagerPlugin {
       );
     } else {
       return IosDocumentPickerPlugin.import(
-        forOpeningContentTypes: <String>["public.directory"],
+        forOpeningContentTypes: <String>["public.folder"],
         asCopy: false,
         directoryURL: initialLocation,
         allowsMultipleSelection: false,
