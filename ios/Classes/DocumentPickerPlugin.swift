@@ -1,8 +1,8 @@
 import Flutter
 import UniformTypeIdentifiers
 
-public class DocumentPickerPlugin: NSObject, FlutterPlugin, UIDocumentPickerDelegate {
-
+class DocumentPickerPlugin: NSObject, FlutterPlugin, UIDocumentPickerDelegate {
+    
     public static func register(with registrar: FlutterPluginRegistrar) {
         let methodChannel = FlutterMethodChannel(
             name: "com.yullg.flutter.scaffold/document_picker",
@@ -10,9 +10,9 @@ public class DocumentPickerPlugin: NSObject, FlutterPlugin, UIDocumentPickerDele
         let instance = DocumentPickerPlugin()
         registrar.addMethodCallDelegate(instance, channel: methodChannel)
     }
-
+    
     private var flutterResult: FlutterResult?
-
+    
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         do {
             switch call.method {
@@ -23,20 +23,25 @@ public class DocumentPickerPlugin: NSObject, FlutterPlugin, UIDocumentPickerDele
                 guard let documentTypes = callArguments["forOpeningContentTypes"] as? [String] else {
                     throw ScaffoldPluginError.nilPointer
                 }
-                let forOpeningContentTypes = documentTypes.map {
-                    UTType(string: $0) ?? throw ScaffoldPluginError.nilPointer
-                }
                 guard let asCopy = callArguments["asCopy"] as? Bool else {
                     throw ScaffoldPluginError.nilPointer
                 }
                 let documentPickerVC = if #available(iOS 14.0, *) {
-                    UIDocumentPickerViewController(forOpeningContentTypes: forOpeningContentTypes,asCopy: asCopy)
+                    UIDocumentPickerViewController(
+                        forOpeningContentTypes: try documentTypes.map {
+                            guard let result = UTType($0) else {
+                                throw ScaffoldPluginError.nilPointer
+                            }
+                            return result
+                        },
+                        asCopy: asCopy
+                    )
                 } else {
                     UIDocumentPickerViewController(documentTypes: documentTypes, in: asCopy ? .import : .open)
                 }
                 documentPickerVC.delegate = self
                 if let directoryURLStr = callArguments["directoryURL"] as? String {
-                    if let directoryURL = URL(directoryURLStr) {
+                    if let directoryURL = URL(string: directoryURLStr) {
                         documentPickerVC.directoryURL = directoryURL
                     }
                 }
@@ -46,16 +51,20 @@ public class DocumentPickerPlugin: NSObject, FlutterPlugin, UIDocumentPickerDele
                 if let shouldShowFileExtensions = callArguments["shouldShowFileExtensions"] as? Bool {
                     documentPickerVC.shouldShowFileExtensions = shouldShowFileExtensions
                 }
-                Utils.rootViewController().present(documentPickerVC, animated: true)
+                try Utils.rootViewController().present(documentPickerVC, animated: true)
                 flutterResult = result
             case "export":
                 guard let callArguments = call.arguments as? [String: Any?] else {
                     throw ScaffoldPluginError.nilPointer
                 }
-                guard let forExporting = (callArguments["forExporting"] as? [String])?.map {
-                    URL(string: $0) ?? throw ScaffoldPluginError.nilPointer
-                } else {
+                guard let forExportingStr = callArguments["forExporting"] as? [String] else {
                     throw ScaffoldPluginError.nilPointer
+                }
+                let forExporting = try forExportingStr.map {
+                    guard let result = URL(string: $0) else {
+                        throw ScaffoldPluginError.nilPointer
+                    }
+                    return result
                 }
                 guard let asCopy = callArguments["asCopy"] as? Bool else {
                     throw ScaffoldPluginError.nilPointer
@@ -67,14 +76,14 @@ public class DocumentPickerPlugin: NSObject, FlutterPlugin, UIDocumentPickerDele
                 }
                 documentPickerVC.delegate = self
                 if let directoryURLStr = callArguments["directoryURL"] as? String {
-                    if let directoryURL = URL(directoryURLStr) {
+                    if let directoryURL = URL(string: directoryURLStr) {
                         documentPickerVC.directoryURL = directoryURL
                     }
                 }
                 if let shouldShowFileExtensions = callArguments["shouldShowFileExtensions"] as? Bool {
                     documentPickerVC.shouldShowFileExtensions = shouldShowFileExtensions
                 }
-                Utils.rootViewController().present(documentPickerVC, animated: true)
+                try Utils.rootViewController().present(documentPickerVC, animated: true)
                 flutterResult = result
             default:
                 result(FlutterMethodNotImplemented)
