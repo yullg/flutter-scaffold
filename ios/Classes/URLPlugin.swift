@@ -13,6 +13,25 @@ class URLPlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         do {
             switch call.method {
+            case "createFileURL":
+                guard let callArguments = call.arguments as? [String: Any?] else {
+                    throw ScaffoldPluginError.nilPointer
+                }
+                guard let fileURLWithPath = callArguments["fileURLWithPath"] as? String else {
+                    throw ScaffoldPluginError.nilPointer
+                }
+                let isDirectory = callArguments["isDirectory"] as? Bool
+                let relativeTo: URL? = if let relativeToStr = callArguments["relativeTo"] as? String {
+                    URL(string: relativeToStr)
+                } else {
+                    nil
+                }
+                let fileURL = if let isDirectory {
+                    URL(fileURLWithPath: fileURLWithPath, isDirectory: isDirectory, relativeTo: relativeTo)
+                } else {
+                    URL(fileURLWithPath: fileURLWithPath, relativeTo: relativeTo)
+                }
+                result(fileURL.absoluteString)
             case "startAccessingSecurityScopedResource":
                 guard let callArguments = call.arguments as? [String: Any?] else {
                     throw ScaffoldPluginError.nilPointer

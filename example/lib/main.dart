@@ -16,6 +16,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
   Uri? _treeUri;
+  Uri? _subTreeUri;
   final _documents = <File>[];
   final _loadingDialog = LoadingDialog();
 
@@ -43,6 +44,22 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                   DocumentManagerPlugin.openDocumentTree(initialLocation: _treeUri).then((value) {
                     setStateIfMounted(() {
                       _treeUri = value;
+                    });
+                  });
+                },
+              ),
+              EasyListTile(
+                nameText: "createSubTreeUri()",
+                descriptionText: _subTreeUri?.toString(),
+                onTap: () {
+                  final treeUri = _treeUri;
+                  if (treeUri == null) {
+                    Toast.showShort(context, "First open a document tree");
+                    return;
+                  }
+                  DocumentManagerPlugin.createSubTreeUri(treeUri: treeUri, displayName: "TEST").then((value) {
+                    setStateIfMounted(() {
+                      _subTreeUri = value;
                     });
                   });
                 },

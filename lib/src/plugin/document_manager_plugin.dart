@@ -32,6 +32,51 @@ class DocumentManagerPlugin {
     }
   }
 
+  static Future<Uri> createSubTreeUri({
+    required Uri treeUri,
+    required String displayName,
+  }) {
+    if (Platform.isAndroid) {
+      return AndroidContentResolverPlugin.createSubTreeUri(
+        treeUri: treeUri,
+        displayName: displayName,
+      );
+    } else {
+      return IosUrlPlugin.createFileURL(
+        fileURLWithPath: displayName,
+        isDirectory: true,
+        relativeTo: treeUri,
+      );
+    }
+  }
+
+  static Future<Uri> copyFileToTreeUri({
+    required File file,
+    required Uri treeUri,
+    String? displayName,
+  }) {
+    if (Platform.isAndroid) {
+      return AndroidContentResolverPlugin.copyFileToTreeUri(
+        file: file,
+        treeUri: treeUri,
+        displayName: displayName,
+      );
+    } else {
+      return Future<Uri>(() async {
+        final fileUri = await IosUrlPlugin.createFileURL(
+          fileURLWithPath: displayName != null ? "$displayName${p.extension(file.path)}" : p.basename(file.path),
+          isDirectory: false,
+          relativeTo: treeUri,
+        );
+        await IosFileManagerPlugin.copyItem(
+          at: Uri.file(file.path),
+          to: fileUri,
+        );
+        return fileUri;
+      });
+    }
+  }
+
   static Future<List<File>> import({
     List<DocumentType> documentTypes = const [DocumentType.all],
     bool allowsMultipleSelection = false,
