@@ -14,6 +14,19 @@ import 'ios/ios_file_manager_plugin.dart';
 import 'ios/ios_url_plugin.dart';
 
 class DocumentManagerPlugin {
+  static Future<T> useSecurityScopedResource<T>(Uri uri, Future<T> Function() block) async {
+    try {
+      if (!Platform.isAndroid) {
+        await IosUrlPlugin.startAccessingSecurityScopedResource(uri);
+      }
+      return await block();
+    } finally {
+      if (!Platform.isAndroid) {
+        await IosUrlPlugin.stopAccessingSecurityScopedResource(uri).asyncIgnore();
+      }
+    }
+  }
+
   static Future<Uri?> openDocumentTree({
     Uri? initialLocation,
   }) {
@@ -63,8 +76,11 @@ class DocumentManagerPlugin {
       );
     } else {
       return Future<Uri>(() async {
+        final fileURLWithPath =
+            displayName?.let((it) => p.extension(it).isNotEmpty ? it : "$it${p.extension(file.path)}") ??
+                p.basename(file.path);
         final fileUri = await IosUrlPlugin.createFileURL(
-          fileURLWithPath: displayName != null ? "$displayName${p.extension(file.path)}" : p.basename(file.path),
+          fileURLWithPath: fileURLWithPath,
           isDirectory: false,
           relativeTo: treeUri,
         );
