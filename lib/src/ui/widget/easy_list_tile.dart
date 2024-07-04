@@ -40,7 +40,7 @@ class EasyListTile extends StatelessWidget {
                 valueText!,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               )
             : null);

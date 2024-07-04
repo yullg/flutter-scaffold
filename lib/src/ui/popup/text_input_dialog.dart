@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../../lang/extensions.dart';
 
@@ -108,6 +109,9 @@ class _IosTextInputDialogState extends State<_IosTextInputDialog> {
           maxLines: field.maxLines,
           minLines: field.minLines,
           maxLength: field.maxLength,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
       ));
     }

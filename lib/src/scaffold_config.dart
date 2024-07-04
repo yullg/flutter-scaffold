@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import 'core/error_printer.dart';
 import 'support/logger/log.dart';
 import 'support/logger/log_file_uploader.dart';
 
@@ -12,8 +13,8 @@ class ScaffoldConfig {
   final LogLevel loggerFileAppenderLevel;
   final int loggerLogFileMaxLife;
   final LogFileUploader? loggerUploader;
-
   final Map<String, LoggerConfigOption>? _loggerConfigOptionMap;
+  final Iterable<ErrorPrinter>? errorPrinters;
 
   ScaffoldConfig({
     this.globalCacheManagerStalePeriod = 30,
@@ -25,6 +26,7 @@ class ScaffoldConfig {
     this.loggerLogFileMaxLife = 15,
     this.loggerUploader,
     Map<String, LoggerConfigOption>? loggerConfigOptionMap,
+    this.errorPrinters,
   }) : _loggerConfigOptionMap = loggerConfigOptionMap;
 
   bool findLoggerConsoleAppenderEnabled(String name) {
@@ -49,7 +51,7 @@ class ScaffoldConfig {
 
   @override
   String toString() {
-    return 'ScaffoldConfig{globalCacheManagerStalePeriod: $globalCacheManagerStalePeriod, globalCacheManagerMaxNrOfCacheObjects: $globalCacheManagerMaxNrOfCacheObjects, loggerConsoleAppenderEnabled: $loggerConsoleAppenderEnabled, loggerConsoleAppenderLevel: $loggerConsoleAppenderLevel, loggerFileAppenderEnabled: $loggerFileAppenderEnabled, loggerFileAppenderLevel: $loggerFileAppenderLevel, loggerLogFileMaxLife: $loggerLogFileMaxLife, loggerUploader: $loggerUploader, _loggerConfigOptionMap: $_loggerConfigOptionMap}';
+    return 'ScaffoldConfig{globalCacheManagerStalePeriod: $globalCacheManagerStalePeriod, globalCacheManagerMaxNrOfCacheObjects: $globalCacheManagerMaxNrOfCacheObjects, loggerConsoleAppenderEnabled: $loggerConsoleAppenderEnabled, loggerConsoleAppenderLevel: $loggerConsoleAppenderLevel, loggerFileAppenderEnabled: $loggerFileAppenderEnabled, loggerFileAppenderLevel: $loggerFileAppenderLevel, loggerLogFileMaxLife: $loggerLogFileMaxLife, loggerUploader: $loggerUploader, _loggerConfigOptionMap: $_loggerConfigOptionMap, errorPrinters: $errorPrinters}';
   }
 }
 

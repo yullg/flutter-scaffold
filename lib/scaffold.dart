@@ -1,4 +1,5 @@
 export 'src/core/error.dart';
+export 'src/core/error_printer.dart';
 export 'src/core/global_cache_manager.dart';
 export 'src/core/no_value_given.dart';
 export 'src/core/pair.dart';
@@ -46,6 +47,7 @@ export 'src/ui/paged_controller.dart';
 export 'src/ui/popup/action_sheet.dart';
 export 'src/ui/popup/alert_dialog.dart';
 export 'src/ui/popup/loading_dialog.dart';
+export 'src/ui/popup/scaffold_messengers.dart';
 export 'src/ui/popup/text_input_dialog.dart';
 export 'src/ui/popup/toast.dart';
 export 'src/ui/widget/easy_list_tile.dart';

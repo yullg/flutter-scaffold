@@ -1,32 +1,42 @@
-class VisibleError extends Error {
+class ContextUnmountedError extends Error {
   final Object? message;
-  final Object? visual;
 
-  VisibleError({this.message, this.visual});
+  ContextUnmountedError({this.message});
 
   @override
   String toString() {
-    return '$runtimeType{message: ${Error.safeToString(message)}}';
+    return 'ContextUnmountedError{message: ${Error.safeToString(message)}}';
   }
 }
 
-class ContextUnmountedError extends VisibleError {
-  ContextUnmountedError({super.message, super.visual});
+class CancellationError extends Error {
+  final Object? message;
+
+  CancellationError({this.message});
+
+  @override
+  String toString() {
+    return 'CancellationError{message: ${Error.safeToString(message)}}';
+  }
 }
 
-class CancellationError extends VisibleError {
-  CancellationError({super.message, super.visual});
+class AuthenticationNotFoundError extends Error {
+  final Object? message;
+
+  AuthenticationNotFoundError({this.message});
+
+  @override
+  String toString() {
+    return 'AuthenticationNotFoundError{message: ${Error.safeToString(message)}}';
+  }
 }
 
-class AuthenticationNotFoundError extends VisibleError {
-  AuthenticationNotFoundError({super.message, super.visual});
-}
-
-class IncorrectResultSizeDatabaseError extends VisibleError {
+class IncorrectResultSizeDatabaseError extends Error {
+  final Object? message;
   final int? expectedSize;
   final int? actualSize;
 
-  IncorrectResultSizeDatabaseError({super.message, super.visual, this.expectedSize, this.actualSize});
+  IncorrectResultSizeDatabaseError({this.message, this.expectedSize, this.actualSize});
 
   @override
   String toString() {
@@ -35,7 +45,7 @@ class IncorrectResultSizeDatabaseError extends VisibleError {
 }
 
 class EmptyResultDatabaseError extends IncorrectResultSizeDatabaseError {
-  EmptyResultDatabaseError({super.message, super.expectedSize, super.visual});
+  EmptyResultDatabaseError({super.message, super.expectedSize});
 
   @override
   String toString() {
