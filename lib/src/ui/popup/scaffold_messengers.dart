@@ -7,8 +7,8 @@ class ScaffoldMessengers {
     BuildContext context, {
     Widget? content,
     String contentText = "",
-    bool? showCloseIcon,
     Duration? duration,
+    bool? showCloseIcon,
     bool clearQueue = true,
   }) {
     final state = ScaffoldMessenger.of(context);
@@ -37,8 +37,8 @@ class ScaffoldMessengers {
     BuildContext context, {
     Object? error,
     String message = "",
-    bool? showCloseIcon,
-    Duration? duration,
+    Duration duration = const Duration(minutes: 5),
+    bool? showCloseIcon = true,
     bool clearQueue = true,
   }) {
     final state = ScaffoldMessenger.of(context);
@@ -62,7 +62,7 @@ class ScaffoldMessengers {
           ),
           backgroundColor: theme.colorScheme.errorContainer,
           closeIconColor: theme.colorScheme.onErrorContainer,
-          duration: duration ?? const Duration(seconds: 4),
+          duration: duration,
           showCloseIcon: showCloseIcon,
         ))
         .closed;
