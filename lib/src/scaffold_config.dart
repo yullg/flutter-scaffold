@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'core/error_printer.dart';
+import 'support/database/database_schema.dart';
 import 'support/logger/log.dart';
 import 'support/logger/log_file_uploader.dart';
 
@@ -15,6 +16,7 @@ class ScaffoldConfig {
   final LogFileUploader? loggerUploader;
   final Map<String, LoggerConfigOption>? _loggerConfigOptionMap;
   final Iterable<ErrorPrinter>? errorPrinters;
+  final DatabaseSchema? globalDatabaseSchema;
 
   ScaffoldConfig({
     this.globalCacheManagerStalePeriod = 30,
@@ -27,6 +29,7 @@ class ScaffoldConfig {
     this.loggerUploader,
     Map<String, LoggerConfigOption>? loggerConfigOptionMap,
     this.errorPrinters,
+    this.globalDatabaseSchema,
   }) : _loggerConfigOptionMap = loggerConfigOptionMap;
 
   bool findLoggerConsoleAppenderEnabled(String name) {
@@ -51,7 +54,7 @@ class ScaffoldConfig {
 
   @override
   String toString() {
-    return 'ScaffoldConfig{globalCacheManagerStalePeriod: $globalCacheManagerStalePeriod, globalCacheManagerMaxNrOfCacheObjects: $globalCacheManagerMaxNrOfCacheObjects, loggerConsoleAppenderEnabled: $loggerConsoleAppenderEnabled, loggerConsoleAppenderLevel: $loggerConsoleAppenderLevel, loggerFileAppenderEnabled: $loggerFileAppenderEnabled, loggerFileAppenderLevel: $loggerFileAppenderLevel, loggerLogFileMaxLife: $loggerLogFileMaxLife, loggerUploader: $loggerUploader, _loggerConfigOptionMap: $_loggerConfigOptionMap, errorPrinters: $errorPrinters}';
+    return 'ScaffoldConfig{globalCacheManagerStalePeriod: $globalCacheManagerStalePeriod, globalCacheManagerMaxNrOfCacheObjects: $globalCacheManagerMaxNrOfCacheObjects, loggerConsoleAppenderEnabled: $loggerConsoleAppenderEnabled, loggerConsoleAppenderLevel: $loggerConsoleAppenderLevel, loggerFileAppenderEnabled: $loggerFileAppenderEnabled, loggerFileAppenderLevel: $loggerFileAppenderLevel, loggerLogFileMaxLife: $loggerLogFileMaxLife, loggerUploader: $loggerUploader, _loggerConfigOptionMap: $_loggerConfigOptionMap, errorPrinters: $errorPrinters, globalDatabaseSchema: $globalDatabaseSchema}';
   }
 }
 

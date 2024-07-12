@@ -6,6 +6,7 @@ import 'package:intl/intl_standalone.dart' if (dart.library.html) 'package:intl/
 import 'internal/scaffold_logger.dart';
 import 'scaffold_config.dart';
 import 'scaffold_constants.dart';
+import 'support/database/global_database.dart';
 import 'support/logger/log_file_manager.dart';
 import 'support/logger/logger.dart';
 
@@ -25,6 +26,7 @@ class ScaffoldModule {
       await GetStorage.init(ScaffoldConstants.kGetStorageNameScaffold);
       await GetStorage.init(ScaffoldConstants.kGetStorageNameSP);
       await _initializeIntl();
+      await _initializeGlobalDatabase();
       await _onInitialized();
       ScaffoldLogger.info(Logger.message(library: _kLogLibrary, part: "Initialize", what: "end"));
     } catch (e, s) {
@@ -36,6 +38,13 @@ class ScaffoldModule {
   static Future<void> _initializeIntl() async {
     await findSystemLocale();
     await initializeDateFormatting();
+  }
+
+  static Future<void> _initializeGlobalDatabase() async {
+    final globalDatabaseSchema = config.globalDatabaseSchema;
+    if (globalDatabaseSchema != null) {
+      await GlobalDatabase.initialize(globalDatabaseSchema);
+    }
   }
 
   static Future<void> _onInitialized() async {
