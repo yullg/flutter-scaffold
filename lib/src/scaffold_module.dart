@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl_standalone.dart' if (dart.library.html) 'package:intl/intl_browser.dart';
+import 'package:intl/intl_standalone.dart';
 
 import 'internal/scaffold_logger.dart';
 import 'scaffold_config.dart';
@@ -21,7 +21,9 @@ class ScaffoldModule {
     ScaffoldConfig? config,
   }) async {
     try {
-      ScaffoldLogger.info(Logger.message(library: _kLogLibrary, part: "Initialize", what: "begin"));
+      ScaffoldLogger.info(Logger.message(library: _kLogLibrary, part: "Initialize", what: "begin", namedArgs: {
+        "config": config,
+      }));
       _config = config ?? ScaffoldConfig();
       await GetStorage.init(ScaffoldConstants.kGetStorageNameScaffold);
       await GetStorage.init(ScaffoldConstants.kGetStorageNameSP);
@@ -48,9 +50,7 @@ class ScaffoldModule {
   }
 
   static Future<void> _onInitialized() async {
-    LogFileManager.deleteExpiredLogFile().catchError((e, s) {
-      // ignore
-    });
+    LogFileManager.deleteExpiredLogFile().ignore();
   }
 }
 

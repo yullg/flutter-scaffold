@@ -39,6 +39,7 @@ export 'src/support/logger/log.dart';
 export 'src/support/logger/log_file_manager.dart';
 export 'src/support/logger/log_file_uploader.dart';
 export 'src/support/logger/logger.dart';
+export 'src/support/logger/logger_config.dart';
 export 'src/support/permission/permission.dart';
 export 'src/support/permission/permission_result.dart';
 export 'src/support/permission/permission_support.dart';

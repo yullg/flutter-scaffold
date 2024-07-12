@@ -9,12 +9,12 @@ import 'log_file_manager.dart';
 
 class LogAppender {
   static Future<void> doAppend(Log log) async {
-    if (ScaffoldModule.config.findLoggerConsoleAppenderEnabled(log.name) &&
-        ScaffoldModule.config.findLoggerConsoleAppenderLevel(log.name).index <= log.level.index) {
+    if (ScaffoldModule.config.loggerConfig.findConsoleAppenderEnabled(log.name) &&
+        ScaffoldModule.config.loggerConfig.findConsoleAppenderLevel(log.name).index <= log.level.index) {
       _doAppendConsoleLog(log);
     }
-    if (ScaffoldModule.config.findLoggerFileAppenderEnabled(log.name) &&
-        ScaffoldModule.config.findLoggerFileAppenderLevel(log.name).index <= log.level.index) {
+    if (ScaffoldModule.config.loggerConfig.findFileAppenderEnabled(log.name) &&
+        ScaffoldModule.config.loggerConfig.findFileAppenderLevel(log.name).index <= log.level.index) {
       await _doAppendFileLog(log);
     }
   }

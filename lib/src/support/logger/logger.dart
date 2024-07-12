@@ -49,10 +49,10 @@ class Logger {
   /// 检查指定的日志级别是否启用。
   bool isEnabled(LogLevel logLevel) {
     try {
-      return (ScaffoldModule.config.findLoggerConsoleAppenderEnabled(name) &&
-              ScaffoldModule.config.findLoggerConsoleAppenderLevel(name).index <= logLevel.index) ||
-          (ScaffoldModule.config.findLoggerFileAppenderEnabled(name) &&
-              ScaffoldModule.config.findLoggerFileAppenderLevel(name).index <= logLevel.index);
+      return (ScaffoldModule.config.loggerConfig.findConsoleAppenderEnabled(name) &&
+              ScaffoldModule.config.loggerConfig.findConsoleAppenderLevel(name).index <= logLevel.index) ||
+          (ScaffoldModule.config.loggerConfig.findFileAppenderEnabled(name) &&
+              ScaffoldModule.config.loggerConfig.findFileAppenderLevel(name).index <= logLevel.index);
     } catch (e) {
       return false;
     }

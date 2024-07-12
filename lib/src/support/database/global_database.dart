@@ -4,7 +4,7 @@ import 'database_factory.dart' as my;
 import 'database_schema.dart';
 
 class GlobalDatabase {
-  static late Database? _database;
+  static Database? _database;
 
   static Future<void> initialize(DatabaseSchema schema) async {
     _database = await my.DatabaseFactory(schema).createDatabase();

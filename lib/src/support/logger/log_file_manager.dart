@@ -28,7 +28,7 @@ class LogFileManager {
           Logger.message(library: "logger", part: "LogFileManager", what: "Start deleting expired log files"));
       await _eachLogFile((logFile) async {
         final minDateTime =
-            DateTime.now().subtract(Duration(days: ScaffoldModule.config.findLoggerLogFileMaxLife(logFile.name)));
+            DateTime.now().subtract(ScaffoldModule.config.loggerConfig.findLogFileLifetime(logFile.name));
         if (logFile.time.isBefore(minDateTime)) {
           await logFile.file.delete();
           ScaffoldLogger.debug(Logger.message(
@@ -54,7 +54,7 @@ class LogFileManager {
   static Future<void> uploadAllLogFile() async {
     try {
       ScaffoldLogger.info(Logger.message(library: "logger", part: "LogFileManager", what: "Start uploading log files"));
-      final uploader = ScaffoldModule.config.loggerUploader;
+      final uploader = ScaffoldModule.config.loggerConfig.uploader;
       if (uploader == null) {
         ScaffoldLogger.warn(
             Logger.message(library: "logger", part: "LogFileManager", what: "Uploader is not provided"));

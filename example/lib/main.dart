@@ -238,12 +238,7 @@ class _MyAppViewModel extends BaseViewModel<MyApp> {
   @override
   Future<void> asyncInitialize() async {
     await super.asyncInitialize();
-    if (!mounted) throw ContextUnmountedError();
-    await ScaffoldModule.initialize(
-      context,
-      config: ScaffoldConfig(
-        loggerConsoleAppenderEnabled: true,
-      ),
-    );
+    if (!context.mounted) throw ContextUnmountedError();
+    await ScaffoldModule.initialize(context);
   }
 }
