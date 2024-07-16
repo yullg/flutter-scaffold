@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:intl/intl.dart';
-
 class FormatHelper {
   static int parseInt(Object source, {int? radix}) {
     if (source is num) return source.toInt();
@@ -200,18 +198,33 @@ class FormatHelper {
     }
   }
 
-  static String printNum(num number,
-      {int minFractionDigits = 0, int maxFractionDigits = 3, bool round = true, String? locale}) {
-    if (!round) {
-      final operand = 1 / pow(10, maxFractionDigits + 1) * 5;
-      if (number >= 0) {
-        number = max(number - operand, 0);
-      } else {
-        number = min(number + operand, -0);
+  static String printNum(num number, {int minFractionDigits = 0, int maxFractionDigits = 3, bool round = true}) {
+    if (number.isFinite && number is double) {
+      maxFractionDigits = min(round ? 20 : 19, max(0, maxFractionDigits));
+      minFractionDigits = min(maxFractionDigits, max(0, minFractionDigits));
+      String result = number.toStringAsFixed(round ? maxFractionDigits : maxFractionDigits + 1);
+      if (!round && result.isNotEmpty) {
+        result = result.substring(0, result.length - 1);
       }
+      final dotIndex = result.indexOf(".");
+      if (dotIndex >= 0) {
+        // 去掉多余的0
+        while (result.endsWith("0")) {
+          result = result.substring(0, result.length - 1);
+        }
+        // 如果小数点后位数小于最小值，则补0
+        while (result.length - 1 - dotIndex < minFractionDigits) {
+          result += "0";
+        }
+        // 在没有小数位时去掉末尾的小数点
+        while (result.endsWith(".")) {
+          result = result.substring(0, result.length - 1);
+        }
+      }
+      return result;
+    } else {
+      return number.toString();
     }
-    final pattern = "0.${'0' * minFractionDigits}${'#' * (maxFractionDigits - minFractionDigits)}";
-    return NumberFormat(pattern, locale).format(number);
   }
 
   FormatHelper._();
