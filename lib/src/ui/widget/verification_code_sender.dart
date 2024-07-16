@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../../helper/sp_helper.dart';
+import '../../support/preference/default_preference.dart';
 import '../../scaffold_constants.dart';
 import 'lockable_elevated_button.dart';
 import 'lockable_filled_button.dart';
@@ -154,7 +154,7 @@ class _VerificationCodeSenderState extends State<VerificationCodeSender> {
         };
 
   Future<DateTime?> defaultLoadLastSendTime(String name) async {
-    final lastSendTime = SPHelper.getInt(name);
+    final lastSendTime = DefaultPreference.getInt(name);
     if (lastSendTime != null) {
       return DateTime.fromMillisecondsSinceEpoch(lastSendTime);
     }
@@ -162,7 +162,7 @@ class _VerificationCodeSenderState extends State<VerificationCodeSender> {
   }
 
   Future<void> defaultSaveLastSendTime(String name, DateTime dateTime) async {
-    await SPHelper.setInt(name, dateTime.millisecondsSinceEpoch);
+    await DefaultPreference.setInt(name, dateTime.millisecondsSinceEpoch);
   }
 
   @override

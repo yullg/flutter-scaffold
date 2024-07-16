@@ -1,39 +1,36 @@
 import 'dart:io';
 
-import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 
 import '../../internal/scaffold_logger.dart';
 import '../../scaffold_constants.dart';
-import '../../scaffold_module.dart';
 import '../storage/storage_type.dart';
 import 'log.dart';
 import 'logger.dart';
+import 'logger_support.dart';
 
 /// 管理本地日志文件
 class LogFileManager {
-  static final _logFileNameTimeFormat = DateFormat("yyyyMMdd", "en_US");
-  static final _logFileNameRegExp = RegExp(r'^(.+)-(\d{4})(\d{2})(\d{2}).log$');
+  static final _logFileNameRegExp = RegExp(r'^(.+)-(\d+)(\d{2})(\d{2}).log$');
 
   static Future<File> createFileForLog(Log log) async {
-    final logFile = File(p.join((await StorageType.cache.directory).absolute.path, ScaffoldConstants.kLoggerDirectory,
-        "${log.name}-${_logFileNameTimeFormat.format(log.time)}.log"));
-    await logFile.create(recursive: true);
-    return logFile;
+    final cacheDirectory = await StorageType.cache.directory;
+    final fileName =
+        "${log.name}-${log.time.year}${log.time.month.toString().padLeft(2, '0')}${log.time.day.toString().padLeft(2, '0')}.log";
+    return File(p.join(cacheDirectory.absolute.path, ScaffoldConstants.kLoggerDirectory, fileName));
   }
 
   static Future<void> deleteExpiredLogFile() async {
     try {
       ScaffoldLogger.info(
-          Logger.message(library: "logger", part: "LogFileManager", what: "Start deleting expired log files"));
+          Logger.message(library: _kLogLibrary, part: _kLogPart, what: "Start deleting expired log files"));
       await _eachLogFile((logFile) async {
-        final minDateTime =
-            DateTime.now().subtract(ScaffoldModule.config.loggerConfig.findLogFileLifetime(logFile.name));
+        final minDateTime = DateTime.now().subtract(LoggerSupport.logFileLifetime(logFile.name));
         if (logFile.time.isBefore(minDateTime)) {
           await logFile.file.delete();
           ScaffoldLogger.debug(Logger.message(
-            library: "logger",
-            part: "LogFileManager",
+            library: _kLogLibrary,
+            part: _kLogPart,
             what: "Delete expired log file",
             namedArgs: {
               "file": logFile.file,
@@ -43,33 +40,33 @@ class LogFileManager {
         }
       });
       ScaffoldLogger.info(
-          Logger.message(library: "logger", part: "LogFileManager", what: "All expired log files have been deleted"));
+          Logger.message(library: _kLogLibrary, part: _kLogPart, what: "All expired log files have been deleted"));
     } catch (e, s) {
       ScaffoldLogger.error(
-          Logger.message(library: "logger", part: "LogFileManager", what: "Failed to delete expired log files"), e, s);
+          Logger.message(library: _kLogLibrary, part: _kLogPart, what: "Failed to delete expired log files"), e, s);
       rethrow;
     }
   }
 
   static Future<void> uploadAllLogFile() async {
     try {
-      ScaffoldLogger.info(Logger.message(library: "logger", part: "LogFileManager", what: "Start uploading log files"));
-      final uploader = ScaffoldModule.config.loggerConfig.uploader;
-      if (uploader == null) {
-        ScaffoldLogger.warn(
-            Logger.message(library: "logger", part: "LogFileManager", what: "Uploader is not provided"));
-        return;
-      }
+      ScaffoldLogger.info(Logger.message(library: _kLogLibrary, part: _kLogPart, what: "Start uploading log files"));
       await _eachUploadLogFile((logFile) async {
         try {
+          final uploader = LoggerSupport.uploader(logFile.name);
+          if (uploader == null) {
+            ScaffoldLogger.warn(Logger.message(
+                library: _kLogLibrary, part: _kLogPart, what: "Uploader(${logFile.name}) is not provided"));
+            return;
+          }
           await uploader.upload(logFile);
           await logFile.file.delete();
           ScaffoldLogger.debug(Logger.message(
-              library: "logger", part: "LogFileManager", what: "Log file has been uploaded", args: [logFile.file]));
+              library: _kLogLibrary, part: _kLogPart, what: "Log file has been uploaded", args: [logFile.file]));
         } catch (e, s) {
           ScaffoldLogger.error(
               Logger.message(
-                  library: "logger", part: "LogFileManager", what: "Failed to upload log file", args: [logFile.file]),
+                  library: _kLogLibrary, part: _kLogPart, what: "Failed to upload log file", args: [logFile.file]),
               e,
               s);
         }
@@ -79,8 +76,8 @@ class LogFileManager {
             ScaffoldConstants.kLoggerDirectoryUpload, p.basename(logFile.file.path)));
         if (await uploadFile.exists()) {
           ScaffoldLogger.debug(Logger.message(
-            library: "logger",
-            part: "LogFileManager",
+            library: _kLogLibrary,
+            part: _kLogPart,
             what: "Mark the file to upload",
             args: [logFile.file],
             result: "conflict",
@@ -90,8 +87,8 @@ class LogFileManager {
           await logFile.file.copy(uploadFile.path);
           await logFile.file.delete();
           ScaffoldLogger.debug(Logger.message(
-            library: "logger",
-            part: "LogFileManager",
+            library: _kLogLibrary,
+            part: _kLogPart,
             what: "Mark the file to upload",
             args: [logFile.file],
             result: "success",
@@ -100,23 +97,29 @@ class LogFileManager {
       });
       await _eachUploadLogFile((logFile) async {
         try {
+          final uploader = LoggerSupport.uploader(logFile.name);
+          if (uploader == null) {
+            ScaffoldLogger.warn(Logger.message(
+                library: _kLogLibrary, part: _kLogPart, what: "Uploader(${logFile.name}) is not provided"));
+            return;
+          }
           await uploader.upload(logFile);
           await logFile.file.delete();
           ScaffoldLogger.debug(Logger.message(
-              library: "logger", part: "LogFileManager", what: "Log file has been uploaded", args: [logFile.file]));
+              library: _kLogLibrary, part: _kLogPart, what: "Log file has been uploaded", args: [logFile.file]));
         } catch (e, s) {
           ScaffoldLogger.error(
               Logger.message(
-                  library: "logger", part: "LogFileManager", what: "Failed to upload log file", args: [logFile.file]),
+                  library: _kLogLibrary, part: _kLogPart, what: "Failed to upload log file", args: [logFile.file]),
               e,
               s);
         }
       });
       ScaffoldLogger.info(
-          Logger.message(library: "logger", part: "LogFileManager", what: "Completed uploading log files"));
+          Logger.message(library: _kLogLibrary, part: _kLogPart, what: "Completed uploading log files"));
     } catch (e, s) {
       ScaffoldLogger.error(
-          Logger.message(library: "logger", part: "LogFileManager", what: "Failed to upload log files"), e, s);
+          Logger.message(library: _kLogLibrary, part: _kLogPart, what: "Failed to upload log files"), e, s);
       rethrow;
     }
   }
@@ -157,3 +160,6 @@ class LogFileManager {
     }
   }
 }
+
+const _kLogLibrary = "logger";
+const _kLogPart = "LogFileManager";

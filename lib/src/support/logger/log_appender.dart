@@ -3,18 +3,18 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
-import '../../scaffold_module.dart';
 import 'log.dart';
 import 'log_file_manager.dart';
+import 'logger_support.dart';
 
 class LogAppender {
   static Future<void> doAppend(Log log) async {
-    if (ScaffoldModule.config.loggerConfig.findConsoleAppenderEnabled(log.name) &&
-        ScaffoldModule.config.loggerConfig.findConsoleAppenderLevel(log.name).index <= log.level.index) {
+    if (LoggerSupport.consoleAppenderEnabled(log.name) &&
+        LoggerSupport.consoleAppenderLevel(log.name).index <= log.level.index) {
       _doAppendConsoleLog(log);
     }
-    if (ScaffoldModule.config.loggerConfig.findFileAppenderEnabled(log.name) &&
-        ScaffoldModule.config.loggerConfig.findFileAppenderLevel(log.name).index <= log.level.index) {
+    if (LoggerSupport.fileAppenderEnabled(log.name) &&
+        LoggerSupport.fileAppenderLevel(log.name).index <= log.level.index) {
       await _doAppendFileLog(log);
     }
   }
@@ -55,6 +55,8 @@ class LogAppender {
     if (log.trace != null) {
       sb.write(log.trace);
     }
-    await (await LogFileManager.createFileForLog(log)).writeAsString(sb.toString(), mode: FileMode.append);
+    final file = await LogFileManager.createFileForLog(log);
+    await file.create(recursive: true);
+    await file.writeAsString(sb.toString(), mode: FileMode.append, flush: true);
   }
 }

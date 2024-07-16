@@ -6,7 +6,7 @@ import 'database_schema.dart';
 class GlobalDatabase {
   static Database? _database;
 
-  static Future<void> initialize(DatabaseSchema schema) async {
+  static Future<void> initialize({required DatabaseSchema schema}) async {
     _database = await my.DatabaseFactory(schema).createDatabase();
   }
 
@@ -83,8 +83,6 @@ class GlobalDatabase {
 
   static Future<int> rawUpdate(String sql, [List<Object?>? arguments]) => database.rawUpdate(sql, arguments);
 
-  static Future<T> readTransaction<T>(Future<T> Function(Transaction txn) action) => database.readTransaction(action);
-
   static Future<T> transaction<T>(Future<T> Function(Transaction txn) action, {bool? exclusive}) =>
       database.transaction(action, exclusive: exclusive);
 
@@ -92,8 +90,8 @@ class GlobalDatabase {
           {String? where, List<Object?>? whereArgs, ConflictAlgorithm? conflictAlgorithm}) =>
       database.update(table, values, where: where, whereArgs: whereArgs, conflictAlgorithm: conflictAlgorithm);
 
-  static void destroy() {
-    _database?.close().ignore();
+  static Future<void> destroy() async {
+    await _database?.close();
     _database = null;
   }
 

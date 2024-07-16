@@ -1,11 +1,11 @@
 import 'package:get_storage/get_storage.dart';
 
-import '../scaffold_constants.dart';
+import '../../scaffold_constants.dart';
 
-class ScaffoldStorage {
-  static GetStorage get _sp => GetStorage(ScaffoldConstants.kGetStorageNameScaffold);
+class DefaultPreference {
+  static GetStorage get _sp => GetStorage(ScaffoldConstants.kGetStorageNameDefault);
 
-  static Set<String> getKeys() => Set.of(_sp.getKeys());
+  static Iterable<String> getKeys() => _sp.getKeys();
 
   static bool? getBool(String key) => _sp.read(key);
 
@@ -31,5 +31,5 @@ class ScaffoldStorage {
 
   static Future<void> clear() => _sp.erase();
 
-  ScaffoldStorage._();
+  DefaultPreference._();
 }

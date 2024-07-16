@@ -234,11 +234,4 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
 
 class _MyAppViewModel extends BaseViewModel<MyApp> {
   _MyAppViewModel(super.state);
-
-  @override
-  Future<void> asyncInitialize() async {
-    await super.asyncInitialize();
-    if (!context.mounted) throw ContextUnmountedError();
-    await ScaffoldModule.initialize(context);
-  }
 }

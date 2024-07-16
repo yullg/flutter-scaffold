@@ -1,9 +1,9 @@
 abstract class ScaffoldConstants {
   static const kCacheManagerKeyGlobal = "yg_cache_manager_global";
 
-  static const kGetStorageNameScaffold = "yg_get_storage_scaffold";
+  static const kGetStorageNameDefault = "yg_get_storage_default";
 
-  static const kGetStorageNameSP = "yg_get_storage_sp";
+  static const kGetStorageNameScaffold = "yg_get_storage_scaffold";
 
   static const kLoggerNameDefault = "yg_logger_default";
 

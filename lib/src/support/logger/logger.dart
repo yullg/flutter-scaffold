@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import '../../core/no_value_given.dart';
-import '../../scaffold_module.dart';
 import 'log.dart';
 import 'log_appender.dart';
+import 'logger_support.dart';
 
 /// 日志记录器
 class Logger {
@@ -49,10 +48,9 @@ class Logger {
   /// 检查指定的日志级别是否启用。
   bool isEnabled(LogLevel logLevel) {
     try {
-      return (ScaffoldModule.config.loggerConfig.findConsoleAppenderEnabled(name) &&
-              ScaffoldModule.config.loggerConfig.findConsoleAppenderLevel(name).index <= logLevel.index) ||
-          (ScaffoldModule.config.loggerConfig.findFileAppenderEnabled(name) &&
-              ScaffoldModule.config.loggerConfig.findFileAppenderLevel(name).index <= logLevel.index);
+      return (LoggerSupport.consoleAppenderEnabled(name) &&
+              LoggerSupport.consoleAppenderLevel(name).index <= logLevel.index) ||
+          (LoggerSupport.fileAppenderEnabled(name) && LoggerSupport.fileAppenderLevel(name).index <= logLevel.index);
     } catch (e) {
       return false;
     }
@@ -65,7 +63,7 @@ class Logger {
     String? what,
     List<Object?>? args,
     Map<String, Object?>? namedArgs,
-    Object? result = const NoValueGiven(),
+    Object? result = const _NoValueGiven(),
   }) {
     final sb = StringBuffer("[$library]");
 
@@ -77,31 +75,35 @@ class Logger {
       sb.write(" - $what");
     }
 
-    /// 防止toString()抛出异常
-    String safeToString(Object? obj) {
-      try {
-        return obj.toString();
-      } catch (e) {
-        return "*${obj.runtimeType}*";
-      }
-    }
-
     final argStringList = <String>[];
     args?.forEach((element) {
-      argStringList.add(safeToString(element));
+      argStringList.add(_safeToString(element));
     });
     namedArgs?.forEach((key, value) {
-      argStringList.add("$key: ${safeToString(value)}");
+      argStringList.add("$key: ${_safeToString(value)}");
     });
     if (argStringList.isNotEmpty) {
       sb.write(" < ");
       sb.writeAll(argStringList, ", ");
     }
 
-    if (result is! NoValueGiven) {
-      sb.write(" > ${safeToString(result)}");
+    if (result is! _NoValueGiven) {
+      sb.write(" > ${_safeToString(result)}");
     }
 
     return sb.toString();
   }
+
+  /// 防止toString()抛出异常
+  static String _safeToString(Object? obj) {
+    try {
+      return obj.toString();
+    } catch (e) {
+      return "*${obj.runtimeType}*";
+    }
+  }
+}
+
+final class _NoValueGiven {
+  const _NoValueGiven();
 }

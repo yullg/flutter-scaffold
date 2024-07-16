@@ -19,16 +19,16 @@ class DatabaseSchema {
     this.openSqls = const Iterable.empty(),
   }) : _changeSqls = changeSqls;
 
-  DatabaseSchema.fromJsonMap(Map<String, dynamic> jsonMap)
+  DatabaseSchema.fromMap(Map<String, dynamic> map)
       : this(
-          path: jsonMap["path"],
-          version: jsonMap["version"],
-          readOnly: jsonMap["readOnly"],
-          singleInstance: jsonMap["singleInstance"],
-          configureSqls: _parseConfigureSqls(jsonMap["configureSqls"]),
-          createSqls: _parseCreateSqls(jsonMap["createSqls"]),
-          changeSqls: _parseChangeSqls(jsonMap["changeSqls"]),
-          openSqls: _parseOpenSqls(jsonMap["openSqls"]),
+          path: map["path"],
+          version: map["version"],
+          readOnly: map["readOnly"],
+          singleInstance: map["singleInstance"],
+          configureSqls: _parseConfigureSqls(map["configureSqls"]),
+          createSqls: _parseCreateSqls(map["createSqls"]),
+          changeSqls: _parseChangeSqls(map["changeSqls"]),
+          openSqls: _parseOpenSqls(map["openSqls"]),
         );
 
   Iterable<String>? getChangeSqls(({int oldVersion, int newVersion}) version) => _changeSqls[version];

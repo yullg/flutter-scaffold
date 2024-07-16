@@ -3,8 +3,6 @@ import 'dart:math';
 
 import 'package:intl/intl.dart';
 
-import '../core/no_value_given.dart';
-
 class FormatHelper {
   static int parseInt(Object source, {int? radix}) {
     if (source is num) return source.toInt();
@@ -117,10 +115,10 @@ class FormatHelper {
   }
 
   static DateTime parseDateTime({
-    Object httpDate = const NoValueGiven(),
-    Object millisecondsSinceEpoch = const NoValueGiven(),
-    Object microsecondsSinceEpoch = const NoValueGiven(),
-    Object year = const NoValueGiven(),
+    Object httpDate = const _NoValueGiven(),
+    Object millisecondsSinceEpoch = const _NoValueGiven(),
+    Object microsecondsSinceEpoch = const _NoValueGiven(),
+    Object year = const _NoValueGiven(),
     Object? month,
     Object? day,
     Object? hour,
@@ -130,14 +128,14 @@ class FormatHelper {
     Object? microsecond,
     bool isUtc = false,
   }) {
-    if (httpDate is! NoValueGiven) {
+    if (httpDate is! _NoValueGiven) {
       if (httpDate is DateTime) return httpDate;
       return HttpDate.parse(httpDate.toString());
-    } else if (millisecondsSinceEpoch is! NoValueGiven) {
+    } else if (millisecondsSinceEpoch is! _NoValueGiven) {
       return DateTime.fromMillisecondsSinceEpoch(parseInt(millisecondsSinceEpoch), isUtc: isUtc);
-    } else if (microsecondsSinceEpoch is! NoValueGiven) {
+    } else if (microsecondsSinceEpoch is! _NoValueGiven) {
       return DateTime.fromMicrosecondsSinceEpoch(parseInt(microsecondsSinceEpoch), isUtc: isUtc);
-    } else if (year is! NoValueGiven) {
+    } else if (year is! _NoValueGiven) {
       if (isUtc) {
         return DateTime.utc(
           parseInt(year),
@@ -184,10 +182,10 @@ class FormatHelper {
     }
     try {
       return parseDateTime(
-        httpDate: httpDate ?? const NoValueGiven(),
-        millisecondsSinceEpoch: millisecondsSinceEpoch ?? const NoValueGiven(),
-        microsecondsSinceEpoch: microsecondsSinceEpoch ?? const NoValueGiven(),
-        year: year ?? const NoValueGiven(),
+        httpDate: httpDate ?? const _NoValueGiven(),
+        millisecondsSinceEpoch: millisecondsSinceEpoch ?? const _NoValueGiven(),
+        microsecondsSinceEpoch: microsecondsSinceEpoch ?? const _NoValueGiven(),
+        year: year ?? const _NoValueGiven(),
         month: month,
         day: day,
         hour: hour,
@@ -217,4 +215,8 @@ class FormatHelper {
   }
 
   FormatHelper._();
+}
+
+final class _NoValueGiven {
+  const _NoValueGiven();
 }
