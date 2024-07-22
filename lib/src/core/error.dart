@@ -1,7 +1,7 @@
 class ContextUnmountedError extends Error {
   final Object? message;
 
-  ContextUnmountedError({this.message});
+  ContextUnmountedError([this.message]);
 
   @override
   String toString() {
@@ -9,10 +9,21 @@ class ContextUnmountedError extends Error {
   }
 }
 
+class NoInitializeError extends Error {
+  final Object? message;
+
+  NoInitializeError([this.message]);
+
+  @override
+  String toString() {
+    return 'NoInitializeError{message: ${Error.safeToString(message)}}';
+  }
+}
+
 class CancellationError extends Error {
   final Object? message;
 
-  CancellationError({this.message});
+  CancellationError([this.message]);
 
   @override
   String toString() {
