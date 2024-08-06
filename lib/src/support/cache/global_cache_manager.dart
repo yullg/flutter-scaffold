@@ -22,7 +22,7 @@ class GlobalCacheManager extends CacheManager with ImageCacheManager {
   static Duration? _stalePeriod;
   static int? _maxNrOfCacheObjects;
 
-  static void config({
+  static void initialize({
     Duration? stalePeriod,
     int? maxNrOfCacheObjects,
   }) {
@@ -34,4 +34,10 @@ class GlobalCacheManager extends CacheManager with ImageCacheManager {
   static Duration get stalePeriod => _stalePeriod ?? kStalePeriod;
 
   static int get maxNrOfCacheObjects => _maxNrOfCacheObjects ?? kMaxNrOfCacheObjects;
+
+  static void destroy() {
+    _stalePeriod = null;
+    _maxNrOfCacheObjects = null;
+    _instance = null;
+  }
 }
