@@ -3,6 +3,10 @@ import 'package:get_storage/get_storage.dart';
 import '../../scaffold_constants.dart';
 
 class DefaultPreference {
+  static Future<void> initialize() async {
+    await GetStorage.init(ScaffoldConstants.kGetStorageNameDefault);
+  }
+
   static GetStorage get _sp => GetStorage(ScaffoldConstants.kGetStorageNameDefault);
 
   static Iterable<String> getKeys() => _sp.getKeys();
@@ -30,6 +34,10 @@ class DefaultPreference {
   static Future<void> remove(String key) => _sp.remove(key);
 
   static Future<void> clear() => _sp.erase();
+
+  static Future<void> destroy() async {
+    // nothing
+  }
 
   DefaultPreference._();
 }

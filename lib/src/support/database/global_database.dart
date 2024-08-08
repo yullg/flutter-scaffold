@@ -1,13 +1,19 @@
 import 'package:sqflite/sqflite.dart';
 
+import '../../config/scaffold_config.dart';
+import '../../core/error.dart';
 import 'database_factory.dart' as my;
 import 'database_schema.dart';
 
 class GlobalDatabase {
   static Database? _database;
 
-  static Future<void> initialize({required DatabaseSchema schema}) async {
-    _database = await my.DatabaseFactory(schema).createDatabase();
+  static Future<void> initialize({DatabaseSchema? schema}) async {
+    final localSchema = schema ?? ScaffoldConfig.databaseOption?.globalDatabaseSchema;
+    if (localSchema == null) {
+      throw NoConfigurationError();
+    }
+    _database = await my.DatabaseFactory(localSchema).createDatabase();
   }
 
   static Database get database => _database!;
@@ -18,13 +24,11 @@ class GlobalDatabase {
 
   static Batch batch() => database.batch();
 
-  static Future<int> delete(String table, {String? where, List<Object?>? whereArgs}) =>
-      database.delete(table, where: where, whereArgs: whereArgs);
+  static Future<int> delete(String table, {String? where, List<Object?>? whereArgs}) => database.delete(table, where: where, whereArgs: whereArgs);
 
   static Future<void> execute(String sql, [List<Object?>? arguments]) => database.execute(sql, arguments);
 
-  static Future<int> insert(String table, Map<String, Object?> values,
-          {String? nullColumnHack, ConflictAlgorithm? conflictAlgorithm}) =>
+  static Future<int> insert(String table, Map<String, Object?> values, {String? nullColumnHack, ConflictAlgorithm? conflictAlgorithm}) =>
       database.insert(table, values, nullColumnHack: nullColumnHack, conflictAlgorithm: conflictAlgorithm);
 
   static Future<List<Map<String, Object?>>> query(String table,
@@ -75,8 +79,7 @@ class GlobalDatabase {
 
   static Future<int> rawInsert(String sql, [List<Object?>? arguments]) => database.rawInsert(sql, arguments);
 
-  static Future<List<Map<String, Object?>>> rawQuery(String sql, [List<Object?>? arguments]) =>
-      database.rawQuery(sql, arguments);
+  static Future<List<Map<String, Object?>>> rawQuery(String sql, [List<Object?>? arguments]) => database.rawQuery(sql, arguments);
 
   static Future<QueryCursor> rawQueryCursor(String sql, List<Object?>? arguments, {int? bufferSize}) =>
       database.rawQueryCursor(sql, arguments, bufferSize: bufferSize);

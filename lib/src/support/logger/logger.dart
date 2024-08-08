@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import '../../config/scaffold_logger_option.dart';
 import 'log.dart';
 import 'log_appender.dart';
-import 'logger_support.dart';
 
 /// 日志记录器
 class Logger {
@@ -10,23 +10,17 @@ class Logger {
 
   const Logger(this.name);
 
-  void trace(Object? message, [Object? error, StackTrace? trace]) =>
-      log(Log(name, LogLevel.trace, message, error, trace, pid, DateTime.now()));
+  void trace(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.trace, message, error, trace, pid, DateTime.now()));
 
-  void debug(Object? message, [Object? error, StackTrace? trace]) =>
-      log(Log(name, LogLevel.debug, message, error, trace, pid, DateTime.now()));
+  void debug(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.debug, message, error, trace, pid, DateTime.now()));
 
-  void info(Object? message, [Object? error, StackTrace? trace]) =>
-      log(Log(name, LogLevel.info, message, error, trace, pid, DateTime.now()));
+  void info(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.info, message, error, trace, pid, DateTime.now()));
 
-  void warn(Object? message, [Object? error, StackTrace? trace]) =>
-      log(Log(name, LogLevel.warn, message, error, trace, pid, DateTime.now()));
+  void warn(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.warn, message, error, trace, pid, DateTime.now()));
 
-  void error(Object? message, [Object? error, StackTrace? trace]) =>
-      log(Log(name, LogLevel.error, message, error, trace, pid, DateTime.now()));
+  void error(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.error, message, error, trace, pid, DateTime.now()));
 
-  void fatal(Object? message, [Object? error, StackTrace? trace]) =>
-      log(Log(name, LogLevel.fatal, message, error, trace, pid, DateTime.now()));
+  void fatal(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.fatal, message, error, trace, pid, DateTime.now()));
 
   bool isTraceEnabled() => isEnabled(LogLevel.trace);
 
@@ -48,9 +42,8 @@ class Logger {
   /// 检查指定的日志级别是否启用。
   bool isEnabled(LogLevel logLevel) {
     try {
-      return (LoggerSupport.consoleAppenderEnabled(name) &&
-              LoggerSupport.consoleAppenderLevel(name).index <= logLevel.index) ||
-          (LoggerSupport.fileAppenderEnabled(name) && LoggerSupport.fileAppenderLevel(name).index <= logLevel.index);
+      return (ScaffoldLoggerOption.consoleAppenderEnabled(name) && ScaffoldLoggerOption.consoleAppenderLevel(name).index <= logLevel.index) ||
+          (ScaffoldLoggerOption.fileAppenderEnabled(name) && ScaffoldLoggerOption.fileAppenderLevel(name).index <= logLevel.index);
     } catch (e) {
       return false;
     }

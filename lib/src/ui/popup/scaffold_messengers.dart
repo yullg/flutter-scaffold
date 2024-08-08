@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../support/error_print/error_print_support.dart';
+import '../../core/error_print.dart';
 
 class ScaffoldMessengers {
   static Future<SnackBarClosedReason> showSnackBar(
@@ -47,7 +47,7 @@ class ScaffoldMessengers {
       state.clearSnackBars();
     }
     if (error != null) {
-      final newMessage = ErrorPrintSupport.print(context, error);
+      final newMessage = ErrorPrinters.print(context, error);
       if (newMessage != null) {
         message = newMessage;
       }

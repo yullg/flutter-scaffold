@@ -9,6 +9,17 @@ class ContextUnmountedError extends Error {
   }
 }
 
+class NoConfigurationError extends Error {
+  final Object? message;
+
+  NoConfigurationError([this.message]);
+
+  @override
+  String toString() {
+    return 'NoConfigurationError{message: ${Error.safeToString(message)}}';
+  }
+}
+
 class NoInitializeError extends Error {
   final Object? message;
 
