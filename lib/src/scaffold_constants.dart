@@ -15,9 +15,7 @@ abstract class ScaffoldConstants {
 
   static const kDocumentManagerDirectory = "yg/document";
 
-  static const kVerificationCodeSenderNameDefault = "yg_verification_code_sender_default";
-
-  static const kVerificationCodeSenderIntervalDefault = 60;
+  static const kSendCodeNameDefault = "yg_send_code_default";
 
   ScaffoldConstants._();
 }
