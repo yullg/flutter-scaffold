@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class ThemeModeHolder extends ChangeNotifier {
+class ThemeModeHolder extends ChangeNotifier implements ValueListenable<ThemeMode?> {
   static ThemeModeHolder? _instance;
 
   factory ThemeModeHolder() {
@@ -9,11 +10,12 @@ class ThemeModeHolder extends ChangeNotifier {
 
   ThemeMode? _themeMode;
 
-  ThemeMode? get themeMode => _themeMode;
+  @override
+  ThemeMode? get value => _themeMode;
 
-  set themeMode(ThemeMode? value) {
-    if (_themeMode != value) {
-      _themeMode = value;
+  set value(ThemeMode? newValue) {
+    if (_themeMode != newValue) {
+      _themeMode = newValue;
       notifyListeners();
     }
   }
