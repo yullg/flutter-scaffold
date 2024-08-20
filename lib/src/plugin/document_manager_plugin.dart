@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:scaffold/scaffold_lang.dart';
 
 import '../helper/string_helper.dart';
 import '../helper/uuid_helper.dart';
-import '../lang/extensions.dart';
 import '../scaffold_constants.dart';
 import '../support/storage/storage_type.dart';
 import 'android/android_activity_result_contracts_plugin.dart';
@@ -76,9 +76,7 @@ class DocumentManagerPlugin {
       );
     } else {
       return Future<Uri>(() async {
-        final fileURLWithPath =
-            displayName?.let((it) => p.extension(it).isNotEmpty ? it : "$it${p.extension(file.path)}") ??
-                p.basename(file.path);
+        final fileURLWithPath = displayName?.let((it) => p.extension(it).isNotEmpty ? it : "$it${p.extension(file.path)}") ?? p.basename(file.path);
         final fileUri = await IosUrlPlugin.createFileURL(
           fileURLWithPath: fileURLWithPath,
           isDirectory: false,
@@ -202,8 +200,7 @@ class DocumentType {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is DocumentType && runtimeType == other.runtimeType && mimeType == other.mimeType && utType == other.utType;
+      identical(this, other) || other is DocumentType && runtimeType == other.runtimeType && mimeType == other.mimeType && utType == other.utType;
 
   @override
   int get hashCode => mimeType.hashCode ^ utType.hashCode;

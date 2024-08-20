@@ -25,9 +25,10 @@ abstract class GenericState<T extends StatefulWidget> extends State<T> {
   }
 
   @protected
-  void setStateIfMounted([VoidCallback? fn]) {
+  void setStateIfMounted() {
+    // 有意移除了传递给setState()的回调方法来避免产生歧义。
     if (mounted) {
-      setState(fn ?? () {});
+      setState(() {});
     }
   }
 }

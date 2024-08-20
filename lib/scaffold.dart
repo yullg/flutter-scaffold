@@ -9,7 +9,7 @@ export 'src/config/scaffold_logger_option.dart';
 export 'src/core/error.dart';
 export 'src/core/error_print.dart';
 export 'src/core/global_cache_manager.dart';
-export 'src/core/theme_mode_holder.dart';
+export 'src/core/theme_mode_manager.dart';
 export 'src/helper/enum_helper.dart';
 export 'src/helper/format_helper.dart';
 export 'src/helper/guid_helper.dart';

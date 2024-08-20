@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../../lang/extensions.dart';
+import 'package:scaffold/scaffold_lang.dart';
 
 Future<List<String>?> showTextInputDialog({
   required BuildContext context,

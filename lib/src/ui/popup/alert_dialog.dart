@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
-
-import '../../lang/extensions.dart';
+import 'package:scaffold/scaffold_lang.dart';
 
 Future<T?> showAlertDialog<T>({
   required BuildContext context,

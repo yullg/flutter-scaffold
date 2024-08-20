@@ -42,7 +42,7 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                 descriptionText: _treeUri?.toString(),
                 onTap: () {
                   DocumentManagerPlugin.openDocumentTree(initialLocation: _treeUri).then((value) {
-                    setStateIfMounted(() {
+                    setState(() {
                       _treeUri = value;
                     });
                   });
@@ -58,7 +58,7 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                     return;
                   }
                   DocumentManagerPlugin.createSubTreeUri(treeUri: treeUri, displayName: "TEST").then((value) {
-                    setStateIfMounted(() {
+                    setState(() {
                       _subTreeUri = value;
                     });
                   });
