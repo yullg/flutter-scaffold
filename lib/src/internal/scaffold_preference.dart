@@ -1,8 +1,8 @@
-import '../scaffold_constants.dart';
+import '../config/scaffold_config.dart';
 import '../support/preference/preference.dart';
 
 class ScaffoldPreference {
-  static Preference get _sp => Preference(ScaffoldConstants.kGetStorageNameScaffold);
+  static Preference get _sp => Preference(ScaffoldConfig.kPreferenceNameScaffold);
 
   static Future<Iterable<String>> getKeys() => _sp.getKeys();
 

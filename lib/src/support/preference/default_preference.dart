@@ -1,13 +1,13 @@
 import 'package:get_storage/get_storage.dart';
 
-import '../../scaffold_constants.dart';
+import '../../config/scaffold_config.dart';
 
 class DefaultPreference {
   static Future<void> initialize() async {
-    await GetStorage.init(ScaffoldConstants.kGetStorageNameDefault);
+    await GetStorage.init(ScaffoldConfig.kPreferenceNameDefault);
   }
 
-  static GetStorage get _sp => GetStorage(ScaffoldConstants.kGetStorageNameDefault);
+  static GetStorage get _sp => GetStorage(ScaffoldConfig.kPreferenceNameDefault);
 
   static Iterable<String> getKeys() => _sp.getKeys();
 

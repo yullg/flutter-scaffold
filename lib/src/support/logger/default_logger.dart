@@ -1,9 +1,9 @@
-import '../../scaffold_constants.dart';
+import '../../config/scaffold_config.dart';
 import 'log.dart';
 import 'logger.dart';
 
 class DefaultLogger {
-  static const _logger = Logger(ScaffoldConstants.kLoggerNameDefault);
+  static const _logger = Logger(ScaffoldConfig.kLoggerNameDefault);
 
   static String get name => _logger.name;
 

@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:scaffold/scaffold_lang.dart';
 
+import '../config/scaffold_config.dart';
 import '../helper/string_helper.dart';
 import '../helper/uuid_helper.dart';
-import '../scaffold_constants.dart';
 import '../support/storage/storage_type.dart';
 import 'android/android_activity_result_contracts_plugin.dart';
 import 'android/android_content_resolver_plugin.dart';
@@ -109,7 +109,7 @@ class DocumentManagerPlugin {
         final contentUriMetadata = await AndroidContentResolverPlugin.getMetadata(uri);
         final path = p.join(
           cacheDirectoryPath,
-          ScaffoldConstants.kDocumentManagerDirectory,
+          ScaffoldConfig.kDocumentManagerDirectory,
           UuidHelper.v4(),
           StringHelper.trimToNull(contentUriMetadata.displayName) ?? UuidHelper.v4(),
         );
@@ -133,7 +133,7 @@ class DocumentManagerPlugin {
       for (final uri in uris) {
         final path = p.join(
           cacheDirectoryPath,
-          ScaffoldConstants.kDocumentManagerDirectory,
+          ScaffoldConfig.kDocumentManagerDirectory,
           UuidHelper.v4(),
           StringHelper.trimToNull(uri.pathSegments.lastOrNull) ?? UuidHelper.v4(),
         );

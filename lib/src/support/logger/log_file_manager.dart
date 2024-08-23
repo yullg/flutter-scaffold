@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import '../../config/scaffold_config.dart';
 import '../../config/scaffold_logger_option.dart';
 import '../../internal/scaffold_logger.dart';
-import '../../scaffold_constants.dart';
 import '../storage/storage_type.dart';
 import 'log.dart';
 import 'logger.dart';
@@ -16,7 +16,7 @@ class LogFileManager {
   static Future<File> createFileForLog(Log log) async {
     final cacheDirectory = await StorageType.cache.directory;
     final fileName = "${log.name}-${log.time.year}${log.time.month.toString().padLeft(2, '0')}${log.time.day.toString().padLeft(2, '0')}.log";
-    return File(p.join(cacheDirectory.absolute.path, ScaffoldConstants.kLoggerDirectory, fileName));
+    return File(p.join(cacheDirectory.absolute.path, ScaffoldConfig.kLoggerDirectory, fileName));
   }
 
   static Future<void> deleteExpiredLogFile() async {
@@ -63,7 +63,7 @@ class LogFileManager {
       });
       await _eachLogFile((logFile) async {
         final uploadFile =
-            File(p.join((await StorageType.cache.directory).absolute.path, ScaffoldConstants.kLoggerDirectoryUpload, p.basename(logFile.file.path)));
+            File(p.join((await StorageType.cache.directory).absolute.path, ScaffoldConfig.kLoggerDirectoryUpload, p.basename(logFile.file.path)));
         if (await uploadFile.exists()) {
           ScaffoldLogger.debug(Logger.message(
             library: _kLogLibrary,
@@ -107,7 +107,7 @@ class LogFileManager {
   }
 
   static Future<void> _eachLogFile(Future<void> Function(LogFile) block) async {
-    final logDirectory = Directory(p.join((await StorageType.cache.directory).absolute.path, ScaffoldConstants.kLoggerDirectory));
+    final logDirectory = Directory(p.join((await StorageType.cache.directory).absolute.path, ScaffoldConfig.kLoggerDirectory));
     if (await logDirectory.exists()) {
       await for (FileSystemEntity entity in logDirectory.list(recursive: false, followLinks: false)) {
         if (entity is! File) continue;
@@ -123,7 +123,7 @@ class LogFileManager {
   }
 
   static Future<void> _eachUploadLogFile(Future<void> Function(LogFile) block) async {
-    final logDirectory = Directory(p.join((await StorageType.cache.directory).absolute.path, ScaffoldConstants.kLoggerDirectoryUpload));
+    final logDirectory = Directory(p.join((await StorageType.cache.directory).absolute.path, ScaffoldConfig.kLoggerDirectoryUpload));
     if (await logDirectory.exists()) {
       await for (FileSystemEntity entity in logDirectory.list(recursive: false, followLinks: false)) {
         if (entity is! File) continue;

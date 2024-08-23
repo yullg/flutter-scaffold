@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../config/scaffold_config.dart';
 import '../../internal/scaffold_preference.dart';
-import '../../scaffold_constants.dart';
 
 class SendCodeWidget extends StatelessWidget {
   final SendCodeController controller;
@@ -55,7 +55,7 @@ class SendCodeController extends ChangeNotifier {
   Timer? _resendIntervalTimer;
 
   SendCodeController({
-    this.name = ScaffoldConstants.kSendCodeNameDefault,
+    this.name = ScaffoldConfig.kSendCodeNameDefault,
     this.resendInterval = const Duration(seconds: 60),
     this.callbackInterval = const Duration(seconds: 1),
   }) {
