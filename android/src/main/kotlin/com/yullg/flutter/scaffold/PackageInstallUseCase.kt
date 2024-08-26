@@ -58,7 +58,7 @@ class PackageInstallUseCase : BaseUseCase(
                 }
             }
 
-            "classicalInstall" -> {
+            "legacyInstall" -> {
                 val activity = requiredActivityPluginBinding.activity
                 val contentUri = Uri.parse(call.argument<String>("contentUri")!!)
                 val intent = Intent(Intent.ACTION_INSTALL_PACKAGE).apply {

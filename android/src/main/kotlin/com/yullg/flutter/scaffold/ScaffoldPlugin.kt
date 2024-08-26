@@ -12,7 +12,8 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware {
         DomainVerificationUseCase(),
         ContentResolverUseCase(),
         ActivityResultContractsUseCase(),
-        FileProviderUseCase()
+        FileProviderUseCase(),
+        MediaStoreUseCase()
     )
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {

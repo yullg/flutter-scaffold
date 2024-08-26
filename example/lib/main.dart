@@ -105,16 +105,71 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                   ),
                   nameText: _documents[i].path,
                 ),
+              _buildHeader("MediaStorePlugin"),
+              EasyListTile(
+                nameText: "insertAudio()",
+                onTap: () {
+                  AndroidMediaStorePlugin.insertAudio(
+                    file: _documents.first
+                  ).then((value) {
+                    Toast.showLong(context, "insertAudio() > $value");
+                    setStateIfMounted();
+                  }, onError: (e, s) {
+                    DefaultLogger.error("insertAudio() > failed", e, s);
+                    Toast.showLong(context, "insertAudio() > $e");
+                  });
+                },
+              ),
+              EasyListTile(
+                nameText: "insertImage()",
+                onTap: () {
+                  AndroidMediaStorePlugin.insertImage(
+                    file: _documents.first,
+                  ).then((value) {
+                    Toast.showLong(context, "insertImage() > $value");
+                    setStateIfMounted();
+                  }, onError: (e, s) {
+                    DefaultLogger.error("insertImage() > failed", e, s);
+                    Toast.showLong(context, "insertImage() > $e");
+                  });
+                },
+              ),
+              EasyListTile(
+                nameText: "insertVideo()",
+                onTap: () {
+                  AndroidMediaStorePlugin.insertVideo(
+                    file: _documents.first,
+                  ).then((value) {
+                    Toast.showLong(context, "insertVideo() > $value");
+                    setStateIfMounted();
+                  }, onError: (e, s) {
+                    DefaultLogger.error("insertVideo() > failed", e, s);
+                    Toast.showLong(context, "insertVideo() > $e");
+                  });
+                },
+              ),
+              EasyListTile(
+                nameText: "insertDownload()",
+                onTap: () {
+                  AndroidMediaStorePlugin.insertDownload(
+                    file: _documents.first,
+                  ).then((value) {
+                    Toast.showLong(context, "insertDownload() > $value");
+                    setStateIfMounted();
+                  }, onError: (e, s) {
+                    DefaultLogger.error("insertDownload() > failed", e, s);
+                    Toast.showLong(context, "insertDownload() > $e");
+                  });
+                },
+              ),
               _buildHeader("SystemClockPlugin"),
               EasyListTile(
                 nameText: "elapsedRealtime()",
                 descriptionText: "Returns duration since boot, including time spent in sleep.",
                 onTap: () {
                   SystemClockPlugin.elapsedRealtime().then((value) {
-                    DefaultLogger.info(
-                        "elapsedRealtime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
-                    Toast.showLong(context,
-                        "elapsedRealtime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
+                    DefaultLogger.info("elapsedRealtime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
+                    Toast.showLong(context, "elapsedRealtime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
                   }, onError: (e, s) {
                     DefaultLogger.error("elapsedRealtime() > failed", e, s);
                     Toast.showLong(context, "elapsedRealtime() > $e");
@@ -128,8 +183,7 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                 onTap: () {
                   SystemClockPlugin.uptime().then((value) {
                     DefaultLogger.info("uptime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
-                    Toast.showLong(
-                        context, "uptime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
+                    Toast.showLong(context, "uptime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
                   }, onError: (e, s) {
                     DefaultLogger.error("uptime() > failed", e, s);
                     Toast.showLong(context, "uptime() > $e");

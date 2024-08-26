@@ -31,19 +31,19 @@ class AndroidPackageInstallPlugin {
     await install(contentUri: contentUri);
   }
 
-  static Future<void> classicalInstall({required Uri contentUri}) async {
-    await _methodChannel.invokeMethod("classicalInstall", {
+  static Future<void> legacyInstall({required Uri contentUri}) async {
+    await _methodChannel.invokeMethod("legacyInstall", {
       "contentUri": contentUri.toString(),
     });
   }
 
-  static Future<void> classicalInstallFile({required File file, String? shareFileName}) async {
+  static Future<void> legacyInstallFile({required File file, String? shareFileName}) async {
     final shareDirectory = await AndroidFileProviderPlugin.externalCache;
     final shareFile = File(p.join(shareDirectory.path, shareFileName ?? p.basename(file.path)));
     await shareFile.parent.create(recursive: true);
     await file.copy(shareFile.path);
     final contentUri = await AndroidFileProviderPlugin.getUriForFile(file: shareFile);
-    await classicalInstall(contentUri: contentUri);
+    await legacyInstall(contentUri: contentUri);
   }
 
   AndroidPackageInstallPlugin._();
