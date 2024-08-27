@@ -1,5 +1,5 @@
 name: scaffold
-description: A new Flutter plugin project.
+description: A Flutter plugin that provides a reusable development scaffold for common features.
 repository: https://github.com/yullg/flutter-scaffold
 
 version: 1.0.0
