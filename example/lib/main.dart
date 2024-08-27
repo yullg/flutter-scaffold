@@ -105,60 +105,46 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                   ),
                   nameText: _documents[i].path,
                 ),
-              _buildHeader("MediaStorePlugin"),
+              _buildHeader("GallerySavePlugin"),
               EasyListTile(
-                nameText: "insertAudio()",
+                nameText: "saveImage()",
                 onTap: () {
-                  AndroidMediaStorePlugin.insertAudio(
-                    file: _documents.first
-                  ).then((value) {
-                    Toast.showLong(context, "insertAudio() > $value");
-                    setStateIfMounted();
+                  GallerySavePlugin.requestSavePermission().then((value) {
+                    if (value) {
+                      GallerySavePlugin.saveImage(_documents.first).then((_) {
+                        Toast.showLong(context, "saveImage() > success");
+                        setStateIfMounted();
+                      }, onError: (e, s) {
+                        DefaultLogger.error("saveImage() > failed", e, s);
+                        Toast.showLong(context, "saveImage() > $e");
+                      });
+                    } else {
+                      Toast.showLong(context, "no permission");
+                    }
                   }, onError: (e, s) {
-                    DefaultLogger.error("insertAudio() > failed", e, s);
-                    Toast.showLong(context, "insertAudio() > $e");
+                    DefaultLogger.error("saveImage() > failed", e, s);
+                    Toast.showLong(context, "saveImage() > $e");
                   });
                 },
               ),
               EasyListTile(
-                nameText: "insertImage()",
+                nameText: "saveVideo()",
                 onTap: () {
-                  AndroidMediaStorePlugin.insertImage(
-                    file: _documents.first,
-                  ).then((value) {
-                    Toast.showLong(context, "insertImage() > $value");
-                    setStateIfMounted();
+                  GallerySavePlugin.requestSavePermission().then((value) {
+                    if (value) {
+                      GallerySavePlugin.saveVideo(_documents.first).then((_) {
+                        Toast.showLong(context, "saveVideo() > success");
+                        setStateIfMounted();
+                      }, onError: (e, s) {
+                        DefaultLogger.error("saveVideo() > failed", e, s);
+                        Toast.showLong(context, "saveVideo() > $e");
+                      });
+                    } else {
+                      Toast.showLong(context, "no permission");
+                    }
                   }, onError: (e, s) {
-                    DefaultLogger.error("insertImage() > failed", e, s);
-                    Toast.showLong(context, "insertImage() > $e");
-                  });
-                },
-              ),
-              EasyListTile(
-                nameText: "insertVideo()",
-                onTap: () {
-                  AndroidMediaStorePlugin.insertVideo(
-                    file: _documents.first,
-                  ).then((value) {
-                    Toast.showLong(context, "insertVideo() > $value");
-                    setStateIfMounted();
-                  }, onError: (e, s) {
-                    DefaultLogger.error("insertVideo() > failed", e, s);
-                    Toast.showLong(context, "insertVideo() > $e");
-                  });
-                },
-              ),
-              EasyListTile(
-                nameText: "insertDownload()",
-                onTap: () {
-                  AndroidMediaStorePlugin.insertDownload(
-                    file: _documents.first,
-                  ).then((value) {
-                    Toast.showLong(context, "insertDownload() > $value");
-                    setStateIfMounted();
-                  }, onError: (e, s) {
-                    DefaultLogger.error("insertDownload() > failed", e, s);
-                    Toast.showLong(context, "insertDownload() > $e");
+                    DefaultLogger.error("saveVideo() > failed", e, s);
+                    Toast.showLong(context, "saveVideo() > $e");
                   });
                 },
               ),

@@ -1,16 +1,13 @@
 package com.yullg.flutter.scaffold
 
-import android.Manifest
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import androidx.core.content.ContextCompat
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -26,20 +23,6 @@ class MediaStoreUseCase : BaseUseCase(
     @OptIn(DelicateCoroutinesApi::class)
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
-            "hasInsertPermission" -> {
-                if (Build.VERSION.SDK_INT >= 29) {
-                    result.success(true)
-                } else {
-                    val applicationContext = requiredFlutterPluginBinding.applicationContext
-                    result.success(
-                        ContextCompat.checkSelfPermission(
-                            applicationContext,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ) == PackageManager.PERMISSION_GRANTED
-                    )
-                }
-            }
-
             "insertAudio" -> {
                 val applicationContext = requiredFlutterPluginBinding.applicationContext
                 val file = File(call.argument<String>("file")!!)
