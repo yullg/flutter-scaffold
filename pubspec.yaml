@@ -1,5 +1,5 @@
 name: scaffold
-description: A Flutter plugin that provides a reusable development scaffold for common features.
+description: Provides reusable development scaffolding for common functionality.
 repository: https://github.com/yullg/flutter-scaffold
 
 version: 1.0.0
@@ -12,15 +12,15 @@ dependencies:
   flutter:
     sdk: flutter
   async: ^2.11.0
-  path: ^1.8.3
-  uuid: ^4.2.1
-  dio: ^5.4.3+1
-  sqflite: ^2.3.3+1
-  get_storage: ^2.1.1
-  path_provider: ^2.1.1
+  path: ^1.9.0
+  path_provider: ^2.1.4
   device_info_plus: ^10.1.2
   permission_handler: ^11.3.1
   flutter_cache_manager: ^3.3.2
+  dio: ^5.4.3+1
+  uuid: ^4.2.1
+  sqflite: ^2.3.3+1
+  get_storage: ^2.1.1
   system_clock: ^2.0.0
 
 dev_dependencies:
