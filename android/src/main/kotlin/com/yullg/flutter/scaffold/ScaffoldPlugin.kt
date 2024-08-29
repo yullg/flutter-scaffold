@@ -13,7 +13,8 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware {
         ContentResolverUseCase(),
         ActivityResultContractsUseCase(),
         FileProviderUseCase(),
-        MediaStoreUseCase()
+        MediaStoreUseCase(),
+        DownloadUseCase()
     )
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {

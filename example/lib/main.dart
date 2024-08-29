@@ -18,7 +18,6 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
   Uri? _treeUri;
   Uri? _subTreeUri;
   final _documents = <File>[];
-  final _loadingDialog = LoadingDialog();
 
   @override
   _MyAppViewModel newViewModel() => _MyAppViewModel(this);
@@ -220,25 +219,36 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                     ),
                   ],
                 ),
-              _buildHeader("LoadingDialog"),
+              _buildHeader("AndroidDownloadPlugin"),
               EasyListTile(
-                nameText: "show()",
+                nameText: "download()",
                 onTap: () {
-                  _loadingDialog.resetMetadata();
-                  _loadingDialog.barrierDismissible = true;
-                  _loadingDialog.message = "test" * 10;
-                  _loadingDialog.show(context);
-                  Future.delayed(const Duration(seconds: 3)).then((value) {
-                    _loadingDialog.progress = 0.8;
-                    _loadingDialog.message = "test";
+                  defaultLoadingDialog.resetMetadata();
+                  defaultLoadingDialog.show(context);
+                  AndroidDownloadPlugin.enqueue(
+                    uri: Uri.parse("https://www.pexels.com/download/video/27935830/"),
+                    destination: AndroidDownloadPlugin.kDestinationExternalPublicDir,
+                    filename: "example.mp4",
+                    description: "Test file download",
+                  ).then((downloadId) {
+                    int i = 0;
+                    AndroidDownloadPlugin.waitDownload(downloadId, interval: const Duration(milliseconds: 256), onProgress: (downloadInfo) {
+                      final totalSize = downloadInfo.totalSize;
+                      final bytesSoFar = downloadInfo.bytesSoFar;
+                      if (totalSize != null && totalSize > 0 && bytesSoFar != null && bytesSoFar > 0) {
+                        defaultLoadingDialog.progress = bytesSoFar / totalSize;
+                      }
+                      defaultLoadingDialog.message = "${++i} -> $downloadInfo";
+                    }).then((value) {
+                      defaultLoadingDialog.dismiss();
+                      DefaultLogger.info("download() > $value");
+                      Toast.showLong(context, "download() > $value");
+                    }, onError: (e) {
+                      defaultLoadingDialog.dismiss();
+                    });
+                  }, onError: (e) {
+                    defaultLoadingDialog.dismiss();
                   });
-                },
-              ),
-              _buildDivider(),
-              EasyListTile(
-                nameText: "dismiss()",
-                onTap: () {
-                  _loadingDialog.dismiss();
                 },
               ),
             ],
@@ -264,12 +274,6 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
       );
 
   Widget _buildDivider() => const Divider(height: 1);
-
-  @override
-  void dispose() {
-    _loadingDialog.dispose();
-    super.dispose();
-  }
 }
 
 class _MyAppViewModel extends BaseViewModel<MyApp> {
