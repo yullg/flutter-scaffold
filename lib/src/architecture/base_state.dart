@@ -4,7 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'base_view_model.dart';
 import 'generic_state.dart';
 
-abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel<T>> extends GenericState<T> {
+abstract class BaseState<T extends StatefulWidget, VM extends BaseViewModel<T>>
+    extends GenericState<T> {
   late final VM viewModel;
   late final ResultFuture<void> asyncInitializeFuture;
 

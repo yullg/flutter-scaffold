@@ -21,7 +21,8 @@ class ScaffoldLoggerOption {
         _namedDetails = Map.of(namedDetails);
 
   static bool consoleAppenderEnabled(String name) =>
-      ScaffoldConfig.loggerOption?._namedDetails[name]?.consoleAppenderEnabled ??
+      ScaffoldConfig
+          .loggerOption?._namedDetails[name]?.consoleAppenderEnabled ??
       ScaffoldConfig.loggerOption?._defaultDetails?.consoleAppenderEnabled ??
       kFallbackConsoleAppenderEnabled;
 
@@ -46,7 +47,8 @@ class ScaffoldLoggerOption {
       kFallbackLogFileLifetime;
 
   static LogFileUploader? uploader(String name) =>
-      ScaffoldConfig.loggerOption?._namedDetails[name]?.uploader ?? ScaffoldConfig.loggerOption?._defaultDetails?.uploader;
+      ScaffoldConfig.loggerOption?._namedDetails[name]?.uploader ??
+      ScaffoldConfig.loggerOption?._defaultDetails?.uploader;
 
   @override
   String toString() {
