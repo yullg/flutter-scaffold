@@ -32,7 +32,8 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
         ),
         body: FutureWidget<void>(
           future: asyncInitializeFuture,
-          waitingBuilder: (context) => const Center(child: CircularProgressIndicator()),
+          waitingBuilder: (context) =>
+              const Center(child: CircularProgressIndicator()),
           builder: (context, _) => ListView(
             children: <Widget>[
               _buildHeader("DocumentManagerPlugin"),
@@ -40,7 +41,9 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                 nameText: "openDocumentTree()",
                 descriptionText: _treeUri?.toString(),
                 onTap: () {
-                  DocumentManagerPlugin.openDocumentTree(initialLocation: _treeUri).then((value) {
+                  DocumentManagerPlugin.openDocumentTree(
+                          initialLocation: _treeUri)
+                      .then((value) {
                     setState(() {
                       _treeUri = value;
                     });
@@ -53,10 +56,12 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                 onTap: () {
                   final treeUri = _treeUri;
                   if (treeUri == null) {
-                    Toast.showShort(context, "First open a document tree");
+                    showToast("First open a document tree");
                     return;
                   }
-                  DocumentManagerPlugin.createSubTreeUri(treeUri: treeUri, displayName: "TEST").then((value) {
+                  DocumentManagerPlugin.createSubTreeUri(
+                          treeUri: treeUri, displayName: "TEST")
+                      .then((value) {
                     setState(() {
                       _subTreeUri = value;
                     });
@@ -74,7 +79,7 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                     setStateIfMounted();
                   }, onError: (e, s) {
                     DefaultLogger.error("import() > failed", e, s);
-                    Toast.showLong(context, "import() > $e");
+                    showToast("import() > $e");
                   });
                 },
               ),
@@ -87,11 +92,11 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                       files: _documents,
                     ).then((value) {
                       _documents.clear();
-                      Toast.showLong(context, "export() > $value");
+                      showToast("export() > $value");
                       setStateIfMounted();
                     }, onError: (e, s) {
                       DefaultLogger.error("export() > failed", e, s);
-                      Toast.showLong(context, "export() > $e");
+                      showToast("export() > $e");
                     });
                   },
                 ),
@@ -100,7 +105,8 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                 EasyListTile(
                   leading: Text(
                     "${i + 1}",
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   nameText: _documents[i].path,
                 ),
@@ -111,18 +117,18 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                   GallerySavePlugin.requestSavePermission().then((value) {
                     if (value) {
                       GallerySavePlugin.saveImage(_documents.first).then((_) {
-                        Toast.showLong(context, "saveImage() > success");
+                        showToast("saveImage() > success");
                         setStateIfMounted();
                       }, onError: (e, s) {
                         DefaultLogger.error("saveImage() > failed", e, s);
-                        Toast.showLong(context, "saveImage() > $e");
+                        showToast("saveImage() > $e");
                       });
                     } else {
-                      Toast.showLong(context, "no permission");
+                      showToast("no permission");
                     }
                   }, onError: (e, s) {
                     DefaultLogger.error("saveImage() > failed", e, s);
-                    Toast.showLong(context, "saveImage() > $e");
+                    showToast("saveImage() > $e");
                   });
                 },
               ),
@@ -132,46 +138,52 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                   GallerySavePlugin.requestSavePermission().then((value) {
                     if (value) {
                       GallerySavePlugin.saveVideo(_documents.first).then((_) {
-                        Toast.showLong(context, "saveVideo() > success");
+                        showToast("saveVideo() > success");
                         setStateIfMounted();
                       }, onError: (e, s) {
                         DefaultLogger.error("saveVideo() > failed", e, s);
-                        Toast.showLong(context, "saveVideo() > $e");
+                        showToast("saveVideo() > $e");
                       });
                     } else {
-                      Toast.showLong(context, "no permission");
+                      showToast("no permission");
                     }
                   }, onError: (e, s) {
                     DefaultLogger.error("saveVideo() > failed", e, s);
-                    Toast.showLong(context, "saveVideo() > $e");
+                    showToast("saveVideo() > $e");
                   });
                 },
               ),
               _buildHeader("SystemClockPlugin"),
               EasyListTile(
                 nameText: "elapsedRealtime()",
-                descriptionText: "Returns duration since boot, including time spent in sleep.",
+                descriptionText:
+                    "Returns duration since boot, including time spent in sleep.",
                 onTap: () {
                   SystemClockPlugin.elapsedRealtime().then((value) {
-                    DefaultLogger.info("elapsedRealtime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
-                    Toast.showLong(context, "elapsedRealtime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
+                    DefaultLogger.info(
+                        "elapsedRealtime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
+                    showToast(
+                        "elapsedRealtime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
                   }, onError: (e, s) {
                     DefaultLogger.error("elapsedRealtime() > failed", e, s);
-                    Toast.showLong(context, "elapsedRealtime() > $e");
+                    showToast("elapsedRealtime() > $e");
                   });
                 },
               ),
               _buildDivider(),
               EasyListTile(
                 nameText: "uptime()",
-                descriptionText: "Returns duration since boot, not counting time spent in deep sleep.",
+                descriptionText:
+                    "Returns duration since boot, not counting time spent in deep sleep.",
                 onTap: () {
                   SystemClockPlugin.uptime().then((value) {
-                    DefaultLogger.info("uptime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
-                    Toast.showLong(context, "uptime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
+                    DefaultLogger.info(
+                        "uptime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
+                    showToast(
+                        "uptime() > ${value.inHours}h${value.inMinutes % 60}m${value.inSeconds % 60}s");
                   }, onError: (e, s) {
                     DefaultLogger.error("uptime() > failed", e, s);
-                    Toast.showLong(context, "uptime() > $e");
+                    showToast("uptime() > $e");
                   });
                 },
               ),
@@ -183,12 +195,15 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                     EasyListTile(
                       nameText: "isLinkHandlingAllowed()",
                       onTap: () {
-                        AndroidDomainVerificationPlugin.isLinkHandlingAllowed().then((value) {
-                          DefaultLogger.info("isLinkHandlingAllowed() > $value");
-                          Toast.showLong(context, "isLinkHandlingAllowed() > $value");
+                        AndroidDomainVerificationPlugin.isLinkHandlingAllowed()
+                            .then((value) {
+                          DefaultLogger.info(
+                              "isLinkHandlingAllowed() > $value");
+                          showToast("isLinkHandlingAllowed() > $value");
                         }, onError: (e, s) {
-                          DefaultLogger.error("isLinkHandlingAllowed() > failed", e, s);
-                          Toast.showLong(context, "isLinkHandlingAllowed() > $e");
+                          DefaultLogger.error(
+                              "isLinkHandlingAllowed() > failed", e, s);
+                          showToast("isLinkHandlingAllowed() > $e");
                         });
                       },
                     ),
@@ -196,12 +211,14 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                     EasyListTile(
                       nameText: "getHostToStateMap()",
                       onTap: () {
-                        AndroidDomainVerificationPlugin.getHostToStateMap().then((value) {
+                        AndroidDomainVerificationPlugin.getHostToStateMap()
+                            .then((value) {
                           DefaultLogger.info("getHostToStateMap() > $value");
-                          Toast.showLong(context, "getHostToStateMap() > $value");
+                          showToast("getHostToStateMap() > $value");
                         }, onError: (e, s) {
-                          DefaultLogger.error("getHostToStateMap() > failed", e, s);
-                          Toast.showLong(context, "getHostToStateMap() > $e");
+                          DefaultLogger.error(
+                              "getHostToStateMap() > failed", e, s);
+                          showToast("getHostToStateMap() > $e");
                         });
                       },
                     ),
@@ -210,10 +227,10 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                       nameText: "toSettings()",
                       onTap: () {
                         AndroidDomainVerificationPlugin.toSettings().then((_) {
-                          Toast.showLong(context, "toSettings() > success");
+                          showToast("toSettings() > success");
                         }, onError: (e, s) {
                           DefaultLogger.error("toSettings() > failed", e, s);
-                          Toast.showLong(context, "toSettings() > $e");
+                          showToast("toSettings() > $e");
                         });
                       },
                     ),
@@ -226,23 +243,30 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
                   defaultLoadingDialog.resetMetadata();
                   defaultLoadingDialog.show(context);
                   AndroidDownloadPlugin.enqueue(
-                    uri: Uri.parse("https://www.pexels.com/download/video/27935830/"),
-                    destination: AndroidDownloadPlugin.kDestinationExternalPublicDir,
+                    uri: Uri.parse(
+                        "https://www.pexels.com/download/video/27935830/"),
+                    destination:
+                        AndroidDownloadPlugin.kDestinationExternalPublicDir,
                     filename: "example.mp4",
                     description: "Test file download",
                   ).then((downloadId) {
                     int i = 0;
-                    AndroidDownloadPlugin.waitDownload(downloadId, interval: const Duration(milliseconds: 256), onProgress: (downloadInfo) {
+                    AndroidDownloadPlugin.waitDownload(downloadId,
+                        interval: const Duration(milliseconds: 256),
+                        onProgress: (downloadInfo) {
                       final totalSize = downloadInfo.totalSize;
                       final bytesSoFar = downloadInfo.bytesSoFar;
-                      if (totalSize != null && totalSize > 0 && bytesSoFar != null && bytesSoFar > 0) {
+                      if (totalSize != null &&
+                          totalSize > 0 &&
+                          bytesSoFar != null &&
+                          bytesSoFar > 0) {
                         defaultLoadingDialog.progress = bytesSoFar / totalSize;
                       }
                       defaultLoadingDialog.message = "${++i} -> $downloadInfo";
                     }).then((value) {
                       defaultLoadingDialog.dismiss();
                       DefaultLogger.info("download() > $value");
-                      Toast.showLong(context, "download() > $value");
+                      showToast("download() > $value");
                     }, onError: (e) {
                       defaultLoadingDialog.dismiss();
                     });
@@ -260,7 +284,7 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
 
   Widget _buildHeader(String name) => Container(
         width: double.infinity,
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
         alignment: AlignmentDirectional.centerStart,
         child: Text(
@@ -274,6 +298,10 @@ class _MyAppState extends BaseState<MyApp, _MyAppViewModel> {
       );
 
   Widget _buildDivider() => const Divider(height: 1);
+
+  void showToast(String message) {
+    Toast.showLong(context, message);
+  }
 }
 
 class _MyAppViewModel extends BaseViewModel<MyApp> {

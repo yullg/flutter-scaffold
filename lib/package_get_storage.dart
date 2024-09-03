@@ -1,0 +1,1 @@
+export 'package:get_storage/get_storage.dart';
