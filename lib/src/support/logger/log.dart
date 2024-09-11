@@ -1,5 +1,3 @@
-import 'dart:io';
-
 enum LogLevel { trace, debug, info, warn, error, fatal }
 
 class Log {
@@ -11,7 +9,15 @@ class Log {
   final int processId;
   final DateTime time;
 
-  const Log(this.name, this.level, this.message, this.error, this.trace, this.processId, this.time);
+  const Log({
+    required this.name,
+    required this.level,
+    this.message,
+    this.error,
+    this.trace,
+    required this.processId,
+    required this.time,
+  });
 
   @override
   bool operator ==(Object other) =>
@@ -39,30 +45,5 @@ class Log {
   @override
   String toString() {
     return 'Log{name: $name, level: $level, message: $message, error: $error, trace: $trace, processId: $processId, time: $time}';
-  }
-}
-
-class LogFile {
-  final String name;
-  final DateTime time;
-  final File file;
-
-  const LogFile(this.name, this.time, this.file);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is LogFile &&
-          runtimeType == other.runtimeType &&
-          name == other.name &&
-          time == other.time &&
-          file == other.file;
-
-  @override
-  int get hashCode => name.hashCode ^ time.hashCode ^ file.hashCode;
-
-  @override
-  String toString() {
-    return 'LogFile{name: $name, time: $time, file: $file}';
   }
 }

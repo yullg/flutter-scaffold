@@ -39,6 +39,7 @@ export 'src/support/database/database_schema.dart';
 export 'src/support/database/global_database.dart';
 export 'src/support/logger/default_logger.dart';
 export 'src/support/logger/log.dart';
+export 'src/support/logger/log_file_manager.dart';
 export 'src/support/logger/log_file_uploader.dart';
 export 'src/support/logger/logger.dart';
 export 'src/support/preference/default_preference.dart';

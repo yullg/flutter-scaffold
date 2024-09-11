@@ -7,10 +7,6 @@ class ScaffoldConfig {
   static const kCacheManagerKeyGlobal = "yullg_cache_manager_global";
   static const kPreferenceNameDefault = "yullg_preference_default";
   static const kPreferenceNameScaffold = "yullg_preference_scaffold";
-  static const kLoggerNameDefault = "yullg_logger_default";
-  static const kLoggerNameScaffold = "yullg_logger_scaffold";
-  static const kLoggerDirectory = "yullg/log";
-  static const kLoggerDirectoryUpload = "yullg/log/upload";
   static const kDocumentManagerDirectory = "yullg/document";
   static const kSendCodeNameDefault = "yullg_send_code_default";
 

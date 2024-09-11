@@ -4,23 +4,72 @@ import '../../config/scaffold_logger_option.dart';
 import 'log.dart';
 import 'log_appender.dart';
 
-/// 日志记录器
 class Logger {
   final String name;
 
   const Logger(this.name);
 
-  void trace(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.trace, message, error, trace, pid, DateTime.now()));
+  void trace(Object? message, [Object? error, StackTrace? trace]) => log(Log(
+        name: name,
+        level: LogLevel.trace,
+        message: message,
+        error: error,
+        trace: trace,
+        processId: pid,
+        time: DateTime.now(),
+      ));
 
-  void debug(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.debug, message, error, trace, pid, DateTime.now()));
+  void debug(Object? message, [Object? error, StackTrace? trace]) => log(Log(
+        name: name,
+        level: LogLevel.debug,
+        message: message,
+        error: error,
+        trace: trace,
+        processId: pid,
+        time: DateTime.now(),
+      ));
 
-  void info(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.info, message, error, trace, pid, DateTime.now()));
+  void info(Object? message, [Object? error, StackTrace? trace]) => log(Log(
+        name: name,
+        level: LogLevel.info,
+        message: message,
+        error: error,
+        trace: trace,
+        processId: pid,
+        time: DateTime.now(),
+      ));
 
-  void warn(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.warn, message, error, trace, pid, DateTime.now()));
+  void warn(Object? message, [Object? error, StackTrace? trace]) => log(Log(
+        name: name,
+        level: LogLevel.warn,
+        message: message,
+        error: error,
+        trace: trace,
+        processId: pid,
+        time: DateTime.now(),
+      ));
 
-  void error(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.error, message, error, trace, pid, DateTime.now()));
+  void error(Object? message, [Object? error, StackTrace? trace]) => log(Log(
+        name: name,
+        level: LogLevel.error,
+        message: message,
+        error: error,
+        trace: trace,
+        processId: pid,
+        time: DateTime.now(),
+      ));
 
-  void fatal(Object? message, [Object? error, StackTrace? trace]) => log(Log(name, LogLevel.fatal, message, error, trace, pid, DateTime.now()));
+  void fatal(Object? message, [Object? error, StackTrace? trace]) => log(Log(
+        name: name,
+        level: LogLevel.fatal,
+        message: message,
+        error: error,
+        trace: trace,
+        processId: pid,
+        time: DateTime.now(),
+      ));
+
+  void log(Log log) => LogAppender.doAppend(log);
 
   bool isTraceEnabled() => isEnabled(LogLevel.trace);
 
@@ -34,22 +83,20 @@ class Logger {
 
   bool isFatalEnabled() => isEnabled(LogLevel.fatal);
 
-  /// 记录日志。
-  void log(Log log) {
-    LogAppender.doAppend(log).ignore();
-  }
-
-  /// 检查指定的日志级别是否启用。
   bool isEnabled(LogLevel logLevel) {
     try {
-      return (ScaffoldLoggerOption.consoleAppenderEnabled(name) && ScaffoldLoggerOption.consoleAppenderLevel(name).index <= logLevel.index) ||
-          (ScaffoldLoggerOption.fileAppenderEnabled(name) && ScaffoldLoggerOption.fileAppenderLevel(name).index <= logLevel.index);
+      return (ScaffoldLoggerOption.consoleAppenderEnabled(name) &&
+              ScaffoldLoggerOption.consoleAppenderLevel(name).index <=
+                  logLevel.index) ||
+          (ScaffoldLoggerOption.fileAppenderEnabled(name) &&
+              ScaffoldLoggerOption.fileAppenderLevel(name).index <=
+                  logLevel.index);
     } catch (e) {
       return false;
     }
   }
 
-  /// 生成日志消息的便捷方法，同时也为日志消息约定一致的格式。
+  /// 为日志消息约定一致的格式。
   static String message({
     String library = "undefined",
     String? part,
@@ -87,7 +134,7 @@ class Logger {
     return sb.toString();
   }
 
-  /// 防止toString()抛出异常
+  /// 防止toString()出错
   static String _safeToString(Object? obj) {
     try {
       return obj.toString();

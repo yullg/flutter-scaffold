@@ -5,6 +5,10 @@ import '../support/logger/log_file_uploader.dart';
 import 'scaffold_config.dart';
 
 class ScaffoldLoggerOption {
+  static const kLoggerNameDefault = "yullg_logger_default";
+  static const kLoggerNameScaffold = "yullg_logger_scaffold";
+  static const kLogDirectory = "yullg/log";
+  static const kLogUploadDirectory = "yullg/log/upload";
   static const kFallbackConsoleAppenderEnabled = kDebugMode;
   static const kFallbackConsoleAppenderLevel = LogLevel.trace;
   static const kFallbackFileAppenderEnabled = true;
