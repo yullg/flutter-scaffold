@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../../architecture/generic_state.dart';
+import '../../helper/format_helper.dart';
 import '../../plugin/document_manager_plugin.dart';
 import '../popup/scaffold_messengers.dart';
 import '../widget/easy_list_tile.dart';
@@ -156,6 +157,20 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
             return EasyListTile(
               leadingIcon: Icons.description_outlined,
               nameText: p.basename(entity.path),
+              description: FutureWidget<({int length, DateTime lastModified})>(
+                future: () async {
+                  final length = await entity.length();
+                  final lastModified = await entity.lastModified();
+                  return (length: length, lastModified: lastModified);
+                }(),
+                builder: (context, data) => Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(_formatDateTime(data.lastModified)),
+                    Text(_formatBytes(data.length)),
+                  ],
+                ),
+              ),
               trailing: IconButton(
                 onPressed: () {
                   DocumentManagerPlugin.export(
@@ -185,5 +200,23 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
         separatorBuilder: (context, index) => const Divider(),
       ),
     );
+  }
+}
+
+String _formatDateTime(DateTime time) =>
+    "${time.year}-${time.month.toString().padLeft(2, '0')}-${time.day.toString().padLeft(2, '0')} ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')}";
+
+String _formatBytes(int bytes) {
+  const int kB = 1024;
+  const int mB = 1024 * kB;
+  const int gB = 1024 * mB;
+  if (bytes < kB) {
+    return '$bytes B';
+  } else if (bytes < mB) {
+    return '${FormatHelper.printNum(bytes / kB, maxFractionDigits: 2)} KB';
+  } else if (bytes < gB) {
+    return '${FormatHelper.printNum(bytes / mB, maxFractionDigits: 2)} MB';
+  } else {
+    return '${FormatHelper.printNum(bytes / gB, maxFractionDigits: 2)} GB';
   }
 }
