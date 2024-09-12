@@ -141,64 +141,79 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
       }(),
       waitingBuilder: (context) =>
           const Center(child: CircularProgressIndicator()),
-      builder: (context, entities) => ListView.separated(
-        itemCount: entities.length,
-        itemBuilder: (context, index) {
-          final entity = entities[index];
-          if (entity is Directory) {
-            return EasyListTile(
-              leadingIcon: Icons.folder_outlined,
-              nameText: p.basename(entity.path),
-              onTap: () {
-                _pushDirectory(entity);
-              },
-            );
-          } else if (entity is File) {
-            return EasyListTile(
-              leadingIcon: Icons.description_outlined,
-              nameText: p.basename(entity.path),
-              description: FutureWidget<({int length, DateTime lastModified})>(
-                future: () async {
-                  final length = await entity.length();
-                  final lastModified = await entity.lastModified();
-                  return (length: length, lastModified: lastModified);
-                }(),
-                builder: (context, data) => Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(_formatDateTime(data.lastModified)),
-                    Text(_formatBytes(data.length)),
-                  ],
-                ),
+      builder: (context, entities) {
+        if (entities.isNotEmpty) {
+          return ListView.separated(
+            itemCount: entities.length,
+            itemBuilder: (context, index) {
+              final entity = entities[index];
+              if (entity is Directory) {
+                return EasyListTile(
+                  leadingIcon: Icons.folder_outlined,
+                  nameText: p.basename(entity.path),
+                  onTap: () {
+                    _pushDirectory(entity);
+                  },
+                );
+              } else if (entity is File) {
+                return EasyListTile(
+                  leadingIcon: Icons.description_outlined,
+                  nameText: p.basename(entity.path),
+                  description:
+                      FutureWidget<({int length, DateTime lastModified})>(
+                    future: () async {
+                      final length = await entity.length();
+                      final lastModified = await entity.lastModified();
+                      return (length: length, lastModified: lastModified);
+                    }(),
+                    builder: (context, data) => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(_formatDateTime(data.lastModified)),
+                        Text(_formatBytes(data.length)),
+                      ],
+                    ),
+                  ),
+                  trailing: IconButton(
+                    onPressed: () {
+                      DocumentManagerPlugin.export(
+                        files: <File>[entity],
+                      ).then((_) {
+                        if (context.mounted) {
+                          ScaffoldMessengers.showSnackBar(context,
+                              contentText: "File downloaded successfully!");
+                        }
+                      }, onError: (e) {
+                        if (context.mounted) {
+                          ScaffoldMessengers.showErrorSnackBar(context,
+                              message: "Operation failed, please try again!");
+                        }
+                      });
+                    },
+                    icon: const Icon(Icons.download_outlined),
+                  ),
+                );
+              } else {
+                return EasyListTile(
+                  leadingIcon: Icons.help_center_outlined,
+                  nameText: p.basename(entity.path),
+                );
+              }
+            },
+            separatorBuilder: (context, index) => const Divider(),
+          );
+        } else {
+          return Center(
+            child: Text(
+              "No files",
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).hintColor,
               ),
-              trailing: IconButton(
-                onPressed: () {
-                  DocumentManagerPlugin.export(
-                    files: <File>[entity],
-                  ).then((_) {
-                    if (context.mounted) {
-                      ScaffoldMessengers.showSnackBar(context,
-                          contentText: "File downloaded successfully!");
-                    }
-                  }, onError: (e) {
-                    if (context.mounted) {
-                      ScaffoldMessengers.showErrorSnackBar(context,
-                          message: "Operation failed, please try again!");
-                    }
-                  });
-                },
-                icon: const Icon(Icons.download_outlined),
-              ),
-            );
-          } else {
-            return EasyListTile(
-              leadingIcon: Icons.help_center_outlined,
-              nameText: p.basename(entity.path),
-            );
-          }
-        },
-        separatorBuilder: (context, index) => const Divider(),
-      ),
+            ),
+          );
+        }
+      },
     );
   }
 }
