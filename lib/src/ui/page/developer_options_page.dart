@@ -5,6 +5,7 @@ import '../popup/text_input_dialog.dart';
 import '../popup/toast.dart';
 import '../widget/easy_list_tile.dart';
 import 'developer_files_page.dart';
+import 'developer_preference_page.dart';
 
 class DeveloperOptionsPage extends StatelessWidget {
   const DeveloperOptionsPage({super.key});
@@ -33,6 +34,18 @@ class DeveloperOptionsPage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const DeveloperFilesPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  EasyListTile(
+                    nameText: "Preference",
+                    trailingIcon: Icons.arrow_forward_ios,
+                    onTap: () {
+                      Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const DeveloperPreferencePage(),
                         ),
                       );
                     },

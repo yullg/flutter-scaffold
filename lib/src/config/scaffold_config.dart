@@ -6,8 +6,6 @@ import 'scaffold_logger_option.dart';
 
 class ScaffoldConfig {
   static const kCacheManagerKeyGlobal = "yullg_cache_manager_global";
-  static const kPreferenceNameDefault = "yullg_preference_default";
-  static const kPreferenceNameScaffold = "yullg_preference_scaffold";
   static const kDocumentManagerDirectory = "yullg/document";
   static const kSendCodeNameDefault = "yullg_send_code_default";
 

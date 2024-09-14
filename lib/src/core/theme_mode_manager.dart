@@ -4,7 +4,8 @@ import 'package:scaffold/scaffold_lang.dart';
 
 import '../internal/scaffold_preference.dart';
 
-class ThemeModeManager extends ChangeNotifier implements ValueListenable<ThemeMode?> {
+class ThemeModeManager extends ChangeNotifier
+    implements ValueListenable<ThemeMode?> {
   static const kSpKey = "yg_theme_mode";
 
   static ThemeModeManager? _instance;
@@ -20,9 +21,10 @@ class ThemeModeManager extends ChangeNotifier implements ValueListenable<ThemeMo
 
   Future<ThemeMode?> load() async {
     ThemeMode? themeMode;
-    final themeModeName = await ScaffoldPreference.getString(kSpKey);
+    final themeModeName = await ScaffoldPreference().getString(kSpKey);
     if (themeModeName != null) {
-      themeMode = ThemeMode.values.firstWhereOrNull((it) => it.name == themeModeName);
+      themeMode =
+          ThemeMode.values.firstWhereOrNull((it) => it.name == themeModeName);
     }
     if (_value != themeMode) {
       _value = themeMode;
@@ -33,9 +35,9 @@ class ThemeModeManager extends ChangeNotifier implements ValueListenable<ThemeMo
 
   Future<void> save(ThemeMode? themeMode) async {
     if (themeMode != null) {
-      await ScaffoldPreference.setString(kSpKey, themeMode.name);
+      await ScaffoldPreference().setString(kSpKey, themeMode.name);
     } else {
-      await ScaffoldPreference.remove(kSpKey);
+      await ScaffoldPreference().remove(kSpKey);
     }
     if (_value != themeMode) {
       _value = themeMode;

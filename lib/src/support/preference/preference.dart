@@ -5,31 +5,37 @@ class Preference {
 
   Preference(this.name);
 
-  Future<Iterable<String>> getKeys() async => (await _sp).getKeys();
+  Future<Iterable<String>> getKeys() => _sp.then((it) => it.getKeys());
 
-  Future<bool?> getBool(String key) async => (await _sp).read(key);
+  Future<bool?> getBool(String key) => _sp.then((it) => it.read(key));
 
-  Future<int?> getInt(String key) async => (await _sp).read(key);
+  Future<int?> getInt(String key) => _sp.then((it) => it.read(key));
 
-  Future<double?> getDouble(String key) async => (await _sp).read(key);
+  Future<double?> getDouble(String key) => _sp.then((it) => it.read(key));
 
-  Future<String?> getString(String key) async => (await _sp).read(key);
+  Future<String?> getString(String key) => _sp.then((it) => it.read(key));
 
-  Future<List<String>?> getStringList(String key) async => (await _sp).read(key);
+  Future<List<String>?> getStringList(String key) =>
+      _sp.then((it) => it.read(key));
 
-  Future<void> setBool(String key, bool value) async => (await _sp).write(key, value);
+  Future<void> setBool(String key, bool value) =>
+      _sp.then((it) => it.write(key, value));
 
-  Future<void> setInt(String key, int value) async => (await _sp).write(key, value);
+  Future<void> setInt(String key, int value) =>
+      _sp.then((it) => it.write(key, value));
 
-  Future<void> setDouble(String key, double value) async => (await _sp).write(key, value);
+  Future<void> setDouble(String key, double value) =>
+      _sp.then((it) => it.write(key, value));
 
-  Future<void> setString(String key, String value) async => (await _sp).write(key, value);
+  Future<void> setString(String key, String value) =>
+      _sp.then((it) => it.write(key, value));
 
-  Future<void> setStringList(String key, List<String> value) async => (await _sp).write(key, value);
+  Future<void> setStringList(String key, List<String> value) =>
+      _sp.then((it) => it.write(key, value));
 
-  Future<void> remove(String key) async => (await _sp).remove(key);
+  Future<void> remove(String key) => _sp.then((it) => it.remove(key));
 
-  Future<void> clear() async => (await _sp).erase();
+  Future<void> clear() => _sp.then((it) => it.erase());
 
   GetStorage? _storage;
 

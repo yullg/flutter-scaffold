@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../architecture/generic_state.dart';
 import '../../helper/format_helper.dart';
+import '../../internal/scaffold_logger.dart';
 import '../../plugin/document_manager_plugin.dart';
 import '../popup/scaffold_messengers.dart';
 import '../widget/easy_list_tile.dart';
@@ -40,8 +41,9 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
               message: "Directory does not exist!");
         }
       }
-    }, onError: (e) {
+    }, onError: (e, s) {
       defaultLoadingDialog.dismiss();
+      ScaffoldLogger.error(null, e, s);
       if (context.mounted) {
         ScaffoldMessengers.showErrorSnackBar(context,
             message: "Operation failed, please try again!");
@@ -132,12 +134,17 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
   Widget _buildBody(BuildContext context, Directory directory) {
     return FutureWidget<List<FileSystemEntity>>(
       future: () async {
-        final entities = <FileSystemEntity>[];
-        await for (final entity
-            in directory.list(recursive: false, followLinks: false)) {
-          entities.add(entity);
+        try {
+          final entities = <FileSystemEntity>[];
+          await for (final entity
+              in directory.list(recursive: false, followLinks: false)) {
+            entities.add(entity);
+          }
+          return entities;
+        } catch (e, s) {
+          ScaffoldLogger.error(null, e, s);
+          rethrow;
         }
-        return entities;
       }(),
       waitingBuilder: (context) =>
           const Center(child: CircularProgressIndicator()),
@@ -162,9 +169,14 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
                   description:
                       FutureWidget<({int length, DateTime lastModified})>(
                     future: () async {
-                      final length = await entity.length();
-                      final lastModified = await entity.lastModified();
-                      return (length: length, lastModified: lastModified);
+                      try {
+                        final length = await entity.length();
+                        final lastModified = await entity.lastModified();
+                        return (length: length, lastModified: lastModified);
+                      } catch (e, s) {
+                        ScaffoldLogger.error(null, e, s);
+                        rethrow;
+                      }
                     }(),
                     builder: (context, data) => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -178,12 +190,13 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
                     onPressed: () {
                       DocumentManagerPlugin.export(
                         files: <File>[entity],
-                      ).then((_) {
-                        if (context.mounted) {
+                      ).then((value) {
+                        if (context.mounted && value.isNotEmpty) {
                           ScaffoldMessengers.showSnackBar(context,
                               contentText: "File downloaded successfully!");
                         }
-                      }, onError: (e) {
+                      }, onError: (e, s) {
+                        ScaffoldLogger.error(null, e, s);
                         if (context.mounted) {
                           ScaffoldMessengers.showErrorSnackBar(context,
                               message: "Operation failed, please try again!");
