@@ -44,6 +44,7 @@ export 'src/support/logger/log_file_manager.dart';
 export 'src/support/logger/log_file_uploader.dart';
 export 'src/support/logger/logger.dart';
 export 'src/support/preference/default_preference.dart';
+export 'src/support/preference/developer_preference.dart';
 export 'src/support/preference/preference.dart';
 export 'src/support/storage/storage_directory.dart';
 export 'src/support/storage/storage_file.dart';
