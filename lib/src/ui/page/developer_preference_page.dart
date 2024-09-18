@@ -7,6 +7,7 @@ import '../../helper/format_helper.dart';
 import '../../helper/string_helper.dart';
 import '../../internal/scaffold_logger.dart';
 import '../../support/preference/developer_preference.dart';
+import '../popup/alert_dialog.dart';
 import '../popup/scaffold_messengers.dart';
 import '../widget/easy_switch_list_tile.dart';
 
@@ -25,41 +26,58 @@ class _DeveloperPreferenceState extends GenericState<DeveloperPreferencePage> {
     ];
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () {
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            }
-          },
-        ),
         title: const Text("Preference"),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              showAlertDialog<bool>(
+                context: context,
+                titleText: "Confirmation",
+                contentText: "Are you sure you want to reset all preferences?",
+                actions: [
+                  AlertDialogAction(value: false, childText: "Cancel"),
+                  AlertDialogAction(
+                      value: true, childText: "OK", isDestructiveAction: true),
+                ],
+              ).then((value) {
+                if (value != true) return;
+                DeveloperPreference().clear().then((_) {
+                  setStateIfMounted();
+                  _showSuccessSnackBar();
+                }, onError: (e, s) {
+                  ScaffoldLogger.error(null, e, s);
+                  _showFailedSnackBar();
+                });
+              });
+            },
+            style: ButtonStyle(
+              foregroundColor: WidgetStatePropertyAll(
+                  Theme.of(context).appBarTheme.foregroundColor ??
+                      Theme.of(context).colorScheme.onSurface),
+            ),
+            icon: const Icon(Icons.cleaning_services),
+            label: const Text("Reset"),
+          ),
+        ],
       ),
-      body: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, _) {
-          if (didPop || defaultLoadingDialog.isShowing) return;
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          }
-        },
-        child: preferenceFiledList.isNotEmpty
-            ? ListView.builder(
-                itemCount: preferenceFiledList.length,
-                itemBuilder: (context, index) {
-                  final preferenceFiled = preferenceFiledList[index];
-                  return _DeveloperPreferenceFieldWidget(preferenceFiled);
-                },
-              )
-            : Center(
-                child: Text(
-                  "No preference",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).hintColor,
-                  ),
+      body: preferenceFiledList.isNotEmpty
+          ? ListView.builder(
+              key: UniqueKey(),
+              itemCount: preferenceFiledList.length,
+              itemBuilder: (context, index) {
+                final preferenceFiled = preferenceFiledList[index];
+                return _DeveloperPreferenceFieldWidget(preferenceFiled);
+              },
+            )
+          : Center(
+              child: Text(
+                "No preference",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).hintColor,
                 ),
               ),
-      ),
+            ),
     );
   }
 }
@@ -154,7 +172,7 @@ class _DeveloperPreferenceFieldState
               helperMaxLines: 999,
             ),
             onSubmitted: (value) {
-              final newValue = FormatHelper.tryParseInt(value);
+              final newValue = FormatHelper.tryParseInt(value.trim());
               if (newValue != null) {
                 DeveloperPreference()
                     .setInt(widget.preferenceFiled.key, newValue)
@@ -191,7 +209,7 @@ class _DeveloperPreferenceFieldState
               helperMaxLines: 999,
             ),
             onSubmitted: (value) {
-              final newValue = FormatHelper.tryParseDouble(value);
+              final newValue = FormatHelper.tryParseDouble(value.trim());
               if (newValue != null) {
                 DeveloperPreference()
                     .setDouble(widget.preferenceFiled.key, newValue)
@@ -254,6 +272,14 @@ class _DeveloperPreferenceFieldState
     };
   }
 
+  @override
+  void dispose() {
+    textEditingController?.dispose();
+    super.dispose();
+  }
+}
+
+extension _ShowSnackBar on State {
   void _showSuccessSnackBar() {
     if (mounted) {
       ScaffoldMessengers.showSnackBar(context,
@@ -266,11 +292,5 @@ class _DeveloperPreferenceFieldState
       ScaffoldMessengers.showErrorSnackBar(context,
           message: "Operation failed, please try again!");
     }
-  }
-
-  @override
-  void dispose() {
-    textEditingController?.dispose();
-    super.dispose();
   }
 }

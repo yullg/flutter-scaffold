@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:scaffold/scaffold_lang.dart';
 
 import '../../architecture/generic_state.dart';
 import '../../helper/format_helper.dart';
@@ -10,7 +11,6 @@ import '../../internal/scaffold_logger.dart';
 import '../../plugin/document_manager_plugin.dart';
 import '../popup/scaffold_messengers.dart';
 import '../widget/easy_list_tile.dart';
-import '../widget/future_widget.dart';
 
 class DeveloperFilesPage extends StatefulWidget {
   const DeveloperFilesPage({super.key});
@@ -20,221 +20,267 @@ class DeveloperFilesPage extends StatefulWidget {
 }
 
 class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
-  final _directoryStack = <Directory>[];
+  final _directoryStack = <_DirectoryWrapper>[];
+  final _entities = <_FileSystemEntityWrapper>[];
+  final _selectedFiles = <_FileWrapper>[];
 
-  void _pushDirectory(Directory directory) {
-    _directoryStack.add(directory);
-    setStateIfMounted();
+  @override
+  void initState() {
+    super.initState();
+    _refreshEntities().ignore();
   }
 
-  void _asyncPushDirectory(
-      BuildContext context, Future<Directory?> directoryFuture) {
-    defaultLoadingDialog.resetMetadata();
-    defaultLoadingDialog.show(context);
-    directoryFuture.then((value) {
-      defaultLoadingDialog.dismiss();
-      if (value != null) {
-        _pushDirectory(value);
-      } else {
-        if (context.mounted) {
-          ScaffoldMessengers.showErrorSnackBar(context,
-              message: "Directory does not exist!");
-        }
-      }
-    }, onError: (e, s) {
-      defaultLoadingDialog.dismiss();
-      ScaffoldLogger.error(null, e, s);
-      if (context.mounted) {
-        ScaffoldMessengers.showErrorSnackBar(context,
-            message: "Operation failed, please try again!");
-      }
-    });
-  }
-
-  void _back() {
+  Future<void> _back() async {
     if (_directoryStack.isNotEmpty) {
       _directoryStack.removeLast();
-      setStateIfMounted();
+      await _refreshEntities();
     } else if (Navigator.canPop(context)) {
       Navigator.pop(context);
     }
   }
 
+  void _enterDirectory(_DirectoryWrapper directoryWrapper) {
+    _directoryStack.add(directoryWrapper);
+    _refreshEntities().ignore();
+  }
+
+  Future<void> _refreshEntities() async {
+    try {
+      _entities.clear();
+      final directory = _directoryStack.lastOrNull?.entity;
+      final entities = <_FileSystemEntityWrapper>[];
+      if (directory != null) {
+        await for (final entity
+            in directory.list(recursive: false, followLinks: false)) {
+          if (entity is Directory) {
+            entities.add(_DirectoryWrapper(
+              entity: entity,
+              name: p.basename(entity.path),
+            ));
+          } else if (entity is File) {
+            entities.add(_FileWrapper(
+              entity: entity,
+              name: p.basename(entity.path),
+              length: await entity.length().catchErrorToNull(),
+              lastModified: await entity.lastModified().catchErrorToNull(),
+            ));
+          } else {
+            entities.add(_FileSystemEntityWrapper(
+              entity: entity,
+              name: p.basename(entity.path),
+            ));
+          }
+        }
+      } else {
+        if (Platform.isAndroid) {
+          entities.add(_DirectoryWrapper(
+            entity: await getApplicationSupportDirectory()
+                .then((value) => value.parent),
+            name: "Internal Storage",
+          ));
+          final externalStorageDirectory = await getExternalStorageDirectory()
+              .then((value) => value?.parent);
+          if (externalStorageDirectory != null) {
+            entities.add(_DirectoryWrapper(
+              entity: externalStorageDirectory,
+              name: "External Storage",
+            ));
+          }
+        } else if (Platform.isIOS || Platform.isMacOS) {
+          entities.add(_DirectoryWrapper(
+            entity: await getApplicationDocumentsDirectory(),
+            name: "Application Documents",
+          ));
+          entities.add(_DirectoryWrapper(
+            entity: await getApplicationSupportDirectory(),
+            name: "Application Support",
+          ));
+          entities.add(_DirectoryWrapper(
+            entity: await getApplicationCacheDirectory(),
+            name: "Application Caches",
+          ));
+        }
+      }
+      _entities.addAll(entities);
+    } catch (e, s) {
+      ScaffoldLogger.error(null, e, s);
+      rethrow;
+    } finally {
+      setStateIfMounted();
+    }
+  }
+
+  void _toggleSelectedFile(_FileWrapper fileWrapper) {
+    if (_selectedFiles.contains(fileWrapper)) {
+      _selectedFiles.remove(fileWrapper);
+    } else {
+      _selectedFiles.add(fileWrapper);
+    }
+    setStateIfMounted();
+  }
+
+  void _clearSelectedFiles() {
+    _selectedFiles.clear();
+    setStateIfMounted();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final directory = _directoryStack.lastOrNull;
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: _back),
-        title: Text(directory != null ? p.basename(directory.path) : "Files"),
+        leading: BackButton(onPressed: () => _back().ignore),
+        title: Text(_directoryStack.lastOrNull?.name ?? "Files"),
       ),
       body: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, _) {
-          if (didPop || defaultLoadingDialog.isShowing) return;
-          _back();
+          if (didPop) return;
+          _back().ignore();
         },
-        child: directory == null
-            ? _buildRootBody(context)
-            : _buildBody(context, directory),
+        child: _entities.isNotEmpty
+            ? ListView.separated(
+                itemCount: _entities.length,
+                itemBuilder: (context, index) {
+                  final entity = _entities[index];
+                  if (entity is _DirectoryWrapper) {
+                    return EasyListTile(
+                      leadingIcon: Icons.folder_outlined,
+                      nameText: entity.name,
+                      onTap: () => _enterDirectory(entity),
+                    );
+                  } else if (entity is _FileWrapper) {
+                    return EasyListTile(
+                      leadingIcon: Icons.description_outlined,
+                      nameText: entity.name,
+                      description: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(_formatDateTime(entity.lastModified)),
+                          Text(_formatBytes(entity.length)),
+                        ],
+                      ),
+                      trailing: _selectedFiles.isEmpty
+                          ? IconButton(
+                              onPressed: () {
+                                _export([entity]).then((value) {
+                                  if (value) {
+                                    _showSuccessSnackBar();
+                                  }
+                                }, onError: (_) {
+                                  _showFailedSnackBar();
+                                });
+                              },
+                              icon: const Icon(Icons.download_outlined),
+                            )
+                          : Icon(_selectedFiles.contains(entity)
+                              ? Icons.check_box_outlined
+                              : Icons.check_box_outline_blank),
+                      onTap: _selectedFiles.isNotEmpty
+                          ? () => _toggleSelectedFile(entity)
+                          : null,
+                      onLongPress: () => _toggleSelectedFile(entity),
+                    );
+                  } else {
+                    return EasyListTile(
+                      leadingIcon: Icons.help_center_outlined,
+                      nameText: entity.name,
+                    );
+                  }
+                },
+                separatorBuilder: (context, index) => const Divider(height: 0),
+              )
+            : Center(
+                child: Text(
+                  "No files",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).hintColor,
+                  ),
+                ),
+              ),
+      ),
+      bottomNavigationBar: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: _selectedFiles.isNotEmpty
+            ? Container(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                padding: const EdgeInsetsDirectional.fromSTEB(24, 6, 16, 6),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "${_selectedFiles.length} selected",
+                        style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _export(_selectedFiles).then((value) {
+                          if (value) {
+                            _clearSelectedFiles();
+                            _showSuccessSnackBar();
+                          }
+                        }, onError: (_) {
+                          _showFailedSnackBar();
+                        });
+                      },
+                      icon: const Icon(Icons.download_outlined),
+                      tooltip: "Download",
+                    ),
+                    IconButton(
+                      onPressed: () => _clearSelectedFiles(),
+                      icon: const Icon(Icons.clear),
+                      tooltip: "Cancel",
+                    )
+                  ],
+                ),
+              )
+            : const SizedBox.shrink(),
       ),
     );
   }
 
-  Widget _buildRootBody(BuildContext context) {
-    final rootDirectoryWidgets = <Widget>[];
-    if (Platform.isAndroid) {
-      rootDirectoryWidgets.add(EasyListTile(
-        nameText: "Internal Storage",
-        trailingIcon: Icons.arrow_forward_ios,
-        onTap: () {
-          _asyncPushDirectory(context,
-              getApplicationSupportDirectory().then((value) => value.parent));
-        },
-      ));
-      rootDirectoryWidgets.add(EasyListTile(
-        nameText: "External Storage",
-        trailingIcon: Icons.arrow_forward_ios,
-        onTap: () {
-          _asyncPushDirectory(context,
-              getExternalStorageDirectory().then((value) => value?.parent));
-        },
-      ));
-    } else if (Platform.isIOS || Platform.isMacOS) {
-      rootDirectoryWidgets.add(EasyListTile(
-        nameText: "Documents",
-        trailingIcon: Icons.arrow_forward_ios,
-        onTap: () {
-          _asyncPushDirectory(context, getApplicationDocumentsDirectory());
-        },
-      ));
-      rootDirectoryWidgets.add(EasyListTile(
-        nameText: "Application Support",
-        trailingIcon: Icons.arrow_forward_ios,
-        onTap: () {
-          _asyncPushDirectory(context, getApplicationSupportDirectory());
-        },
-      ));
-      rootDirectoryWidgets.add(EasyListTile(
-        nameText: "Application Caches",
-        trailingIcon: Icons.arrow_forward_ios,
-        onTap: () {
-          _asyncPushDirectory(context, getApplicationCacheDirectory());
-        },
-      ));
+  Future<bool> _export(List<_FileWrapper> fileWrappers) async {
+    try {
+      final files = fileWrappers.map((e) => e.entity).toList();
+      final uris = await DocumentManagerPlugin.export(
+        files: files,
+      );
+      return uris.isNotEmpty;
+    } catch (e, s) {
+      ScaffoldLogger.error(null, e, s);
+      rethrow;
     }
-    return ListView(
-      children: ListTile.divideTiles(
-        context: context,
-        tiles: rootDirectoryWidgets,
-      ).toList(),
-    );
-  }
-
-  Widget _buildBody(BuildContext context, Directory directory) {
-    return FutureWidget<List<FileSystemEntity>>(
-      future: () async {
-        try {
-          final entities = <FileSystemEntity>[];
-          await for (final entity
-              in directory.list(recursive: false, followLinks: false)) {
-            entities.add(entity);
-          }
-          return entities;
-        } catch (e, s) {
-          ScaffoldLogger.error(null, e, s);
-          rethrow;
-        }
-      }(),
-      waitingBuilder: (context) =>
-          const Center(child: CircularProgressIndicator()),
-      builder: (context, entities) {
-        if (entities.isNotEmpty) {
-          return ListView.separated(
-            itemCount: entities.length,
-            itemBuilder: (context, index) {
-              final entity = entities[index];
-              if (entity is Directory) {
-                return EasyListTile(
-                  leadingIcon: Icons.folder_outlined,
-                  nameText: p.basename(entity.path),
-                  onTap: () {
-                    _pushDirectory(entity);
-                  },
-                );
-              } else if (entity is File) {
-                return EasyListTile(
-                  leadingIcon: Icons.description_outlined,
-                  nameText: p.basename(entity.path),
-                  description:
-                      FutureWidget<({int length, DateTime lastModified})>(
-                    future: () async {
-                      try {
-                        final length = await entity.length();
-                        final lastModified = await entity.lastModified();
-                        return (length: length, lastModified: lastModified);
-                      } catch (e, s) {
-                        ScaffoldLogger.error(null, e, s);
-                        rethrow;
-                      }
-                    }(),
-                    builder: (context, data) => Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(_formatDateTime(data.lastModified)),
-                        Text(_formatBytes(data.length)),
-                      ],
-                    ),
-                  ),
-                  trailing: IconButton(
-                    onPressed: () {
-                      DocumentManagerPlugin.export(
-                        files: <File>[entity],
-                      ).then((value) {
-                        if (context.mounted && value.isNotEmpty) {
-                          ScaffoldMessengers.showSnackBar(context,
-                              contentText: "File downloaded successfully!");
-                        }
-                      }, onError: (e, s) {
-                        ScaffoldLogger.error(null, e, s);
-                        if (context.mounted) {
-                          ScaffoldMessengers.showErrorSnackBar(context,
-                              message: "Operation failed, please try again!");
-                        }
-                      });
-                    },
-                    icon: const Icon(Icons.download_outlined),
-                  ),
-                );
-              } else {
-                return EasyListTile(
-                  leadingIcon: Icons.help_center_outlined,
-                  nameText: p.basename(entity.path),
-                );
-              }
-            },
-            separatorBuilder: (context, index) => const Divider(),
-          );
-        } else {
-          return Center(
-            child: Text(
-              "No files",
-              style: TextStyle(
-                fontSize: 16,
-                color: Theme.of(context).hintColor,
-              ),
-            ),
-          );
-        }
-      },
-    );
   }
 }
 
-String _formatDateTime(DateTime time) =>
-    "${time.year}-${time.month.toString().padLeft(2, '0')}-${time.day.toString().padLeft(2, '0')} ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')}";
+extension _ShowSnackBar on State {
+  void _showSuccessSnackBar() {
+    if (mounted) {
+      ScaffoldMessengers.showSnackBar(context,
+          contentText: "Operation successful!");
+    }
+  }
 
-String _formatBytes(int bytes) {
+  void _showFailedSnackBar() {
+    if (mounted) {
+      ScaffoldMessengers.showErrorSnackBar(context,
+          message: "Operation failed, please try again!");
+    }
+  }
+}
+
+String _formatDateTime(DateTime? time) {
+  if (time == null) return "unknown";
+  return "${time.year}-${time.month.toString().padLeft(2, '0')}-${time.day.toString().padLeft(2, '0')} ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')}";
+}
+
+String _formatBytes(int? bytes) {
+  if (bytes == null) return "unknown";
   const int kB = 1024;
   const int mB = 1024 * kB;
   const int gB = 1024 * mB;
@@ -247,4 +293,43 @@ String _formatBytes(int bytes) {
   } else {
     return '${FormatHelper.printNum(bytes / gB, maxFractionDigits: 2)} GB';
   }
+}
+
+class _FileSystemEntityWrapper<T extends FileSystemEntity> {
+  final T entity;
+  final String name;
+
+  _FileSystemEntityWrapper({
+    required this.entity,
+    required this.name,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _FileSystemEntityWrapper &&
+          runtimeType == other.runtimeType &&
+          entity.absolute.path == other.entity.absolute.path;
+
+  @override
+  int get hashCode => entity.absolute.path.hashCode;
+}
+
+class _DirectoryWrapper extends _FileSystemEntityWrapper<Directory> {
+  _DirectoryWrapper({
+    required super.entity,
+    required super.name,
+  });
+}
+
+class _FileWrapper extends _FileSystemEntityWrapper<File> {
+  final int? length;
+  final DateTime? lastModified;
+
+  _FileWrapper({
+    required super.entity,
+    required super.name,
+    this.length,
+    this.lastModified,
+  });
 }

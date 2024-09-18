@@ -15,12 +15,12 @@ class ScaffoldLoggerOption {
   static const kFallbackFileAppenderLevel = LogLevel.warn;
   static const kFallbackLogFileLifetime = Duration(days: 15);
 
-  final ScaffoldLoggerOptionDetails? _defaultDetails;
-  final Map<String, ScaffoldLoggerOptionDetails> _namedDetails;
+  final ScaffoldLODetails? _defaultDetails;
+  final Map<String, ScaffoldLODetails> _namedDetails;
 
   ScaffoldLoggerOption({
-    ScaffoldLoggerOptionDetails? defaultDetails,
-    Map<String, ScaffoldLoggerOptionDetails> namedDetails = const {},
+    ScaffoldLODetails? defaultDetails,
+    Map<String, ScaffoldLODetails> namedDetails = const {},
   })  : _defaultDetails = defaultDetails,
         _namedDetails = Map.of(namedDetails);
 
@@ -60,7 +60,7 @@ class ScaffoldLoggerOption {
   }
 }
 
-class ScaffoldLoggerOptionDetails {
+class ScaffoldLODetails {
   final bool? consoleAppenderEnabled;
   final LogLevel? consoleAppenderLevel;
   final bool? fileAppenderEnabled;
@@ -68,7 +68,7 @@ class ScaffoldLoggerOptionDetails {
   final Duration? logFileLifetime;
   final LogFileUploader? uploader;
 
-  ScaffoldLoggerOptionDetails({
+  ScaffoldLODetails({
     this.consoleAppenderEnabled,
     this.consoleAppenderLevel,
     this.fileAppenderEnabled,
@@ -79,6 +79,6 @@ class ScaffoldLoggerOptionDetails {
 
   @override
   String toString() {
-    return 'ScaffoldLoggerOptionDetails{consoleAppenderEnabled: $consoleAppenderEnabled, consoleAppenderLevel: $consoleAppenderLevel, fileAppenderEnabled: $fileAppenderEnabled, fileAppenderLevel: $fileAppenderLevel, logFileLifetime: $logFileLifetime, uploader: $uploader}';
+    return 'ScaffoldLODetails{consoleAppenderEnabled: $consoleAppenderEnabled, consoleAppenderLevel: $consoleAppenderLevel, fileAppenderEnabled: $fileAppenderEnabled, fileAppenderLevel: $fileAppenderLevel, logFileLifetime: $logFileLifetime, uploader: $uploader}';
   }
 }

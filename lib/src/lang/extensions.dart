@@ -11,7 +11,8 @@ extension ExtensionTakeIf<T> on T {
 }
 
 extension ExtensionTakeUnless<T> on T {
-  T? takeUnless(bool Function(T value) predicate) => predicate(this) ? null : this;
+  T? takeUnless(bool Function(T value) predicate) =>
+      predicate(this) ? null : this;
 }
 
 extension ExtensionList<T> on List<T> {
@@ -37,13 +38,17 @@ extension ExtensionList<T> on List<T> {
     sort((a, b) => Comparable.compare(selector(a), selector(b)));
   }
 
-  void sortedByDescending<R extends Comparable<R>>(R Function(T element) selector) {
+  void sortedByDescending<R extends Comparable<R>>(
+      R Function(T element) selector) {
     sort((a, b) => Comparable.compare(selector(b), selector(a)));
   }
 }
 
 extension ExtensionFuture<T> on Future<T> {
   Future<void> asyncIgnore() => then<void>(_ignore, onError: _ignore);
+
+  Future<T?> catchErrorToNull() =>
+      then<T?>((value) => value, onError: (_) => null);
 
   static void _ignore(Object? _, [Object? __]) {}
 }

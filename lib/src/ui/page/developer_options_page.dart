@@ -73,55 +73,54 @@ class DeveloperOptionsPage extends StatelessWidget {
     } else {
       _pushCount++;
     }
-    if (_pushCount >= 3) {
-      if (_pushCount < _kMaxPushCount) {
-        final remainingPushCount = _kMaxPushCount - _pushCount;
-        Toast.showShort(
-            context,
-            remainingPushCount > 1
-                ? "You are now $remainingPushCount steps away from entering developer mode."
-                : "You are now 1 step away from entering developer mode.");
-      } else {
-        _pushCount = 0;
-        final password = ScaffoldConfig.developerOption?.password;
-        if (password != null) {
-          showTextInputDialog(
-            context: context,
-            titleText: "Access Protection",
-            messageText:
-                "Accessing this feature requires developer password authentication.",
-            fields: [
-              TextInputDialogField(
-                keyboardType: TextInputType.visiblePassword,
-                hintText: "Please enter password",
-                maxLength: 256,
-              ),
-            ],
-            actionNoText: "Cancel",
-            actionOkText: "Ok",
-          ).then((values) {
-            if (!context.mounted) return;
-            final inputPassword = values?.firstOrNull;
-            if (inputPassword == null) return;
-            if (password == inputPassword) {
-              Navigator.push<void>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const DeveloperOptionsPage(),
-                ),
-              );
-            } else {
-              Toast.showShort(context, "Incorrect password!");
-            }
-          });
-        } else {
-          Navigator.push<void>(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const DeveloperOptionsPage(),
+    if (_pushCount < 3) return;
+    if (_pushCount < _kMaxPushCount) {
+      final remainingPushCount = _kMaxPushCount - _pushCount;
+      Toast.showShort(
+          context,
+          remainingPushCount > 1
+              ? "You are now $remainingPushCount steps away from entering developer mode."
+              : "You are now 1 step away from entering developer mode.");
+    } else {
+      _pushCount = 0;
+      final password = ScaffoldConfig.developerOption?.password;
+      if (password != null) {
+        showTextInputDialog(
+          context: context,
+          titleText: "Access Protection",
+          messageText:
+              "Accessing this feature requires developer password authentication.",
+          fields: [
+            TextInputDialogField(
+              keyboardType: TextInputType.visiblePassword,
+              hintText: "Please enter password",
+              maxLength: 256,
             ),
-          );
-        }
+          ],
+          actionNoText: "Cancel",
+          actionOkText: "Ok",
+        ).then((values) {
+          if (!context.mounted) return;
+          final inputPassword = values?.firstOrNull;
+          if (inputPassword == null) return;
+          if (password == inputPassword) {
+            Navigator.push<void>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DeveloperOptionsPage(),
+              ),
+            );
+          } else {
+            Toast.showShort(context, "Incorrect password!");
+          }
+        });
+      } else {
+        Navigator.push<void>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const DeveloperOptionsPage(),
+          ),
+        );
       }
     }
   }
