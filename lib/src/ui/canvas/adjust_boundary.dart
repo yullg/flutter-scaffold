@@ -1,26 +1,39 @@
 import 'package:flutter/material.dart';
 
-class AdjustBoundaryController extends ChangeNotifier {
+class AdjustBoundaryExtension extends ChangeNotifier {
   Rect _boundary = Rect.zero;
-  AdjustBoundaryMode _adjustBoundaryMode = AdjustBoundaryMode.none;
+  double? _aspectRatio;
+  AdjustBoundaryMode? _adjustBoundaryMode;
 
   Rect get boundary => _boundary;
 
-  AdjustBoundaryMode get adjustBoundaryMode => _adjustBoundaryMode;
+  double? get aspectRatio => _aspectRatio;
+
+  AdjustBoundaryMode? get adjustBoundaryMode => _adjustBoundaryMode;
 
   set boundary(Rect value) {
-    _boundary = value;
-    notifyListeners();
+    if (_boundary != value) {
+      _boundary = value;
+      notifyListeners();
+    }
   }
 
-  set adjustBoundaryMode(AdjustBoundaryMode value) {
-    _adjustBoundaryMode = value;
-    notifyListeners();
+  set aspectRatio(double? value) {
+    if (_aspectRatio != value) {
+      _aspectRatio = value;
+      notifyListeners();
+    }
+  }
+
+  set adjustBoundaryMode(AdjustBoundaryMode? value) {
+    if (_adjustBoundaryMode != value) {
+      _adjustBoundaryMode = value;
+      notifyListeners();
+    }
   }
 }
 
-class AdjustBoundary extends StatelessWidget {
-  final AdjustBoundaryController controller;
+class AdjustBoundaryStyle {
   final Color? backgroundColor;
   final int gridLineCount;
   final double gridLineWidth;
@@ -31,9 +44,7 @@ class AdjustBoundary extends StatelessWidget {
   final Color activatedBoundaryColor;
   final bool showCenterIndicator;
 
-  const AdjustBoundary({
-    super.key,
-    required this.controller,
+  const AdjustBoundaryStyle({
     this.backgroundColor = Colors.black45,
     this.gridLineCount = 3,
     this.gridLineWidth = 1,
@@ -46,28 +57,35 @@ class AdjustBoundary extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: controller,
-      builder: (context, _) {
-        return CustomPaint(
-          size: Size.infinite,
-          painter: _AdjustBoundaryPainter(
-            boundary: controller.boundary,
-            backgroundColor: backgroundColor,
-            gridLineCount: gridLineCount,
-            gridLineWidth: gridLineWidth,
-            gridLineColor: gridLineColor,
-            boundaryWidth: boundaryWidth,
-            boundaryLength: boundaryLength,
-            boundaryColor: boundaryColor,
-            activatedBoundaryColor: activatedBoundaryColor,
-            showCenterIndicator: showCenterIndicator,
-            adjustBoundaryMode: controller.adjustBoundaryMode,
-          ),
-        );
-      },
-    );
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AdjustBoundaryStyle &&
+          runtimeType == other.runtimeType &&
+          backgroundColor == other.backgroundColor &&
+          gridLineCount == other.gridLineCount &&
+          gridLineWidth == other.gridLineWidth &&
+          gridLineColor == other.gridLineColor &&
+          boundaryWidth == other.boundaryWidth &&
+          boundaryLength == other.boundaryLength &&
+          boundaryColor == other.boundaryColor &&
+          activatedBoundaryColor == other.activatedBoundaryColor &&
+          showCenterIndicator == other.showCenterIndicator;
+
+  @override
+  int get hashCode =>
+      backgroundColor.hashCode ^
+      gridLineCount.hashCode ^
+      gridLineWidth.hashCode ^
+      gridLineColor.hashCode ^
+      boundaryWidth.hashCode ^
+      boundaryLength.hashCode ^
+      boundaryColor.hashCode ^
+      activatedBoundaryColor.hashCode ^
+      showCenterIndicator.hashCode;
+
+  @override
+  String toString() {
+    return 'AdjustBoundaryStyle{backgroundColor: $backgroundColor, gridLineCount: $gridLineCount, gridLineWidth: $gridLineWidth, gridLineColor: $gridLineColor, boundaryWidth: $boundaryWidth, boundaryLength: $boundaryLength, boundaryColor: $boundaryColor, activatedBoundaryColor: $activatedBoundaryColor, showCenterIndicator: $showCenterIndicator}';
   }
 }
 
@@ -82,40 +100,51 @@ enum AdjustBoundaryMode {
   rightCenter,
   rightBottom,
   bottomCenter,
-  none
+}
+
+class AdjustBoundary extends StatelessWidget {
+  final AdjustBoundaryExtension extension;
+  final AdjustBoundaryStyle style;
+
+  const AdjustBoundary({
+    super.key,
+    required this.extension,
+    this.style = const AdjustBoundaryStyle(),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: extension,
+      builder: (context, _) {
+        return CustomPaint(
+          size: Size.infinite,
+          painter: _AdjustBoundaryPainter(
+            boundary: extension.boundary,
+            adjustBoundaryMode: extension.adjustBoundaryMode,
+            style: style,
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _AdjustBoundaryPainter extends CustomPainter {
   final Rect boundary;
-  final Color? backgroundColor;
-  final int gridLineCount;
-  final double gridLineWidth;
-  final Color gridLineColor;
-  final double boundaryWidth;
-  final double boundaryLength;
-  final Color boundaryColor;
-  final Color activatedBoundaryColor;
-  final bool showCenterIndicator;
-  final AdjustBoundaryMode adjustBoundaryMode;
+  final AdjustBoundaryMode? adjustBoundaryMode;
+  final AdjustBoundaryStyle style;
 
   _AdjustBoundaryPainter({
     required this.boundary,
-    this.backgroundColor,
-    required this.gridLineCount,
-    required this.gridLineWidth,
-    required this.gridLineColor,
-    required this.boundaryWidth,
-    required this.boundaryLength,
-    required this.boundaryColor,
-    required this.activatedBoundaryColor,
-    required this.showCenterIndicator,
-    required this.adjustBoundaryMode,
+    this.adjustBoundaryMode,
+    required this.style,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (backgroundColor != null) {
-      final backgroundPaint = Paint()..color = backgroundColor!;
+    if (style.backgroundColor != null) {
+      final backgroundPaint = Paint()..color = style.backgroundColor!;
       canvas.drawPath(
         Path.combine(
           PathOperation.difference,
@@ -125,13 +154,13 @@ class _AdjustBoundaryPainter extends CustomPainter {
         backgroundPaint,
       );
     }
-    if (gridLineCount > 0) {
+    if (style.gridLineCount > 0) {
       final gridLinePaint = Paint()
-        ..strokeWidth = gridLineWidth
-        ..color = gridLineColor;
-      final gridWidth = boundary.width / (gridLineCount + 1);
-      final gridHeight = boundary.height / (gridLineCount + 1);
-      for (int i = 0; i < gridLineCount; i++) {
+        ..strokeWidth = style.gridLineWidth
+        ..color = style.gridLineColor;
+      final gridWidth = boundary.width / (style.gridLineCount + 1);
+      final gridHeight = boundary.height / (style.gridLineCount + 1);
+      for (int i = 0; i < style.gridLineCount; i++) {
         final rowDy = boundary.top + gridHeight * (i + 1);
         final columnDx = boundary.left + gridWidth * (i + 1);
         canvas.drawLine(
@@ -152,14 +181,14 @@ class _AdjustBoundaryPainter extends CustomPainter {
     canvas.drawRect(
       Rect.fromPoints(
         boundary.topLeft,
-        boundary.topLeft + Offset(boundaryWidth, boundaryLength),
+        boundary.topLeft + Offset(style.boundaryWidth, style.boundaryLength),
       ),
       boundaryPaint,
     );
     canvas.drawRect(
       Rect.fromPoints(
         boundary.topLeft,
-        boundary.topLeft + Offset(boundaryLength, boundaryWidth),
+        boundary.topLeft + Offset(style.boundaryLength, style.boundaryWidth),
       ),
       boundaryPaint,
     );
@@ -168,7 +197,8 @@ class _AdjustBoundaryPainter extends CustomPainter {
         _calculateBoundaryColor(AdjustBoundaryMode.leftBottom);
     canvas.drawRect(
       Rect.fromPoints(
-        boundary.bottomLeft - Offset(-boundaryWidth, boundaryLength),
+        boundary.bottomLeft -
+            Offset(-style.boundaryWidth, style.boundaryLength),
         boundary.bottomLeft,
       ),
       boundaryPaint,
@@ -176,7 +206,8 @@ class _AdjustBoundaryPainter extends CustomPainter {
     canvas.drawRect(
       Rect.fromPoints(
         boundary.bottomLeft,
-        boundary.bottomLeft + Offset(boundaryLength, -boundaryWidth),
+        boundary.bottomLeft +
+            Offset(style.boundaryLength, -style.boundaryWidth),
       ),
       boundaryPaint,
     );
@@ -184,15 +215,15 @@ class _AdjustBoundaryPainter extends CustomPainter {
     boundaryPaint.color = _calculateBoundaryColor(AdjustBoundaryMode.rightTop);
     canvas.drawRect(
       Rect.fromPoints(
-        boundary.topRight - Offset(boundaryLength, 0.0),
-        boundary.topRight + Offset(0.0, boundaryWidth),
+        boundary.topRight - Offset(style.boundaryLength, 0.0),
+        boundary.topRight + Offset(0.0, style.boundaryWidth),
       ),
       boundaryPaint,
     );
     canvas.drawRect(
       Rect.fromPoints(
         boundary.topRight,
-        boundary.topRight - Offset(boundaryWidth, -boundaryLength),
+        boundary.topRight - Offset(style.boundaryWidth, -style.boundaryLength),
       ),
       boundaryPaint,
     );
@@ -201,7 +232,8 @@ class _AdjustBoundaryPainter extends CustomPainter {
         _calculateBoundaryColor(AdjustBoundaryMode.rightBottom);
     canvas.drawRect(
       Rect.fromPoints(
-        boundary.bottomRight - Offset(boundaryWidth, boundaryLength),
+        boundary.bottomRight -
+            Offset(style.boundaryWidth, style.boundaryLength),
         boundary.bottomRight,
       ),
       boundaryPaint,
@@ -209,18 +241,20 @@ class _AdjustBoundaryPainter extends CustomPainter {
     canvas.drawRect(
       Rect.fromPoints(
         boundary.bottomRight,
-        boundary.bottomRight - Offset(boundaryLength, boundaryWidth),
+        boundary.bottomRight -
+            Offset(style.boundaryLength, style.boundaryWidth),
       ),
       boundaryPaint,
     );
-    if (showCenterIndicator) {
+    if (style.showCenterIndicator) {
       // TOP CENTER
       boundaryPaint.color =
           _calculateBoundaryColor(AdjustBoundaryMode.topCenter);
       canvas.drawRect(
         Rect.fromPoints(
-          boundary.topCenter + Offset(-boundaryLength / 2, 0.0),
-          boundary.topCenter + Offset(boundaryLength / 2, boundaryWidth),
+          boundary.topCenter + Offset(-style.boundaryLength / 2, 0.0),
+          boundary.topCenter +
+              Offset(style.boundaryLength / 2, style.boundaryWidth),
         ),
         boundaryPaint,
       );
@@ -229,8 +263,9 @@ class _AdjustBoundaryPainter extends CustomPainter {
           _calculateBoundaryColor(AdjustBoundaryMode.leftCenter);
       canvas.drawRect(
         Rect.fromPoints(
-          boundary.centerLeft + Offset(0.0, -boundaryLength / 2),
-          boundary.centerLeft + Offset(boundaryWidth, boundaryLength / 2),
+          boundary.centerLeft + Offset(0.0, -style.boundaryLength / 2),
+          boundary.centerLeft +
+              Offset(style.boundaryWidth, style.boundaryLength / 2),
         ),
         boundaryPaint,
       );
@@ -239,8 +274,9 @@ class _AdjustBoundaryPainter extends CustomPainter {
           _calculateBoundaryColor(AdjustBoundaryMode.rightCenter);
       canvas.drawRect(
         Rect.fromPoints(
-          boundary.centerRight + Offset(-boundaryWidth, -boundaryLength / 2),
-          boundary.centerRight + Offset(0.0, boundaryLength / 2),
+          boundary.centerRight +
+              Offset(-style.boundaryWidth, -style.boundaryLength / 2),
+          boundary.centerRight + Offset(0.0, style.boundaryLength / 2),
         ),
         boundaryPaint,
       );
@@ -249,8 +285,9 @@ class _AdjustBoundaryPainter extends CustomPainter {
           _calculateBoundaryColor(AdjustBoundaryMode.bottomCenter);
       canvas.drawRect(
         Rect.fromPoints(
-          boundary.bottomCenter + Offset(-boundaryLength / 2, 0.0),
-          boundary.bottomCenter + Offset(boundaryLength / 2, -boundaryWidth),
+          boundary.bottomCenter + Offset(-style.boundaryLength / 2, 0.0),
+          boundary.bottomCenter +
+              Offset(style.boundaryLength / 2, -style.boundaryWidth),
         ),
         boundaryPaint,
       );
@@ -260,20 +297,12 @@ class _AdjustBoundaryPainter extends CustomPainter {
   Color _calculateBoundaryColor(AdjustBoundaryMode mode) =>
       (AdjustBoundaryMode.inside == adjustBoundaryMode ||
               adjustBoundaryMode == mode)
-          ? activatedBoundaryColor
-          : boundaryColor;
+          ? style.activatedBoundaryColor
+          : style.boundaryColor;
 
   @override
   bool shouldRepaint(_AdjustBoundaryPainter oldDelegate) =>
       boundary != oldDelegate.boundary ||
-      backgroundColor != oldDelegate.backgroundColor ||
-      gridLineCount != oldDelegate.gridLineCount ||
-      gridLineWidth != oldDelegate.gridLineWidth ||
-      gridLineColor != oldDelegate.gridLineColor ||
-      boundaryWidth != oldDelegate.boundaryWidth ||
-      boundaryLength != oldDelegate.boundaryLength ||
-      boundaryColor != oldDelegate.boundaryColor ||
-      activatedBoundaryColor != oldDelegate.activatedBoundaryColor ||
-      showCenterIndicator != oldDelegate.showCenterIndicator ||
-      adjustBoundaryMode != oldDelegate.adjustBoundaryMode;
+      adjustBoundaryMode != oldDelegate.adjustBoundaryMode ||
+      style != oldDelegate.style;
 }
