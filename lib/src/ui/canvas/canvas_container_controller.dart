@@ -1,22 +1,23 @@
-import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 
 import 'adjust_boundary.dart';
 
 class CanvasContainerController extends ChangeNotifier {
-  final adjustBoundaryExtension = AdjustBoundaryExtension();
+  late final AdjustBoundaryExtension adjustBoundaryExtension;
+
+  CanvasContainerController({
+    AdjustBoundaryExtension? adjustBoundaryExtension,
+  }) {
+    this.adjustBoundaryExtension =
+        adjustBoundaryExtension ?? AdjustBoundaryExtension();
+  }
 
   bool _adjustBoundaryEnabled = false;
 
-  Size _containerSize = Size.zero;
   int _rotation = 0;
   double _scale = 1;
 
   bool get adjustBoundaryEnabled => _adjustBoundaryEnabled;
-
-  Size get containerSize => _containerSize;
 
   int get rotation => _rotation;
 
@@ -26,15 +27,6 @@ class CanvasContainerController extends ChangeNotifier {
     if (_adjustBoundaryEnabled != value) {
       _adjustBoundaryEnabled = value;
       notifyListeners();
-    }
-  }
-
-  set containerSize(Size value) {
-    if (_containerSize != value) {
-      _containerSize = value;
-      notifyListeners();
-      adjustBoundaryExtension.boundary =
-          Rect.fromLTWH(0, 0, value.width, value.height);
     }
   }
 
@@ -59,18 +51,6 @@ class CanvasContainerController extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-  @protected
-  void onPanDown(DragDownDetails details) {}
-
-  @protected
-  void onPanUpdate(DragUpdateDetails details) {}
-
-  @protected
-  void onPanEnd(DragEndDetails details) {}
-
-  @protected
-  void onPanCancel() {}
 
   @override
   void dispose() {

@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 class AdjustBoundaryExtension extends ChangeNotifier {
   Rect _boundary = Rect.zero;
@@ -21,6 +24,21 @@ class AdjustBoundaryExtension extends ChangeNotifier {
   set aspectRatio(double? value) {
     if (_aspectRatio != value) {
       _aspectRatio = value;
+      if (value != null && !boundary.isEmpty) {
+        if (boundary.width / boundary.height > value) {
+          boundary = Rect.fromCenter(
+            center: boundary.center,
+            width: boundary.height * value,
+            height: boundary.height,
+          );
+        } else {
+          boundary = Rect.fromCenter(
+            center: boundary.center,
+            width: boundary.width,
+            height: boundary.width / value,
+          );
+        }
+      }
       notifyListeners();
     }
   }
@@ -31,6 +49,205 @@ class AdjustBoundaryExtension extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  @internal
+  void onPanDown(Offset position) {
+    AdjustBoundaryMode? newAdjustBoundaryMode;
+    final expandedBoundary = Rect.fromCenter(
+      center: boundary.center,
+      width: boundary.width + 48,
+      height: boundary.height + 48,
+    );
+    if (expandedBoundary.contains(position)) {
+      newAdjustBoundaryMode = AdjustBoundaryMode.inside;
+      final expandedPosition = Rect.fromCenter(
+        center: position,
+        width: 48,
+        height: 48,
+      );
+      // CORNERS
+      if (expandedPosition.contains(boundary.topLeft)) {
+        newAdjustBoundaryMode = AdjustBoundaryMode.leftTop;
+      } else if (expandedPosition.contains(boundary.topRight)) {
+        newAdjustBoundaryMode = AdjustBoundaryMode.rightTop;
+      } else if (expandedPosition.contains(boundary.bottomRight)) {
+        newAdjustBoundaryMode = AdjustBoundaryMode.rightBottom;
+      } else if (expandedPosition.contains(boundary.bottomLeft)) {
+        newAdjustBoundaryMode = AdjustBoundaryMode.leftBottom;
+      } else if (aspectRatio == null) {
+        // CENTERS
+        if (expandedPosition.contains(boundary.centerLeft)) {
+          newAdjustBoundaryMode = AdjustBoundaryMode.leftCenter;
+        } else if (expandedPosition.contains(boundary.topCenter)) {
+          newAdjustBoundaryMode = AdjustBoundaryMode.topCenter;
+        } else if (expandedPosition.contains(boundary.centerRight)) {
+          newAdjustBoundaryMode = AdjustBoundaryMode.rightCenter;
+        } else if (expandedPosition.contains(boundary.bottomCenter)) {
+          newAdjustBoundaryMode = AdjustBoundaryMode.bottomCenter;
+        }
+      }
+    } else {
+      newAdjustBoundaryMode = null;
+    }
+    adjustBoundaryMode = newAdjustBoundaryMode;
+  }
+
+  @internal
+  void onPanUpdate({
+    required Offset delta,
+    required Size layoutSize,
+    required Size minBoundarySize,
+  }) {
+    switch (adjustBoundaryMode) {
+      case AdjustBoundaryMode.inside:
+        final Offset pos = boundary.topLeft + delta;
+        boundary = Rect.fromLTWH(
+            pos.dx.clamp(0, layoutSize.width - boundary.width),
+            pos.dy.clamp(0, layoutSize.height - boundary.height),
+            boundary.width,
+            boundary.height);
+      // 角
+      case AdjustBoundaryMode.leftTop:
+        final Offset pos = boundary.topLeft + delta;
+        _adjustBoundary(
+          layoutSize: layoutSize,
+          minBoundarySize: minBoundarySize,
+          adjustBoundaryMode: AdjustBoundaryMode.leftTop,
+          left: pos.dx,
+          top: pos.dy,
+        );
+      case AdjustBoundaryMode.rightTop:
+        final Offset pos = boundary.topRight + delta;
+        _adjustBoundary(
+          layoutSize: layoutSize,
+          minBoundarySize: minBoundarySize,
+          adjustBoundaryMode: AdjustBoundaryMode.rightTop,
+          right: pos.dx,
+          top: pos.dy,
+        );
+      case AdjustBoundaryMode.rightBottom:
+        final Offset pos = boundary.bottomRight + delta;
+        _adjustBoundary(
+          layoutSize: layoutSize,
+          minBoundarySize: minBoundarySize,
+          adjustBoundaryMode: AdjustBoundaryMode.rightBottom,
+          right: pos.dx,
+          bottom: pos.dy,
+        );
+      case AdjustBoundaryMode.leftBottom:
+        final Offset pos = boundary.bottomLeft + delta;
+        _adjustBoundary(
+          layoutSize: layoutSize,
+          minBoundarySize: minBoundarySize,
+          adjustBoundaryMode: AdjustBoundaryMode.leftBottom,
+          left: pos.dx,
+          bottom: pos.dy,
+        );
+      // 边
+      case AdjustBoundaryMode.topCenter:
+        _adjustBoundary(
+          layoutSize: layoutSize,
+          minBoundarySize: minBoundarySize,
+          adjustBoundaryMode: AdjustBoundaryMode.topCenter,
+          top: boundary.top + delta.dy,
+        );
+      case AdjustBoundaryMode.bottomCenter:
+        _adjustBoundary(
+          layoutSize: layoutSize,
+          minBoundarySize: minBoundarySize,
+          adjustBoundaryMode: AdjustBoundaryMode.bottomCenter,
+          bottom: boundary.bottom + delta.dy,
+        );
+      case AdjustBoundaryMode.leftCenter:
+        _adjustBoundary(
+          layoutSize: layoutSize,
+          minBoundarySize: minBoundarySize,
+          adjustBoundaryMode: AdjustBoundaryMode.leftCenter,
+          left: boundary.left + delta.dx,
+        );
+      case AdjustBoundaryMode.rightCenter:
+        _adjustBoundary(
+          layoutSize: layoutSize,
+          minBoundarySize: minBoundarySize,
+          adjustBoundaryMode: AdjustBoundaryMode.rightCenter,
+          right: boundary.right + delta.dx,
+        );
+      default:
+        break;
+    }
+  }
+
+  @internal
+  void onPanEnd() {
+    adjustBoundaryMode = null;
+  }
+
+  void _adjustBoundary({
+    required Size layoutSize,
+    required Size minBoundarySize,
+    required AdjustBoundaryMode adjustBoundaryMode,
+    double? left,
+    double? top,
+    double? right,
+    double? bottom,
+  }) {
+    top = max(0, top ?? boundary.top);
+    left = max(0, left ?? boundary.left);
+    right = min(layoutSize.width, right ?? boundary.right);
+    bottom = min(layoutSize.height, bottom ?? boundary.bottom);
+    // 更新裁剪高度或宽度以匹配指定的长宽比
+    final aspectRatio = this.aspectRatio;
+    if (aspectRatio != null) {
+      final width = right - left;
+      final height = bottom - top;
+      if (width / height > aspectRatio) {
+        switch (adjustBoundaryMode) {
+          case AdjustBoundaryMode.leftTop:
+          case AdjustBoundaryMode.leftBottom:
+            left = right - height * aspectRatio;
+          case AdjustBoundaryMode.rightTop:
+          case AdjustBoundaryMode.rightBottom:
+            right = left + height * aspectRatio;
+          default:
+            break;
+        }
+      } else {
+        switch (adjustBoundaryMode) {
+          case AdjustBoundaryMode.leftTop:
+          case AdjustBoundaryMode.rightTop:
+            top = bottom - width / aspectRatio;
+          case AdjustBoundaryMode.leftBottom:
+          case AdjustBoundaryMode.rightBottom:
+            bottom = top + width / aspectRatio;
+          default:
+            break;
+        }
+      }
+    }
+    final newBoundary = Rect.fromLTRB(left, top, right, bottom);
+    // 如果超出范围，不要应用更改
+    if (newBoundary.width < minBoundarySize.width ||
+        newBoundary.height < minBoundarySize.height ||
+        newBoundary.left < 0 ||
+        newBoundary.top < 0 ||
+        newBoundary.right > layoutSize.width ||
+        newBoundary.bottom > layoutSize.height) {
+      return;
+    }
+    boundary = newBoundary;
+  }
+}
+
+enum AdjustBoundaryMode {
+  inside,
+  leftTop,
+  leftCenter,
+  leftBottom,
+  topCenter,
+  rightTop,
+  rightCenter,
+  rightBottom,
+  bottomCenter,
 }
 
 class AdjustBoundaryStyle {
@@ -87,19 +304,6 @@ class AdjustBoundaryStyle {
   String toString() {
     return 'AdjustBoundaryStyle{backgroundColor: $backgroundColor, gridLineCount: $gridLineCount, gridLineWidth: $gridLineWidth, gridLineColor: $gridLineColor, boundaryWidth: $boundaryWidth, boundaryLength: $boundaryLength, boundaryColor: $boundaryColor, activatedBoundaryColor: $activatedBoundaryColor, showCenterIndicator: $showCenterIndicator}';
   }
-}
-
-@protected
-enum AdjustBoundaryMode {
-  inside,
-  leftTop,
-  leftCenter,
-  leftBottom,
-  topCenter,
-  rightTop,
-  rightCenter,
-  rightBottom,
-  bottomCenter,
 }
 
 class AdjustBoundary extends StatelessWidget {
