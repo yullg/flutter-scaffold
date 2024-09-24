@@ -4,17 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 class AdjustBoundaryExtension extends ChangeNotifier {
-  Rect _boundary = Rect.zero;
+  final Size minBoundarySize;
+
+  AdjustBoundaryExtension({
+    this.minBoundarySize = const Size(48, 48),
+  });
+
+  Rect? _boundary;
   double? _aspectRatio;
   AdjustBoundaryMode? _adjustBoundaryMode;
 
-  Rect get boundary => _boundary;
+  Rect? get boundary => _boundary;
 
   double? get aspectRatio => _aspectRatio;
 
   AdjustBoundaryMode? get adjustBoundaryMode => _adjustBoundaryMode;
 
-  set boundary(Rect value) {
+  set boundary(Rect? value) {
     if (_boundary != value) {
       _boundary = value;
       notifyListeners();
@@ -24,22 +30,8 @@ class AdjustBoundaryExtension extends ChangeNotifier {
   set aspectRatio(double? value) {
     if (_aspectRatio != value) {
       _aspectRatio = value;
-      if (value != null && !boundary.isEmpty) {
-        if (boundary.width / boundary.height > value) {
-          boundary = Rect.fromCenter(
-            center: boundary.center,
-            width: boundary.height * value,
-            height: boundary.height,
-          );
-        } else {
-          boundary = Rect.fromCenter(
-            center: boundary.center,
-            width: boundary.width,
-            height: boundary.width / value,
-          );
-        }
-      }
       notifyListeners();
+      adjustBoundary(containerSize: boundary?.size);
     }
   }
 
@@ -50,8 +42,99 @@ class AdjustBoundaryExtension extends ChangeNotifier {
     }
   }
 
+  void adjustBoundary({
+    Size? containerSize,
+    double? left,
+    double? top,
+    double? right,
+    double? bottom,
+  }) {
+    if (containerSize != null) {
+      left = max(0, left ?? boundary?.left ?? 0);
+      top = max(0, top ?? boundary?.top ?? 0);
+      right = min(
+          containerSize.width, right ?? boundary?.right ?? containerSize.width);
+      bottom = min(containerSize.height,
+          bottom ?? boundary?.bottom ?? containerSize.height);
+      final width = right - left;
+      final height = bottom - top;
+      final aspectRatio = this.aspectRatio;
+      Rect newBoundary;
+      if (aspectRatio != null) {
+        if (width / height > aspectRatio) {
+          switch (adjustBoundaryMode) {
+            case AdjustBoundaryMode.leftTop:
+            case AdjustBoundaryMode.leftBottom:
+              newBoundary = Rect.fromLTRB(
+                right - height * aspectRatio,
+                top,
+                right,
+                bottom,
+              );
+            case AdjustBoundaryMode.rightTop:
+            case AdjustBoundaryMode.rightBottom:
+              newBoundary = Rect.fromLTRB(
+                left,
+                top,
+                left + height * aspectRatio,
+                bottom,
+              );
+            default:
+              newBoundary = Rect.fromCenter(
+                center:
+                    Offset(left + (right - left) / 2, top + (bottom - top) / 2),
+                width: height * aspectRatio,
+                height: height,
+              );
+          }
+        } else {
+          switch (adjustBoundaryMode) {
+            case AdjustBoundaryMode.leftTop:
+            case AdjustBoundaryMode.rightTop:
+              newBoundary = Rect.fromLTRB(
+                left,
+                bottom - width / aspectRatio,
+                right,
+                bottom,
+              );
+            case AdjustBoundaryMode.leftBottom:
+            case AdjustBoundaryMode.rightBottom:
+              newBoundary = Rect.fromLTRB(
+                left,
+                top,
+                right,
+                top + width / aspectRatio,
+              );
+            default:
+              newBoundary = Rect.fromCenter(
+                center:
+                    Offset(left + (right - left) / 2, top + (bottom - top) / 2),
+                width: width,
+                height: width / aspectRatio,
+              );
+          }
+        }
+      } else {
+        newBoundary = Rect.fromLTRB(left, top, right, bottom);
+      }
+      if (newBoundary.width < minBoundarySize.width ||
+          newBoundary.height < minBoundarySize.height ||
+          newBoundary.left < 0 ||
+          newBoundary.top < 0 ||
+          newBoundary.right > containerSize.width ||
+          newBoundary.bottom > containerSize.height) {
+        return;
+      }
+      boundary = newBoundary;
+    } else {
+      boundary = null;
+    }
+  }
+
   @internal
   void onPanDown(Offset position) {
+    final boundary = this.boundary;
+    if (boundary == null) return;
     AdjustBoundaryMode? newAdjustBoundaryMode;
     final expandedBoundary = Rect.fromCenter(
       center: boundary.center,
@@ -74,17 +157,14 @@ class AdjustBoundaryExtension extends ChangeNotifier {
         newAdjustBoundaryMode = AdjustBoundaryMode.rightBottom;
       } else if (expandedPosition.contains(boundary.bottomLeft)) {
         newAdjustBoundaryMode = AdjustBoundaryMode.leftBottom;
-      } else if (aspectRatio == null) {
-        // CENTERS
-        if (expandedPosition.contains(boundary.centerLeft)) {
-          newAdjustBoundaryMode = AdjustBoundaryMode.leftCenter;
-        } else if (expandedPosition.contains(boundary.topCenter)) {
-          newAdjustBoundaryMode = AdjustBoundaryMode.topCenter;
-        } else if (expandedPosition.contains(boundary.centerRight)) {
-          newAdjustBoundaryMode = AdjustBoundaryMode.rightCenter;
-        } else if (expandedPosition.contains(boundary.bottomCenter)) {
-          newAdjustBoundaryMode = AdjustBoundaryMode.bottomCenter;
-        }
+      } else if (expandedPosition.contains(boundary.centerLeft)) {
+        newAdjustBoundaryMode = AdjustBoundaryMode.leftCenter;
+      } else if (expandedPosition.contains(boundary.topCenter)) {
+        newAdjustBoundaryMode = AdjustBoundaryMode.topCenter;
+      } else if (expandedPosition.contains(boundary.centerRight)) {
+        newAdjustBoundaryMode = AdjustBoundaryMode.rightCenter;
+      } else if (expandedPosition.contains(boundary.bottomCenter)) {
+        newAdjustBoundaryMode = AdjustBoundaryMode.bottomCenter;
       }
     } else {
       newAdjustBoundaryMode = null;
@@ -95,81 +175,67 @@ class AdjustBoundaryExtension extends ChangeNotifier {
   @internal
   void onPanUpdate({
     required Offset delta,
-    required Size layoutSize,
-    required Size minBoundarySize,
+    required Size? containerSize,
   }) {
+    if (containerSize == null) return;
+    final boundary = this.boundary;
+    if (boundary == null) return;
     switch (adjustBoundaryMode) {
       case AdjustBoundaryMode.inside:
         final Offset pos = boundary.topLeft + delta;
-        boundary = Rect.fromLTWH(
-            pos.dx.clamp(0, layoutSize.width - boundary.width),
-            pos.dy.clamp(0, layoutSize.height - boundary.height),
+        this.boundary = Rect.fromLTWH(
+            pos.dx.clamp(0, containerSize.width - boundary.width),
+            pos.dy.clamp(0, containerSize.height - boundary.height),
             boundary.width,
             boundary.height);
       // 角
       case AdjustBoundaryMode.leftTop:
         final Offset pos = boundary.topLeft + delta;
-        _adjustBoundary(
-          layoutSize: layoutSize,
-          minBoundarySize: minBoundarySize,
-          adjustBoundaryMode: AdjustBoundaryMode.leftTop,
+        adjustBoundary(
+          containerSize: containerSize,
           left: pos.dx,
           top: pos.dy,
         );
       case AdjustBoundaryMode.rightTop:
         final Offset pos = boundary.topRight + delta;
-        _adjustBoundary(
-          layoutSize: layoutSize,
-          minBoundarySize: minBoundarySize,
-          adjustBoundaryMode: AdjustBoundaryMode.rightTop,
+        adjustBoundary(
+          containerSize: containerSize,
           right: pos.dx,
           top: pos.dy,
         );
       case AdjustBoundaryMode.rightBottom:
         final Offset pos = boundary.bottomRight + delta;
-        _adjustBoundary(
-          layoutSize: layoutSize,
-          minBoundarySize: minBoundarySize,
-          adjustBoundaryMode: AdjustBoundaryMode.rightBottom,
+        adjustBoundary(
+          containerSize: containerSize,
           right: pos.dx,
           bottom: pos.dy,
         );
       case AdjustBoundaryMode.leftBottom:
         final Offset pos = boundary.bottomLeft + delta;
-        _adjustBoundary(
-          layoutSize: layoutSize,
-          minBoundarySize: minBoundarySize,
-          adjustBoundaryMode: AdjustBoundaryMode.leftBottom,
+        adjustBoundary(
+          containerSize: containerSize,
           left: pos.dx,
           bottom: pos.dy,
         );
       // 边
       case AdjustBoundaryMode.topCenter:
-        _adjustBoundary(
-          layoutSize: layoutSize,
-          minBoundarySize: minBoundarySize,
-          adjustBoundaryMode: AdjustBoundaryMode.topCenter,
+        adjustBoundary(
+          containerSize: containerSize,
           top: boundary.top + delta.dy,
         );
       case AdjustBoundaryMode.bottomCenter:
-        _adjustBoundary(
-          layoutSize: layoutSize,
-          minBoundarySize: minBoundarySize,
-          adjustBoundaryMode: AdjustBoundaryMode.bottomCenter,
+        adjustBoundary(
+          containerSize: containerSize,
           bottom: boundary.bottom + delta.dy,
         );
       case AdjustBoundaryMode.leftCenter:
-        _adjustBoundary(
-          layoutSize: layoutSize,
-          minBoundarySize: minBoundarySize,
-          adjustBoundaryMode: AdjustBoundaryMode.leftCenter,
+        adjustBoundary(
+          containerSize: containerSize,
           left: boundary.left + delta.dx,
         );
       case AdjustBoundaryMode.rightCenter:
-        _adjustBoundary(
-          layoutSize: layoutSize,
-          minBoundarySize: minBoundarySize,
-          adjustBoundaryMode: AdjustBoundaryMode.rightCenter,
+        adjustBoundary(
+          containerSize: containerSize,
           right: boundary.right + delta.dx,
         );
       default:
@@ -180,61 +246,6 @@ class AdjustBoundaryExtension extends ChangeNotifier {
   @internal
   void onPanEnd() {
     adjustBoundaryMode = null;
-  }
-
-  void _adjustBoundary({
-    required Size layoutSize,
-    required Size minBoundarySize,
-    required AdjustBoundaryMode adjustBoundaryMode,
-    double? left,
-    double? top,
-    double? right,
-    double? bottom,
-  }) {
-    top = max(0, top ?? boundary.top);
-    left = max(0, left ?? boundary.left);
-    right = min(layoutSize.width, right ?? boundary.right);
-    bottom = min(layoutSize.height, bottom ?? boundary.bottom);
-    // 更新裁剪高度或宽度以匹配指定的长宽比
-    final aspectRatio = this.aspectRatio;
-    if (aspectRatio != null) {
-      final width = right - left;
-      final height = bottom - top;
-      if (width / height > aspectRatio) {
-        switch (adjustBoundaryMode) {
-          case AdjustBoundaryMode.leftTop:
-          case AdjustBoundaryMode.leftBottom:
-            left = right - height * aspectRatio;
-          case AdjustBoundaryMode.rightTop:
-          case AdjustBoundaryMode.rightBottom:
-            right = left + height * aspectRatio;
-          default:
-            break;
-        }
-      } else {
-        switch (adjustBoundaryMode) {
-          case AdjustBoundaryMode.leftTop:
-          case AdjustBoundaryMode.rightTop:
-            top = bottom - width / aspectRatio;
-          case AdjustBoundaryMode.leftBottom:
-          case AdjustBoundaryMode.rightBottom:
-            bottom = top + width / aspectRatio;
-          default:
-            break;
-        }
-      }
-    }
-    final newBoundary = Rect.fromLTRB(left, top, right, bottom);
-    // 如果超出范围，不要应用更改
-    if (newBoundary.width < minBoundarySize.width ||
-        newBoundary.height < minBoundarySize.height ||
-        newBoundary.left < 0 ||
-        newBoundary.top < 0 ||
-        newBoundary.right > layoutSize.width ||
-        newBoundary.bottom > layoutSize.height) {
-      return;
-    }
-    boundary = newBoundary;
   }
 }
 
@@ -321,14 +332,19 @@ class AdjustBoundary extends StatelessWidget {
     return ListenableBuilder(
       listenable: extension,
       builder: (context, _) {
-        return CustomPaint(
-          size: Size.infinite,
-          painter: _AdjustBoundaryPainter(
-            boundary: extension.boundary,
-            adjustBoundaryMode: extension.adjustBoundaryMode,
-            style: style,
-          ),
-        );
+        final boundary = extension.boundary;
+        if (boundary != null) {
+          return CustomPaint(
+            size: Size.infinite,
+            painter: _AdjustBoundaryPainter(
+              boundary: boundary,
+              adjustBoundaryMode: extension.adjustBoundaryMode,
+              style: style,
+            ),
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
       },
     );
   }

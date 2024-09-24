@@ -8,12 +8,11 @@ class DrawPage extends StatefulWidget {
   State<StatefulWidget> createState() => _DrawState();
 }
 
-enum _AspectRation { free, r1_1, r4_3, r16_9 }
+enum _AspectRation { free, r1_1, r16_9, r9_16 }
 
 class _DrawState extends State<DrawPage> {
   late final CanvasContainerController controller;
 
-  bool autoScale = false;
   _AspectRation aspectRatio = _AspectRation.free;
 
   @override
@@ -24,6 +23,7 @@ class _DrawState extends State<DrawPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Draw Page'),
@@ -36,7 +36,7 @@ class _DrawState extends State<DrawPage> {
                   onPressed: () {
                     controller.adjustBoundaryEnabled = false;
                   },
-                  color: Colors.white,
+                  color: theme.colorScheme.onPrimary,
                   icon: const Icon(Icons.crop),
                 );
               } else {
@@ -59,9 +59,11 @@ class _DrawState extends State<DrawPage> {
               Expanded(
                 child: CanvasContainer(
                   controller: controller,
-                  autoScale: autoScale,
-                  child: Container(
-                    color: Colors.blue,
+                  builder: (context, constraints) => CanvasContainerChild(
+                    size: constraints.biggest,
+                    child: Container(
+                      color: Colors.blue,
+                    ),
                   ),
                 ),
               ),
@@ -72,14 +74,19 @@ class _DrawState extends State<DrawPage> {
                   children: [
                     Row(
                       children: [
-                        Text("Rotate: ${controller.rotation}"),
+                        Text("Rotate: ${controller.rotation ?? 0}"),
                         Expanded(
                           child: Slider(
                             min: 0,
                             max: 359,
-                            value: controller.rotation.toDouble(),
+                            value: controller.rotation?.toDouble() ?? 0,
                             onChanged: (value) {
-                              controller.rotation = value.toInt();
+                              final rotation = value.toInt();
+                              if (rotation != 0) {
+                                controller.rotation = rotation;
+                              } else {
+                                controller.rotation = null;
+                              }
                             },
                           ),
                         ),
@@ -88,25 +95,20 @@ class _DrawState extends State<DrawPage> {
                     Row(
                       children: [
                         Text(
-                            "Scale: ${FormatHelper.printNum(controller.scale, maxFractionDigits: 1)}"),
+                            "Scale: ${FormatHelper.printNum(controller.scale ?? 0, maxFractionDigits: 1)}"),
                         Expanded(
                           child: Slider(
-                            min: 0.1,
-                            max: 3.0,
-                            value: controller.scale,
+                            min: 0,
+                            max: 3,
+                            value: controller.scale ?? 0,
                             onChanged: (value) {
-                              controller.scale = value;
+                              if (value > 0) {
+                                controller.scale = value;
+                              } else {
+                                controller.scale = null;
+                              }
                             },
                           ),
-                        ),
-                        const Text("Auto Scale:"),
-                        Switch(
-                          value: autoScale,
-                          onChanged: (value) {
-                            setState(() {
-                              autoScale = value;
-                            });
-                          },
                         ),
                       ],
                     ),
@@ -128,9 +130,7 @@ class _DrawState extends State<DrawPage> {
                                 style: ButtonStyle(
                                   foregroundColor: WidgetStatePropertyAll(
                                       aspectRatio == _AspectRation.free
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .primary
+                                          ? theme.colorScheme.primary
                                           : Colors.grey),
                                 ),
                                 child: const Text("free"),
@@ -146,30 +146,10 @@ class _DrawState extends State<DrawPage> {
                                 style: ButtonStyle(
                                   foregroundColor: WidgetStatePropertyAll(
                                       aspectRatio == _AspectRation.r1_1
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .primary
+                                          ? theme.colorScheme.primary
                                           : Colors.grey),
                                 ),
                                 child: const Text("1:1"),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  controller.adjustBoundaryExtension
-                                      .aspectRatio = 4 / 3;
-                                  setState(() {
-                                    aspectRatio = _AspectRation.r4_3;
-                                  });
-                                },
-                                style: ButtonStyle(
-                                  foregroundColor: WidgetStatePropertyAll(
-                                      aspectRatio == _AspectRation.r4_3
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                          : Colors.grey),
-                                ),
-                                child: const Text("4:3"),
                               ),
                               TextButton(
                                 onPressed: () {
@@ -182,12 +162,26 @@ class _DrawState extends State<DrawPage> {
                                 style: ButtonStyle(
                                   foregroundColor: WidgetStatePropertyAll(
                                       aspectRatio == _AspectRation.r16_9
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .primary
+                                          ? theme.colorScheme.primary
                                           : Colors.grey),
                                 ),
                                 child: const Text("16:9"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  controller.adjustBoundaryExtension
+                                      .aspectRatio = 9 / 16;
+                                  setState(() {
+                                    aspectRatio = _AspectRation.r9_16;
+                                  });
+                                },
+                                style: ButtonStyle(
+                                  foregroundColor: WidgetStatePropertyAll(
+                                      aspectRatio == _AspectRation.r9_16
+                                          ? theme.colorScheme.primary
+                                          : Colors.grey),
+                                ),
+                                child: const Text("9:16"),
                               ),
                             ],
                           )),
