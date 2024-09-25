@@ -5,13 +5,18 @@ import 'package:flutter/gestures.dart';
 import 'package:meta/meta.dart';
 
 import 'adjust_boundary.dart';
+import 'drawing_board.dart';
 
 class CanvasContainerController extends ChangeNotifier {
+  late final DrawingBoardExtension drawingBoardExtension;
   late final AdjustBoundaryExtension adjustBoundaryExtension;
 
   CanvasContainerController({
+    DrawingBoardExtension? drawingBoardExtension,
     AdjustBoundaryExtension? adjustBoundaryExtension,
   }) {
+    this.drawingBoardExtension =
+        drawingBoardExtension ?? DrawingBoardExtension();
     this.adjustBoundaryExtension =
         adjustBoundaryExtension ?? AdjustBoundaryExtension();
   }
@@ -25,8 +30,19 @@ class CanvasContainerController extends ChangeNotifier {
   set containerSize(Size? value) {
     if (_containerSize != value) {
       _containerSize = value;
-      notifyListeners();
       adjustBoundaryExtension.adjustBoundary(containerSize: value);
+    }
+  }
+
+  /// 画板功能开关
+  bool _drawingBoardEnabled = false;
+
+  bool get drawingBoardEnabled => _drawingBoardEnabled;
+
+  set drawingBoardEnabled(bool value) {
+    if (_drawingBoardEnabled != value) {
+      _drawingBoardEnabled = value;
+      notifyListeners();
     }
   }
 
@@ -82,6 +98,9 @@ class CanvasContainerController extends ChangeNotifier {
 
   @internal
   void onPanDown(DragDownDetails details) {
+    if (drawingBoardEnabled) {
+      drawingBoardExtension.onPanDown(details);
+    }
     if (adjustBoundaryEnabled) {
       adjustBoundaryExtension.onPanDown(details.localPosition);
     }
@@ -89,6 +108,9 @@ class CanvasContainerController extends ChangeNotifier {
 
   @internal
   void onPanUpdate(DragUpdateDetails details) {
+    if (drawingBoardEnabled) {
+      drawingBoardExtension.onPanUpdate(details);
+    }
     if (adjustBoundaryEnabled) {
       adjustBoundaryExtension.onPanUpdate(
         delta: details.delta,
@@ -99,6 +121,9 @@ class CanvasContainerController extends ChangeNotifier {
 
   @internal
   void onPanEnd(DragEndDetails details) {
+    if (drawingBoardEnabled) {
+      drawingBoardExtension.onPanEnd(containerSize: containerSize);
+    }
     if (adjustBoundaryEnabled) {
       adjustBoundaryExtension.onPanEnd();
     }
@@ -106,6 +131,9 @@ class CanvasContainerController extends ChangeNotifier {
 
   @internal
   void onPanCancel() {
+    if (drawingBoardEnabled) {
+      drawingBoardExtension.onPanEnd(containerSize: containerSize);
+    }
     if (adjustBoundaryEnabled) {
       adjustBoundaryExtension.onPanEnd();
     }
@@ -115,6 +143,7 @@ class CanvasContainerController extends ChangeNotifier {
 
   @override
   void dispose() {
+    drawingBoardExtension.dispose();
     adjustBoundaryExtension.dispose();
     super.dispose();
   }

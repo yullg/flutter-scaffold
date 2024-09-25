@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'adjust_boundary.dart';
 import 'canvas_container_controller.dart';
+import 'drawing_board.dart';
 
 class CanvasContainer extends StatelessWidget {
   final CanvasContainerController controller;
@@ -57,6 +58,10 @@ class CanvasContainer extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         canvasContainerChild.child,
+                        if (controller.drawingBoardEnabled)
+                          DrawingBoard(
+                            extension: controller.drawingBoardExtension,
+                          ),
                         if (controller.adjustBoundaryEnabled)
                           AdjustBoundary(
                             extension: controller.adjustBoundaryExtension,

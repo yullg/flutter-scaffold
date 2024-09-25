@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
@@ -24,52 +26,136 @@ class _DrawState extends State<DrawPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Draw Page'),
-        actions: [
-          ListenableBuilder(
-            listenable: controller,
-            builder: (context, _) {
-              if (controller.adjustBoundaryEnabled) {
-                return IconButton.filled(
-                  onPressed: () {
-                    controller.adjustBoundaryEnabled = false;
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Draw Page'),
+          actions: [
+            Builder(
+              builder: (context) {
+                if (controller.drawingBoardEnabled) {
+                  return IconButton.filled(
+                    onPressed: () {
+                      controller.drawingBoardEnabled = false;
+                    },
+                    color: theme.colorScheme.onPrimary,
+                    icon: const Icon(Icons.draw),
+                  );
+                } else {
+                  return IconButton(
+                    onPressed: () {
+                      controller.drawingBoardEnabled = true;
+                    },
+                    icon: const Icon(Icons.draw),
+                  );
+                }
+              },
+            ),
+            Builder(
+              builder: (context) {
+                if (controller.adjustBoundaryEnabled) {
+                  return IconButton.filled(
+                    onPressed: () {
+                      controller.adjustBoundaryEnabled = false;
+                    },
+                    color: theme.colorScheme.onPrimary,
+                    icon: const Icon(Icons.crop),
+                  );
+                } else {
+                  return IconButton(
+                    onPressed: () {
+                      controller.adjustBoundaryEnabled = true;
+                    },
+                    icon: const Icon(Icons.crop),
+                  );
+                }
+              },
+            ),
+            PopupMenuButton(
+              position: PopupMenuPosition.under,
+              itemBuilder: (context) => <PopupMenuEntry>[
+                if (controller.drawingBoardEnabled)
+                  PopupMenuItem(
+                    child: const Text("上一步"),
+                    onTap: () async {
+                      if (controller.drawingBoardExtension.canUndo) {
+                        controller.drawingBoardExtension.undo();
+                      } else {
+                        Toast.showShort(context, "没有上一步!");
+                      }
+                    },
+                  ),
+                if (controller.drawingBoardEnabled) const PopupMenuDivider(),
+                if (controller.drawingBoardEnabled)
+                  PopupMenuItem(
+                    child: const Text("下一步"),
+                    onTap: () async {
+                      if (controller.drawingBoardExtension.canRedo) {
+                        controller.drawingBoardExtension.redo();
+                      } else {
+                        Toast.showShort(context, "没有下一步!");
+                      }
+                    },
+                  ),
+                if (controller.drawingBoardEnabled) const PopupMenuDivider(),
+                if (controller.drawingBoardEnabled)
+                  PopupMenuItem(
+                    child: const Text("橡皮檫"),
+                    onTap: () async {
+                      if (controller.drawingBoardExtension.paintBlendMode !=
+                          BlendMode.clear) {
+                        controller.drawingBoardExtension.paintBlendMode =
+                            BlendMode.clear;
+                        Toast.showShort(context, "橡皮檫已打开!");
+                      } else {
+                        controller.drawingBoardExtension.paintBlendMode =
+                            BlendMode.srcOver;
+                        Toast.showShort(context, "橡皮檫已关闭!");
+                      }
+                    },
+                  ),
+                if (controller.drawingBoardEnabled) const PopupMenuDivider(),
+                PopupMenuItem(
+                  child: const Text("导出"),
+                  onTap: () async {
+                    final image = controller.drawingBoardExtension.image;
+                    if (image == null) return;
+                    final bytes =
+                        await image.toByteData(format: ImageByteFormat.png);
+                    if (bytes == null) return;
+                    final file = await StorageFile(
+                            StorageType.cache, "${UuidHelper.v4()}.png")
+                        .file;
+                    file.writeAsBytes(bytes.buffer.asInt8List(), flush: true);
+                    GallerySavePlugin.saveImage(file).then((_) {
+                      if (context.mounted) {
+                        Toast.showShort(context, "导出成功!");
+                      }
+                    });
                   },
-                  color: theme.colorScheme.onPrimary,
-                  icon: const Icon(Icons.crop),
-                );
-              } else {
-                return IconButton(
-                  onPressed: () {
-                    controller.adjustBoundaryEnabled = true;
-                  },
-                  icon: const Icon(Icons.crop),
-                );
-              }
-            },
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: Column(
-            children: [
-              Expanded(
-                child: CanvasContainer(
-                  controller: controller,
-                  builder: (context, constraints) => CanvasContainerChild(
-                    size: constraints.biggest,
-                    child: Container(
-                      color: Colors.blue,
+                ),
+              ],
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Column(
+              children: [
+                Expanded(
+                  child: CanvasContainer(
+                    controller: controller,
+                    builder: (context, constraints) => CanvasContainerChild(
+                      size: constraints.biggest,
+                      child: Container(
+                        color: Colors.blue,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              ListenableBuilder(
-                listenable: controller,
-                builder: (context, _) => Column(
+                Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Row(
@@ -112,6 +198,27 @@ class _DrawState extends State<DrawPage> {
                         ),
                       ],
                     ),
+                    if (controller.drawingBoardEnabled)
+                      Row(
+                        children: [
+                          Text(
+                              "Paint Width: ${controller.drawingBoardExtension.paintStrokeWidth.toInt()}"),
+                          Expanded(
+                            child: Slider(
+                              min: 0,
+                              max: 20,
+                              value: controller
+                                  .drawingBoardExtension.paintStrokeWidth,
+                              onChanged: (value) {
+                                setState(() {
+                                  controller.drawingBoardExtension
+                                      .paintStrokeWidth = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     if (controller.adjustBoundaryEnabled)
                       Row(
                         children: [
@@ -189,8 +296,8 @@ class _DrawState extends State<DrawPage> {
                       ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
