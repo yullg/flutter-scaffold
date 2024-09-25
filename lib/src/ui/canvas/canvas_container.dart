@@ -40,6 +40,7 @@ class CanvasContainer extends StatelessWidget {
               child: Transform.scale(
                 scale: scale,
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onPanDown: (details) {
                     controller.onPanDown(details);
                   },
@@ -113,5 +114,26 @@ class CanvasContainerChild {
     if (!size.isFinite) {
       throw ArgumentError("Size must be finite");
     }
+  }
+
+  CanvasContainerChild.contain({
+    required Size boxSize,
+    required Size childSize,
+    required this.child,
+  }) : size = _calculateSize(boxSize, childSize);
+
+  static Size _calculateSize(Size boxSize, Size childSize) {
+    if (!boxSize.isFinite) {
+      throw ArgumentError("BoxSize must be finite");
+    }
+    if (!childSize.isFinite) {
+      throw ArgumentError("ChildSize must be finite");
+    }
+    final boxAspectRatio = boxSize.width / boxSize.height;
+    final childAspectRatio = childSize.width / childSize.height;
+    final scale = childAspectRatio > boxAspectRatio
+        ? boxSize.width / childSize.width
+        : boxSize.height / childSize.height;
+    return Size(childSize.width * scale, childSize.height * scale);
   }
 }

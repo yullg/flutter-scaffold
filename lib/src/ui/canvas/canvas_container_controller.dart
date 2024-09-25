@@ -83,7 +83,7 @@ class CanvasContainerController extends ChangeNotifier {
   }
 
   /// 缩放比例
-  double? _scale;
+  double? _scale = 1;
 
   double? get scale => _scale;
 
