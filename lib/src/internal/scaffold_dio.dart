@@ -1,22 +1,30 @@
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 
 import 'scaffold_logger.dart';
 
-class ScaffoldDio {
-  static final Dio dio = _newDio();
+class ScaffoldDio extends DioForNative {
+  static ScaffoldDio? _instance;
 
-  static Dio _newDio() {
-    final dio = Dio(BaseOptions(
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-    ));
-    dio.interceptors.add(LogInterceptor(
+  factory ScaffoldDio() {
+    return _instance ??= ScaffoldDio._();
+  }
+
+  ScaffoldDio._()
+      : super(BaseOptions(
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+        )) {
+    interceptors.add(LogInterceptor(
       requestBody: true,
       responseBody: true,
       logPrint: (log) => ScaffoldLogger.debug(log),
     ));
-    return dio;
   }
 
-  ScaffoldDio._();
+  @override
+  void close({bool force = false}) {
+    // 禁用 dispose，防止实例被销毁
+    throw UnsupportedError('Singleton instances should not be closed.');
+  }
 }

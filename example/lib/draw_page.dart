@@ -103,13 +103,13 @@ class _DrawState extends State<DrawPage> {
                   PopupMenuItem(
                     child: const Text("橡皮檫"),
                     onTap: () async {
-                      if (controller.drawingBoardExtension.paintBlendMode !=
+                      if (controller.drawingBoardExtension.paint.blendMode !=
                           BlendMode.clear) {
-                        controller.drawingBoardExtension.paintBlendMode =
+                        controller.drawingBoardExtension.paint.blendMode =
                             BlendMode.clear;
                         Toast.showShort(context, "橡皮檫已打开!");
                       } else {
-                        controller.drawingBoardExtension.paintBlendMode =
+                        controller.drawingBoardExtension.paint.blendMode =
                             BlendMode.srcOver;
                         Toast.showShort(context, "橡皮檫已关闭!");
                       }
@@ -202,17 +202,17 @@ class _DrawState extends State<DrawPage> {
                       Row(
                         children: [
                           Text(
-                              "Paint Width: ${controller.drawingBoardExtension.paintStrokeWidth.toInt()}"),
+                              "Paint Width: ${controller.drawingBoardExtension.paint.strokeWidth.toInt()}"),
                           Expanded(
                             child: Slider(
                               min: 0,
                               max: 20,
                               value: controller
-                                  .drawingBoardExtension.paintStrokeWidth,
+                                  .drawingBoardExtension.paint.strokeWidth,
                               onChanged: (value) {
                                 setState(() {
-                                  controller.drawingBoardExtension
-                                      .paintStrokeWidth = value;
+                                  controller.drawingBoardExtension.paint
+                                      .strokeWidth = value;
                                 });
                               },
                             ),

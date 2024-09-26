@@ -10,12 +10,24 @@ class CanvasContainer extends StatelessWidget {
   final CanvasContainerController controller;
   final CanvasContainerChild Function(BuildContext, BoxConstraints) builder;
   final AdjustBoundaryStyle adjustBoundaryStyle;
+  final GestureTapDownCallback? onTapDown;
+  final GestureTapUpCallback? onTapUp;
+  final GestureDragDownCallback? onPanDown;
+  final GestureDragUpdateCallback? onPanUpdate;
+  final GestureDragEndCallback? onPanEnd;
+  final GestureDragCancelCallback? onPanCancel;
 
   const CanvasContainer({
     super.key,
     required this.controller,
     required this.builder,
     this.adjustBoundaryStyle = const AdjustBoundaryStyle(),
+    this.onTapDown,
+    this.onTapUp,
+    this.onPanDown,
+    this.onPanUpdate,
+    this.onPanEnd,
+    this.onPanCancel,
   });
 
   @override
@@ -41,17 +53,27 @@ class CanvasContainer extends StatelessWidget {
                 scale: scale,
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
+                  onTapDown: (details) {
+                    onTapDown?.call(details);
+                  },
+                  onTapUp: (details) {
+                    onTapUp?.call(details);
+                  },
                   onPanDown: (details) {
                     controller.onPanDown(details);
+                    onPanDown?.call(details);
                   },
                   onPanUpdate: (details) {
                     controller.onPanUpdate(details);
+                    onPanUpdate?.call(details);
                   },
                   onPanEnd: (details) {
                     controller.onPanEnd(details);
+                    onPanEnd?.call(details);
                   },
                   onPanCancel: () {
                     controller.onPanCancel();
+                    onPanCancel?.call();
                   },
                   child: SizedBox.fromSize(
                     size: canvasContainerChild.size,

@@ -1,6 +1,7 @@
 import 'scaffold_cache_option.dart';
 import 'scaffold_database_option.dart';
 import 'scaffold_developer_option.dart';
+import 'scaffold_dio_option.dart';
 import 'scaffold_error_print_option.dart';
 import 'scaffold_logger_option.dart';
 
@@ -14,6 +15,7 @@ class ScaffoldConfig {
   static ScaffoldDatabaseOption? _databaseOption;
   static ScaffoldErrorPrintOption? _errorPrintOption;
   static ScaffoldLoggerOption? _loggerOption;
+  static ScaffoldDioOption? _dioOption;
 
   static ScaffoldDeveloperOption? get developerOption => _developerOption;
 
@@ -25,18 +27,22 @@ class ScaffoldConfig {
 
   static ScaffoldLoggerOption? get loggerOption => _loggerOption;
 
+  static ScaffoldDioOption? get dioOption => _dioOption;
+
   static void apply({
     ScaffoldDeveloperOption? developerOption,
     ScaffoldCacheOption? cacheOption,
     ScaffoldDatabaseOption? databaseOption,
     ScaffoldErrorPrintOption? errorPrintOption,
     ScaffoldLoggerOption? loggerOption,
+    ScaffoldDioOption? dioOption,
   }) {
     _developerOption = developerOption;
     _cacheOption = cacheOption;
     _databaseOption = databaseOption;
     _errorPrintOption = errorPrintOption;
     _loggerOption = loggerOption;
+    _dioOption = dioOption;
   }
 
   static void reset() {
@@ -45,6 +51,7 @@ class ScaffoldConfig {
     _databaseOption = null;
     _errorPrintOption = null;
     _loggerOption = null;
+    _dioOption = null;
   }
 
   ScaffoldConfig._();

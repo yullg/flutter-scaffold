@@ -30,7 +30,8 @@ class CanvasContainerController extends ChangeNotifier {
   set containerSize(Size? value) {
     if (_containerSize != value) {
       _containerSize = value;
-      adjustBoundaryExtension.adjustBoundary(containerSize: value);
+      drawingBoardExtension.containerSize = value;
+      adjustBoundaryExtension.containerSize = value;
     }
   }
 

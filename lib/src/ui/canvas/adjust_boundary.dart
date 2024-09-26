@@ -10,6 +10,17 @@ class AdjustBoundaryExtension extends ChangeNotifier {
     this.minBoundarySize = const Size(48, 48),
   });
 
+  // ---------- 画板 ----------
+  Size? _containerSize;
+
+  @internal
+  set containerSize(Size? value) {
+    if (_containerSize != value) {
+      _containerSize = value;
+      adjustBoundary(containerSize: value);
+    }
+  }
+
   Rect? _boundary;
   double? _aspectRatio;
   AdjustBoundaryMode? _adjustBoundaryMode;

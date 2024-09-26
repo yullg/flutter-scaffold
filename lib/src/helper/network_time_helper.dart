@@ -12,21 +12,24 @@ class NetworkTimeHelper {
     DateTime? localLastNetworkTime = _lastNetworkTime;
     Duration? localLastElapsedRealtime = _lastElapsedRealtime;
     if (localLastNetworkTime == null || localLastElapsedRealtime == null) {
-      final response = await ScaffoldDio.dio.get(
+      final response = await ScaffoldDio().get(
         "https://worldtimeapi.org/api/timezone/Etc/UTC",
         options: Options(
           responseType: ResponseType.json,
         ),
       );
       int secondsSinceEpoch = response.data["unixtime"];
-      localLastNetworkTime = DateTime.fromMillisecondsSinceEpoch(secondsSinceEpoch * 1000, isUtc: true);
+      localLastNetworkTime = DateTime.fromMillisecondsSinceEpoch(
+          secondsSinceEpoch * 1000,
+          isUtc: true);
       localLastElapsedRealtime = await SystemClockPlugin.elapsedRealtime();
       _lastNetworkTime = localLastNetworkTime;
       _lastElapsedRealtime = localLastElapsedRealtime;
       return localLastNetworkTime;
     } else {
       final nowElapsedRealtime = await SystemClockPlugin.elapsedRealtime();
-      return localLastNetworkTime.add(nowElapsedRealtime - localLastElapsedRealtime);
+      return localLastNetworkTime
+          .add(nowElapsedRealtime - localLastElapsedRealtime);
     }
   }
 
