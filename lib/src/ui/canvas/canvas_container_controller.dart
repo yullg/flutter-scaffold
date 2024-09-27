@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -26,13 +27,16 @@ class CanvasContainerController extends ChangeNotifier {
 
   Size? get containerSize => _containerSize;
 
+  final _initializedCompleter = Completer<void>();
+
+  Future<void> get initializedFuture => _initializedCompleter.future;
+
   @internal
-  set containerSize(Size? value) {
-    if (_containerSize != value) {
-      _containerSize = value;
-      drawingBoardExtension.containerSize = value;
-      adjustBoundaryExtension.containerSize = value;
-    }
+  void initialize({required Size containerSize}) {
+    _containerSize = containerSize;
+    drawingBoardExtension.containerSize = containerSize;
+    adjustBoundaryExtension.containerSize = containerSize;
+    _initializedCompleter.complete();
   }
 
   /// 画板功能开关
@@ -123,7 +127,7 @@ class CanvasContainerController extends ChangeNotifier {
   @internal
   void onPanEnd(DragEndDetails details) {
     if (drawingBoardEnabled) {
-      drawingBoardExtension.onPanEnd(containerSize: containerSize);
+      drawingBoardExtension.onPanEnd();
     }
     if (adjustBoundaryEnabled) {
       adjustBoundaryExtension.onPanEnd();
@@ -133,7 +137,7 @@ class CanvasContainerController extends ChangeNotifier {
   @internal
   void onPanCancel() {
     if (drawingBoardEnabled) {
-      drawingBoardExtension.onPanEnd(containerSize: containerSize);
+      drawingBoardExtension.onPanEnd();
     }
     if (adjustBoundaryEnabled) {
       adjustBoundaryExtension.onPanEnd();

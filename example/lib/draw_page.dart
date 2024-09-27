@@ -119,7 +119,7 @@ class _DrawState extends State<DrawPage> {
                 PopupMenuItem(
                   child: const Text("导出"),
                   onTap: () async {
-                    final image = controller.drawingBoardExtension.image;
+                    final image = controller.drawingBoardExtension.export();
                     if (image == null) return;
                     final bytes =
                         await image.toByteData(format: ImageByteFormat.png);

@@ -9,6 +9,7 @@ import 'drawing_board.dart';
 class CanvasContainer extends StatelessWidget {
   final CanvasContainerController controller;
   final CanvasContainerChild Function(BuildContext, BoxConstraints) builder;
+  final AlignmentGeometry alignment;
   final AdjustBoundaryStyle adjustBoundaryStyle;
   final GestureTapDownCallback? onTapDown;
   final GestureTapUpCallback? onTapUp;
@@ -21,6 +22,7 @@ class CanvasContainer extends StatelessWidget {
     super.key,
     required this.controller,
     required this.builder,
+    this.alignment = Alignment.center,
     this.adjustBoundaryStyle = const AdjustBoundaryStyle(),
     this.onTapDown,
     this.onTapUp,
@@ -32,73 +34,76 @@ class CanvasContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final biggestSize = constraints.biggest;
-        final canvasContainerChild = builder(context, constraints);
-        controller.containerSize = canvasContainerChild.size;
-        return ListenableBuilder(
-          listenable: controller,
-          builder: (context, _) {
-            final rotationAngle = (controller.rotation ?? 0) * (pi / 180);
-            final scale = controller.scale ??
-                _calculateAutoScale(
-                  parentSize: biggestSize,
-                  childSize: canvasContainerChild.size,
-                  rotationAngle: rotationAngle,
-                );
-            return Transform.rotate(
-              angle: rotationAngle,
-              child: Transform.scale(
-                scale: scale,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTapDown: (details) {
-                    onTapDown?.call(details);
-                  },
-                  onTapUp: (details) {
-                    onTapUp?.call(details);
-                  },
-                  onPanDown: (details) {
-                    controller.onPanDown(details);
-                    onPanDown?.call(details);
-                  },
-                  onPanUpdate: (details) {
-                    controller.onPanUpdate(details);
-                    onPanUpdate?.call(details);
-                  },
-                  onPanEnd: (details) {
-                    controller.onPanEnd(details);
-                    onPanEnd?.call(details);
-                  },
-                  onPanCancel: () {
-                    controller.onPanCancel();
-                    onPanCancel?.call();
-                  },
-                  child: SizedBox.fromSize(
-                    size: canvasContainerChild.size,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        canvasContainerChild.child,
-                        if (controller.drawingBoardEnabled)
-                          DrawingBoard(
-                            extension: controller.drawingBoardExtension,
-                          ),
-                        if (controller.adjustBoundaryEnabled)
-                          AdjustBoundary(
-                            extension: controller.adjustBoundaryExtension,
-                            style: adjustBoundaryStyle,
-                          ),
-                      ],
+    return Align(
+      alignment: alignment,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final biggestSize = constraints.biggest;
+          final canvasContainerChild = builder(context, constraints);
+          controller.initialize(containerSize: canvasContainerChild.size);
+          return ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) {
+              final rotationAngle = (controller.rotation ?? 0) * (pi / 180);
+              final scale = controller.scale ??
+                  _calculateAutoScale(
+                    parentSize: biggestSize,
+                    childSize: canvasContainerChild.size,
+                    rotationAngle: rotationAngle,
+                  );
+              return Transform.rotate(
+                angle: rotationAngle,
+                child: Transform.scale(
+                  scale: scale,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTapDown: (details) {
+                      onTapDown?.call(details);
+                    },
+                    onTapUp: (details) {
+                      onTapUp?.call(details);
+                    },
+                    onPanDown: (details) {
+                      controller.onPanDown(details);
+                      onPanDown?.call(details);
+                    },
+                    onPanUpdate: (details) {
+                      controller.onPanUpdate(details);
+                      onPanUpdate?.call(details);
+                    },
+                    onPanEnd: (details) {
+                      controller.onPanEnd(details);
+                      onPanEnd?.call(details);
+                    },
+                    onPanCancel: () {
+                      controller.onPanCancel();
+                      onPanCancel?.call();
+                    },
+                    child: SizedBox.fromSize(
+                      size: canvasContainerChild.size,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          canvasContainerChild.child,
+                          if (controller.drawingBoardEnabled)
+                            DrawingBoard(
+                              extension: controller.drawingBoardExtension,
+                            ),
+                          if (controller.adjustBoundaryEnabled)
+                            AdjustBoundary(
+                              extension: controller.adjustBoundaryExtension,
+                              style: adjustBoundaryStyle,
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 

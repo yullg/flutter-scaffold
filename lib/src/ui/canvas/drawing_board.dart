@@ -6,33 +6,21 @@ import 'package:meta/meta.dart';
 import 'package:scaffold/scaffold_lang.dart';
 
 class DrawingBoardExtension extends ChangeNotifier {
-  final _paint = Paint();
+  final paint = DrawingBoardPaint();
 
-  late final DrawingBoardPaint paint;
-
-  DrawingBoardExtension() {
-    _paint.style = PaintingStyle.stroke;
-    _paint.strokeCap = StrokeCap.round;
-    _paint.isAntiAlias = true;
-    _paint.strokeWidth = 8;
-    paint = DrawingBoardPaint(_paint);
-  }
-
-  // ---------- 画板 ----------
+  /// 画板大小
   Size? _containerSize;
 
   @internal
   set containerSize(Size? value) {
-    if (_containerSize != value) {
-      _containerSize = value;
-    }
+    _containerSize = value;
   }
 
   // ---------- 历史快照管理 ----------
   final _imageList = <ui.Image>[];
   int _imageIndex = -1;
 
-  ui.Image? get image {
+  ui.Image? get _image {
     if (_imageIndex >= 0 && _imageIndex < _imageList.length) {
       return _imageList[_imageIndex];
     } else {
@@ -43,14 +31,6 @@ class DrawingBoardExtension extends ChangeNotifier {
   bool get canUndo => _imageIndex >= 0;
 
   bool get canRedo => _imageIndex < _imageList.length - 1;
-
-  void erase() {
-    if (_imageList.isNotEmpty) {
-      _imageList.clear();
-      _imageIndex = -1;
-      notifyListeners();
-    }
-  }
 
   void undo() {
     if (canUndo) {
@@ -66,15 +46,82 @@ class DrawingBoardExtension extends ChangeNotifier {
     }
   }
 
-  void join(ui.Image image) {
-    final pictureRecorder = ui.PictureRecorder();
-    final canvas = Canvas(pictureRecorder);
-    this.image?.let((it) {
-      canvas.drawImage(it, Offset.zero, Paint());
-    });
+  void erase() {
+    if (_imageList.isNotEmpty) {
+      _imageList.clear();
+      _imageIndex = -1;
+      notifyListeners();
+    }
   }
 
-  void _pushImage(ui.Image image) {
+  void push(
+    ui.Image image, {
+    BoxFit? fit,
+    Alignment alignment = Alignment.center,
+  }) {
+    final containerSize = _containerSize;
+    if (containerSize == null) {
+      throw StateError("Unable to get container size");
+    }
+    final pictureRecorder = ui.PictureRecorder();
+    final canvas = Canvas(pictureRecorder);
+    canvas.scale(_kImageCanvasScale);
+    paintImage(
+      canvas: canvas,
+      rect: Rect.fromLTWH(0, 0, containerSize.width.toDouble(),
+          containerSize.height.toDouble()),
+      image: image,
+      fit: fit,
+      alignment: alignment,
+    );
+    final picture = pictureRecorder.endRecording();
+    try {
+      final mergedImage = picture.toImageSync(
+          (containerSize.width * _kImageCanvasScale).floor(),
+          (containerSize.height * _kImageCanvasScale).floor());
+      _addImage(mergedImage);
+    } finally {
+      picture.dispose();
+    }
+  }
+
+  void merge(
+    ui.Image image, {
+    BoxFit? fit,
+    Alignment alignment = Alignment.center,
+  }) {
+    final containerSize = _containerSize;
+    if (containerSize == null) {
+      throw StateError("Unable to get container size");
+    }
+    final pictureRecorder = ui.PictureRecorder();
+    final canvas = Canvas(pictureRecorder);
+    _image?.let((it) {
+      canvas.drawImage(it, Offset.zero, Paint());
+    });
+    canvas.scale(_kImageCanvasScale);
+    paintImage(
+      canvas: canvas,
+      rect: Rect.fromLTWH(0, 0, containerSize.width.toDouble(),
+          containerSize.height.toDouble()),
+      image: image,
+      fit: fit,
+      alignment: alignment,
+    );
+    final picture = pictureRecorder.endRecording();
+    try {
+      final mergedImage = picture.toImageSync(
+          (containerSize.width * _kImageCanvasScale).floor(),
+          (containerSize.height * _kImageCanvasScale).floor());
+      _addImage(mergedImage);
+    } finally {
+      picture.dispose();
+    }
+  }
+
+  ui.Image? export() => _image?.clone();
+
+  void _addImage(ui.Image image) {
     _imageList.add(image);
     _imageIndex = max(-1, _imageList.length - 1);
     notifyListeners();
@@ -85,8 +132,6 @@ class DrawingBoardExtension extends ChangeNotifier {
 
   Path? _currentPath;
   ui.Offset? _currentPosition;
-  ui.PictureRecorder? _currentPictureRecorder;
-  Canvas? _currentCanvas;
 
   void pause() => _paused = true;
 
@@ -98,14 +143,6 @@ class DrawingBoardExtension extends ChangeNotifier {
     _currentPath = Path()
       ..moveTo(details.localPosition.dx, details.localPosition.dy);
     _currentPosition = details.localPosition;
-    final pictureRecorder = ui.PictureRecorder();
-    final canvas = Canvas(pictureRecorder);
-    image?.let((it) {
-      canvas.drawImage(it, Offset.zero, Paint());
-    });
-    canvas.scale(_kImageCanvasScale);
-    _currentPictureRecorder = pictureRecorder;
-    _currentCanvas = canvas;
     notifyListeners();
   }
 
@@ -118,33 +155,32 @@ class DrawingBoardExtension extends ChangeNotifier {
   }
 
   @internal
-  void onPanEnd({required Size? containerSize}) {
-    if (_paused) {
-      _currentPath = null;
-      _currentPosition = null;
-      _currentPictureRecorder = null;
-      _currentCanvas = null;
-    } else {
-      _currentPath?.let((it) {
-        _currentCanvas?.drawPath(it, _paint);
+  void onPanEnd() {
+    try {
+      if (_paused) return;
+      final containerSize = _containerSize;
+      if (containerSize == null) return;
+      final pictureRecorder = ui.PictureRecorder();
+      final canvas = Canvas(pictureRecorder);
+      _image?.let((it) {
+        canvas.drawImage(it, Offset.zero, Paint());
       });
+      canvas.scale(_kImageCanvasScale);
+      _currentPath?.let((it) {
+        canvas.drawPath(it, paint._paint);
+      });
+      final picture = pictureRecorder.endRecording();
+      try {
+        final mergedImage = picture.toImageSync(
+            (containerSize.width * _kImageCanvasScale).floor(),
+            (containerSize.height * _kImageCanvasScale).floor());
+        _addImage(mergedImage);
+      } finally {
+        picture.dispose();
+      }
+    } finally {
       _currentPath = null;
       _currentPosition = null;
-      final picture = _currentPictureRecorder?.endRecording();
-      _currentPictureRecorder = null;
-      _currentCanvas = null;
-      if (picture != null && containerSize != null) {
-        try {
-          final image = picture.toImageSync(
-              (containerSize.width * _kImageCanvasScale).floor(),
-              (containerSize.height * _kImageCanvasScale).floor());
-          _pushImage(image);
-        } finally {
-          picture.dispose();
-        }
-      } else {
-        notifyListeners();
-      }
     }
   }
 
@@ -162,9 +198,14 @@ class DrawingBoardExtension extends ChangeNotifier {
 }
 
 class DrawingBoardPaint extends ChangeNotifier {
-  final Paint _paint;
+  final _paint = Paint();
 
-  DrawingBoardPaint(this._paint);
+  DrawingBoardPaint() {
+    _paint.style = PaintingStyle.stroke;
+    _paint.strokeCap = StrokeCap.round;
+    _paint.isAntiAlias = true;
+    _paint.strokeWidth = 8;
+  }
 
   double get strokeWidth => _paint.strokeWidth;
 
@@ -236,11 +277,11 @@ class DrawingBoard extends StatelessWidget {
         return CustomPaint(
           size: Size.infinite,
           painter: _DrawingBoardPainter(
-            image: extension.image,
+            image: extension._image,
             path: extension._currentPath,
-            pathEndPoint: extension._currentPosition,
-            pathPaint: extension._paint,
-            pathEndPointPaint: _eraserPaint,
+            eraserPosition: extension._currentPosition,
+            pathPaint: extension.paint._paint,
+            eraserPaint: _eraserPaint,
             layerPaint: _layerPaint,
           ),
         );
@@ -252,17 +293,17 @@ class DrawingBoard extends StatelessWidget {
 class _DrawingBoardPainter extends CustomPainter {
   final ui.Image? image;
   final Path? path;
-  final Offset? pathEndPoint;
+  final Offset? eraserPosition;
   final Paint pathPaint;
-  final Paint pathEndPointPaint;
+  final Paint eraserPaint;
   final Paint layerPaint;
 
   _DrawingBoardPainter({
     this.image,
     this.path,
-    this.pathEndPoint,
+    this.eraserPosition,
     required this.pathPaint,
-    required this.pathEndPointPaint,
+    required this.eraserPaint,
     required this.layerPaint,
   });
 
@@ -277,9 +318,9 @@ class _DrawingBoardPainter extends CustomPainter {
     if (path != null) {
       canvas.drawPath(path!, pathPaint);
     }
-    if (pathEndPoint != null && BlendMode.clear == pathPaint.blendMode) {
+    if (eraserPosition != null && BlendMode.clear == pathPaint.blendMode) {
       canvas.drawCircle(
-          pathEndPoint!, pathPaint.strokeWidth / 2, pathEndPointPaint);
+          eraserPosition!, pathPaint.strokeWidth / 2, eraserPaint);
     }
     canvas.restore();
   }
