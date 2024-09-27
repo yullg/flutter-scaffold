@@ -36,7 +36,9 @@ class CanvasContainerController extends ChangeNotifier {
     _containerSize = containerSize;
     drawingBoardExtension.containerSize = containerSize;
     adjustBoundaryExtension.containerSize = containerSize;
-    _initializedCompleter.complete();
+    if (!_initializedCompleter.isCompleted) {
+      _initializedCompleter.complete();
+    }
   }
 
   /// 画板功能开关
