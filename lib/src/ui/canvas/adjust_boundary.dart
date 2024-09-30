@@ -143,7 +143,9 @@ class AdjustBoundaryExtension extends ChangeNotifier {
   }
 
   @internal
-  void onPanDown(Offset position) {
+  void onScaleStart(ScaleStartDetails details) {
+    if (details.pointerCount > 1) return;
+    final position = details.localFocalPoint;
     final boundary = this.boundary;
     if (boundary == null) return;
     AdjustBoundaryMode? newAdjustBoundaryMode;
@@ -184,16 +186,15 @@ class AdjustBoundaryExtension extends ChangeNotifier {
   }
 
   @internal
-  void onPanUpdate({
-    required Offset delta,
-    required Size? containerSize,
-  }) {
+  void onScaleUpdate(ScaleUpdateDetails details) {
+    if (details.pointerCount > 1) return;
+    final containerSize = _containerSize;
     if (containerSize == null) return;
     final boundary = this.boundary;
     if (boundary == null) return;
     switch (adjustBoundaryMode) {
       case AdjustBoundaryMode.inside:
-        final Offset pos = boundary.topLeft + delta;
+        final Offset pos = boundary.topLeft + details.focalPointDelta;
         this.boundary = Rect.fromLTWH(
             pos.dx.clamp(0, containerSize.width - boundary.width),
             pos.dy.clamp(0, containerSize.height - boundary.height),
@@ -201,28 +202,28 @@ class AdjustBoundaryExtension extends ChangeNotifier {
             boundary.height);
       // 角
       case AdjustBoundaryMode.leftTop:
-        final Offset pos = boundary.topLeft + delta;
+        final Offset pos = boundary.topLeft + details.focalPointDelta;
         adjustBoundary(
           containerSize: containerSize,
           left: pos.dx,
           top: pos.dy,
         );
       case AdjustBoundaryMode.rightTop:
-        final Offset pos = boundary.topRight + delta;
+        final Offset pos = boundary.topRight + details.focalPointDelta;
         adjustBoundary(
           containerSize: containerSize,
           right: pos.dx,
           top: pos.dy,
         );
       case AdjustBoundaryMode.rightBottom:
-        final Offset pos = boundary.bottomRight + delta;
+        final Offset pos = boundary.bottomRight + details.focalPointDelta;
         adjustBoundary(
           containerSize: containerSize,
           right: pos.dx,
           bottom: pos.dy,
         );
       case AdjustBoundaryMode.leftBottom:
-        final Offset pos = boundary.bottomLeft + delta;
+        final Offset pos = boundary.bottomLeft + details.focalPointDelta;
         adjustBoundary(
           containerSize: containerSize,
           left: pos.dx,
@@ -232,22 +233,22 @@ class AdjustBoundaryExtension extends ChangeNotifier {
       case AdjustBoundaryMode.topCenter:
         adjustBoundary(
           containerSize: containerSize,
-          top: boundary.top + delta.dy,
+          top: boundary.top + details.focalPointDelta.dy,
         );
       case AdjustBoundaryMode.bottomCenter:
         adjustBoundary(
           containerSize: containerSize,
-          bottom: boundary.bottom + delta.dy,
+          bottom: boundary.bottom + details.focalPointDelta.dy,
         );
       case AdjustBoundaryMode.leftCenter:
         adjustBoundary(
           containerSize: containerSize,
-          left: boundary.left + delta.dx,
+          left: boundary.left + details.focalPointDelta.dx,
         );
       case AdjustBoundaryMode.rightCenter:
         adjustBoundary(
           containerSize: containerSize,
-          right: boundary.right + delta.dx,
+          right: boundary.right + details.focalPointDelta.dx,
         );
       default:
         break;
@@ -255,7 +256,7 @@ class AdjustBoundaryExtension extends ChangeNotifier {
   }
 
   @internal
-  void onPanEnd() {
+  void onScaleEnd(ScaleEndDetails details) {
     adjustBoundaryMode = null;
   }
 }

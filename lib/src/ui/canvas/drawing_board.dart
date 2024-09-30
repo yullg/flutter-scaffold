@@ -138,45 +138,48 @@ class DrawingBoardExtension extends ChangeNotifier {
   void resume() => _paused = false;
 
   @internal
-  void onPanDown(DragDownDetails details) {
+  void onScaleStart(ScaleStartDetails details) {
+    if (details.pointerCount > 1) return;
     if (_paused) return;
     _currentPath = Path()
-      ..moveTo(details.localPosition.dx, details.localPosition.dy);
-    _currentPosition = details.localPosition;
+      ..moveTo(details.localFocalPoint.dx, details.localFocalPoint.dy);
+    _currentPosition = details.localFocalPoint;
     notifyListeners();
   }
 
   @internal
-  void onPanUpdate(DragUpdateDetails details) {
+  void onScaleUpdate(ScaleUpdateDetails details) {
+    if (details.pointerCount > 1) return;
     if (_paused) return;
-    _currentPath?.lineTo(details.localPosition.dx, details.localPosition.dy);
-    _currentPosition = details.localPosition;
+    _currentPath?.lineTo(
+        details.localFocalPoint.dx, details.localFocalPoint.dy);
+    _currentPosition = details.localFocalPoint;
     notifyListeners();
   }
 
   @internal
-  void onPanEnd() {
+  void onScaleEnd(ScaleEndDetails details) {
     try {
-      if (_paused) return;
       final containerSize = _containerSize;
       if (containerSize == null) return;
-      final pictureRecorder = ui.PictureRecorder();
-      final canvas = Canvas(pictureRecorder);
-      _image?.let((it) {
-        canvas.drawImage(it, Offset.zero, Paint());
-      });
-      canvas.scale(_kImageCanvasScale);
-      _currentPath?.let((it) {
-        canvas.drawPath(it, paint._paint);
-      });
-      final picture = pictureRecorder.endRecording();
-      try {
-        final mergedImage = picture.toImageSync(
-            (containerSize.width * _kImageCanvasScale).floor(),
-            (containerSize.height * _kImageCanvasScale).floor());
-        _addImage(mergedImage);
-      } finally {
-        picture.dispose();
+      final currentPath = _currentPath;
+      if (currentPath != null) {
+        final pictureRecorder = ui.PictureRecorder();
+        final canvas = Canvas(pictureRecorder);
+        _image?.let((it) {
+          canvas.drawImage(it, Offset.zero, Paint());
+        });
+        canvas.scale(_kImageCanvasScale);
+        canvas.drawPath(currentPath, paint._paint);
+        final picture = pictureRecorder.endRecording();
+        try {
+          final mergedImage = picture.toImageSync(
+              (containerSize.width * _kImageCanvasScale).floor(),
+              (containerSize.height * _kImageCanvasScale).floor());
+          _addImage(mergedImage);
+        } finally {
+          picture.dispose();
+        }
       }
     } finally {
       _currentPath = null;

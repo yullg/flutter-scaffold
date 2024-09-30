@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:scaffold/scaffold_lang.dart';
 
 import 'adjust_boundary.dart';
 import 'canvas_container_controller.dart';
@@ -13,10 +14,9 @@ class CanvasContainer extends StatelessWidget {
   final AdjustBoundaryStyle adjustBoundaryStyle;
   final GestureTapDownCallback? onTapDown;
   final GestureTapUpCallback? onTapUp;
-  final GestureDragDownCallback? onPanDown;
-  final GestureDragUpdateCallback? onPanUpdate;
-  final GestureDragEndCallback? onPanEnd;
-  final GestureDragCancelCallback? onPanCancel;
+  final GestureScaleStartCallback? onScaleStart;
+  final GestureScaleUpdateCallback? onScaleUpdate;
+  final GestureScaleEndCallback? onScaleEnd;
 
   const CanvasContainer({
     super.key,
@@ -26,10 +26,9 @@ class CanvasContainer extends StatelessWidget {
     this.adjustBoundaryStyle = const AdjustBoundaryStyle(),
     this.onTapDown,
     this.onTapUp,
-    this.onPanDown,
-    this.onPanUpdate,
-    this.onPanEnd,
-    this.onPanCancel,
+    this.onScaleStart,
+    this.onScaleUpdate,
+    this.onScaleEnd,
   });
 
   @override
@@ -44,58 +43,59 @@ class CanvasContainer extends StatelessWidget {
           return ListenableBuilder(
             listenable: controller,
             builder: (context, _) {
-              final rotationAngle = (controller.rotation ?? 0) * (pi / 180);
+              final transform = Matrix4.identity();
+              controller.rotation?.also((it) {
+                transform.rotateZ(it * (pi / 180));
+              });
+              controller.translate?.also((it) {
+                transform.translate(it.dx, it.dy);
+              });
               final scale = controller.scale ??
                   _calculateAutoScale(
                     parentSize: biggestSize,
                     childSize: canvasContainerChild.size,
-                    rotationAngle: rotationAngle,
+                    rotationAngle: (controller.rotation ?? 0) * (pi / 180),
                   );
-              return Transform.rotate(
-                angle: rotationAngle,
-                child: Transform.scale(
-                  scale: scale,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTapDown: (details) {
-                      onTapDown?.call(details);
-                    },
-                    onTapUp: (details) {
-                      onTapUp?.call(details);
-                    },
-                    onPanDown: (details) {
-                      controller.onPanDown(details);
-                      onPanDown?.call(details);
-                    },
-                    onPanUpdate: (details) {
-                      controller.onPanUpdate(details);
-                      onPanUpdate?.call(details);
-                    },
-                    onPanEnd: (details) {
-                      controller.onPanEnd(details);
-                      onPanEnd?.call(details);
-                    },
-                    onPanCancel: () {
-                      controller.onPanCancel();
-                      onPanCancel?.call();
-                    },
-                    child: SizedBox.fromSize(
-                      size: canvasContainerChild.size,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          canvasContainerChild.child,
-                          if (controller.drawingBoardEnabled)
-                            DrawingBoard(
-                              extension: controller.drawingBoardExtension,
-                            ),
-                          if (controller.adjustBoundaryEnabled)
-                            AdjustBoundary(
-                              extension: controller.adjustBoundaryExtension,
-                              style: adjustBoundaryStyle,
-                            ),
-                        ],
-                      ),
+              transform.scale(scale);
+              return Transform(
+                transform: transform,
+                alignment: Alignment.center,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: (details) {
+                    onTapDown?.call(details);
+                  },
+                  onTapUp: (details) {
+                    onTapUp?.call(details);
+                  },
+                  onScaleStart: (details) {
+                    controller.onScaleStart(details);
+                    onScaleStart?.call(details);
+                  },
+                  onScaleUpdate: (details) {
+                    controller.onScaleUpdate(details);
+                    onScaleUpdate?.call(details);
+                  },
+                  onScaleEnd: (details) {
+                    controller.onScaleEnd(details);
+                    onScaleEnd?.call(details);
+                  },
+                  child: SizedBox.fromSize(
+                    size: canvasContainerChild.size,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        canvasContainerChild.child,
+                        if (controller.drawingBoardEnabled)
+                          DrawingBoard(
+                            extension: controller.drawingBoardExtension,
+                          ),
+                        if (controller.adjustBoundaryEnabled)
+                          AdjustBoundary(
+                            extension: controller.adjustBoundaryExtension,
+                            style: adjustBoundaryStyle,
+                          ),
+                      ],
                     ),
                   ),
                 ),
