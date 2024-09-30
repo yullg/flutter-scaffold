@@ -54,7 +54,7 @@ class CanvasContainer extends StatelessWidget {
                   _calculateAutoScale(
                     parentSize: biggestSize,
                     childSize: canvasContainerChild.size,
-                    rotationAngle: (controller.rotation ?? 0) * (pi / 180),
+                    rotation: controller.rotation,
                   );
               transform.scale(scale);
               return Transform(
@@ -110,8 +110,9 @@ class CanvasContainer extends StatelessWidget {
   double _calculateAutoScale({
     required Size parentSize,
     required Size childSize,
-    required double rotationAngle,
+    required int? rotation,
   }) {
+    final rotationAngle = (rotation ?? 0) * (pi / 180);
     if (parentSize.isFinite && childSize.isFinite && rotationAngle.isFinite) {
       // 旋转后的子widget最大宽高
       double rotatedWidth = (childSize.width * cos(rotationAngle)).abs() +
