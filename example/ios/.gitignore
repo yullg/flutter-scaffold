@@ -3,9 +3,12 @@
 !/.gitignore
 !/Podfile
 
+!/Flutter/
 !/Runner/
 !/Runner.xcodeproj/
 
+/Flutter/Flutter.podspec
+/Flutter/flutter_export_environment.sh
+/Flutter/Generated.xcconfig
 /Runner/GeneratedPluginRegistrant.*
 /Runner.xcodeproj/xcuserdata/
-
