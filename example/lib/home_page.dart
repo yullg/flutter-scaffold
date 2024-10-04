@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
-import 'draw_page.dart';
+import 'canvas_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -17,10 +17,10 @@ class HomePage extends StatelessWidget {
           context: context,
           tiles: [
             EasyListTile(
-              nameText: "Draw Page",
+              nameText: "Canvas Demo",
               trailingIcon: Icons.arrow_forward_ios,
               onTap: () {
-                to(context, const DrawPage());
+                to(context, const CanvasPage());
               },
             ),
           ],
