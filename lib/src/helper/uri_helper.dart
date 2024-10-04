@@ -1,4 +1,11 @@
 class UriHelper {
+  static Uri basic(Uri uri) => Uri(
+        scheme: uri.scheme,
+        host: uri.host,
+        port: uri.port,
+        path: uri.path,
+      );
+
   static bool equals(Uri uri,
       {String? scheme,
       String? userInfo,
