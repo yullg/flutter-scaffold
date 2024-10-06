@@ -22,35 +22,33 @@ class _CanvasState extends State<CanvasPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: controller,
-      builder: (context, _) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Canvas Page'),
-          actions: [
-            Builder(
-              builder: (context) => IconButton(
-                onPressed: () {
-                  Scaffold.of(context).showBottomSheet(
-                    (context) => _CanvasSettingsWidget(controller: controller),
-                    backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.7),
-                    showDragHandle: true,
-                    enableDrag: true,
-                  );
-                },
-                icon: const Icon(Icons.apps),
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Canvas Demo'),
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+              onPressed: () {
+                Scaffold.of(context).showBottomSheet(
+                  (context) => _CanvasSettingsWidget(controller: controller),
+                  backgroundColor:
+                      Theme.of(context).colorScheme.surface.withOpacity(0.7),
+                  showDragHandle: true,
+                  enableDrag: true,
+                );
+              },
+              icon: const Icon(Icons.apps),
             ),
-          ],
-        ),
-        body: SafeArea(
-          child: CanvasContainer(
-            controller: controller,
-            builder: (context, constraints) => CanvasContainerChild(
-              size: constraints.biggest,
-              child: Container(
-                color: Colors.blue,
-              ),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: CanvasContainer(
+          controller: controller,
+          builder: (context, constraints) => CanvasContainerChild(
+            size: constraints.biggest / 2,
+            child: Container(
+              color: Colors.blue,
             ),
           ),
         ),
@@ -113,12 +111,17 @@ class _CanvasSettingsWidget extends StatelessWidget {
                     if (controller.drawingBoardEnabled)
                       FilledButton(
                         onPressed: () async {
-                          final image = controller.drawingBoardExtension.export();
+                          final image =
+                              controller.drawingBoardExtension.export();
                           if (image == null) return;
-                          final bytes = await image.toByteData(format: ImageByteFormat.png);
+                          final bytes = await image.toByteData(
+                              format: ImageByteFormat.png);
                           if (bytes == null) return;
-                          final file = await StorageFile(StorageType.cache, "${UuidHelper.v4()}.png").file;
-                          file.writeAsBytes(bytes.buffer.asInt8List(), flush: true);
+                          final file = await StorageFile(
+                                  StorageType.cache, "${UuidHelper.v4()}.png")
+                              .file;
+                          await file.writeAsBytes(bytes.buffer.asInt8List(),
+                              flush: true);
                           GallerySavePlugin.saveImage(file).then((_) {
                             if (context.mounted) {
                               Toast.showShort(context, "导出成功!");
@@ -138,18 +141,15 @@ class _CanvasSettingsWidget extends StatelessWidget {
                   max: 360,
                   value: controller.rotation?.toDouble() ?? 0,
                   onChanged: (value) {
-                    final rotation = value.toInt();
-                    if (rotation != 0) {
-                      controller.rotation = rotation;
-                    } else {
-                      controller.rotation = null;
-                    }
+                    controller.rotation = value.toInt();
                   },
                 ),
               ),
               EasyListTile(
                 nameText: "缩放",
-                valueText: controller.scale?.let((it) => FormatHelper.printNum(it, maxFractionDigits: 1)) ?? "null",
+                valueText: controller.scale?.let((it) =>
+                        FormatHelper.printNum(it, maxFractionDigits: 1)) ??
+                    "null",
                 description: Slider(
                   min: 0,
                   max: 3,
@@ -180,18 +180,25 @@ class _CanvasSettingsWidget extends StatelessWidget {
                       tiles: [
                         EasyListTile(
                           nameText: "混合模式",
-                          valueText: controller.drawingBoardExtension.paint.blendMode.name,
+                          valueText: controller
+                              .drawingBoardExtension.paint.blendMode.name,
                           description: Wrap(
                             spacing: 8,
                             runSpacing: 8,
                             alignment: WrapAlignment.center,
                             children: [
                               OutlinedButton(
-                                onPressed: () => controller.drawingBoardExtension.paint.blendMode = BlendMode.srcOver,
+                                onPressed: () => controller
+                                    .drawingBoardExtension
+                                    .paint
+                                    .blendMode = BlendMode.srcOver,
                                 child: Text(BlendMode.srcOver.name),
                               ),
                               OutlinedButton(
-                                onPressed: () => controller.drawingBoardExtension.paint.blendMode = BlendMode.clear,
+                                onPressed: () => controller
+                                    .drawingBoardExtension
+                                    .paint
+                                    .blendMode = BlendMode.clear,
                                 child: Text(BlendMode.clear.name),
                               ),
                             ],
@@ -199,13 +206,18 @@ class _CanvasSettingsWidget extends StatelessWidget {
                         ),
                         EasyListTile(
                           nameText: "画笔宽度",
-                          valueText: controller.drawingBoardExtension.paint.strokeWidth.toInt().toString(),
+                          valueText: controller
+                              .drawingBoardExtension.paint.strokeWidth
+                              .toInt()
+                              .toString(),
                           description: Slider(
                             min: 0,
                             max: 20,
-                            value: controller.drawingBoardExtension.paint.strokeWidth,
+                            value: controller
+                                .drawingBoardExtension.paint.strokeWidth,
                             onChanged: (value) {
-                              controller.drawingBoardExtension.paint.strokeWidth = value;
+                              controller.drawingBoardExtension.paint
+                                  .strokeWidth = value;
                             },
                           ),
                         ),
@@ -230,7 +242,9 @@ class _CanvasSettingsWidget extends StatelessWidget {
                       tiles: [
                         EasyListTile(
                           nameText: "宽高比",
-                          valueText: _AspectRatio.fromRatio(controller.adjustBoundaryExtension.aspectRatio).displayName,
+                          valueText: _AspectRatio.fromRatio(controller
+                                  .adjustBoundaryExtension.aspectRatio)
+                              .displayName,
                           description: Wrap(
                             spacing: 8,
                             runSpacing: 8,
@@ -238,7 +252,8 @@ class _CanvasSettingsWidget extends StatelessWidget {
                             children: _AspectRatio.values
                                 .map((e) => OutlinedButton(
                                       onPressed: () {
-                                        controller.adjustBoundaryExtension.aspectRatio = e.ratio;
+                                        controller.adjustBoundaryExtension
+                                            .aspectRatio = e.ratio;
                                       },
                                       child: Text(e.displayName),
                                     ))

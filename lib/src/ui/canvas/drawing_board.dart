@@ -5,16 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:scaffold/scaffold_lang.dart';
 
-class DrawingBoardExtension extends ChangeNotifier {
+import 'canvas_container_aware.dart';
+
+class DrawingBoardExtension extends ChangeNotifier with CanvasContainerAware {
   final paint = DrawingBoardPaint();
-
-  /// 画板大小
-  Size? _containerSize;
-
-  @internal
-  set containerSize(Size? value) {
-    _containerSize = value;
-  }
 
   // ---------- 历史快照管理 ----------
   final _imageList = <ui.Image>[];
@@ -48,6 +42,9 @@ class DrawingBoardExtension extends ChangeNotifier {
 
   void erase() {
     if (_imageList.isNotEmpty) {
+      for (final image in _imageList) {
+        image.dispose();
+      }
       _imageList.clear();
       _imageIndex = -1;
       notifyListeners();
@@ -59,17 +56,14 @@ class DrawingBoardExtension extends ChangeNotifier {
     BoxFit? fit,
     Alignment alignment = Alignment.center,
   }) {
-    final containerSize = _containerSize;
-    if (containerSize == null) {
-      throw StateError("Unable to get container size");
-    }
+    final containerChildSize = requiredContainerChildSize;
     final pictureRecorder = ui.PictureRecorder();
     final canvas = Canvas(pictureRecorder);
     canvas.scale(_kImageCanvasScale);
     paintImage(
       canvas: canvas,
-      rect: Rect.fromLTWH(0, 0, containerSize.width.toDouble(),
-          containerSize.height.toDouble()),
+      rect: Rect.fromLTWH(0, 0, containerChildSize.width.toDouble(),
+          containerChildSize.height.toDouble()),
       image: image,
       fit: fit,
       alignment: alignment,
@@ -77,8 +71,8 @@ class DrawingBoardExtension extends ChangeNotifier {
     final picture = pictureRecorder.endRecording();
     try {
       final mergedImage = picture.toImageSync(
-          (containerSize.width * _kImageCanvasScale).floor(),
-          (containerSize.height * _kImageCanvasScale).floor());
+          (containerChildSize.width * _kImageCanvasScale).floor(),
+          (containerChildSize.height * _kImageCanvasScale).floor());
       _addImage(mergedImage);
     } finally {
       picture.dispose();
@@ -90,10 +84,7 @@ class DrawingBoardExtension extends ChangeNotifier {
     BoxFit? fit,
     Alignment alignment = Alignment.center,
   }) {
-    final containerSize = _containerSize;
-    if (containerSize == null) {
-      throw StateError("Unable to get container size");
-    }
+    final containerChildSize = requiredContainerChildSize;
     final pictureRecorder = ui.PictureRecorder();
     final canvas = Canvas(pictureRecorder);
     _image?.let((it) {
@@ -102,8 +93,8 @@ class DrawingBoardExtension extends ChangeNotifier {
     canvas.scale(_kImageCanvasScale);
     paintImage(
       canvas: canvas,
-      rect: Rect.fromLTWH(0, 0, containerSize.width.toDouble(),
-          containerSize.height.toDouble()),
+      rect: Rect.fromLTWH(0, 0, containerChildSize.width.toDouble(),
+          containerChildSize.height.toDouble()),
       image: image,
       fit: fit,
       alignment: alignment,
@@ -111,8 +102,8 @@ class DrawingBoardExtension extends ChangeNotifier {
     final picture = pictureRecorder.endRecording();
     try {
       final mergedImage = picture.toImageSync(
-          (containerSize.width * _kImageCanvasScale).floor(),
-          (containerSize.height * _kImageCanvasScale).floor());
+          (containerChildSize.width * _kImageCanvasScale).floor(),
+          (containerChildSize.height * _kImageCanvasScale).floor());
       _addImage(mergedImage);
     } finally {
       picture.dispose();
@@ -130,40 +121,43 @@ class DrawingBoardExtension extends ChangeNotifier {
   // ---------- 绘图管理 ----------
   bool _paused = false;
 
+  int? _currentPointer;
   Path? _currentPath;
   ui.Offset? _currentPosition;
+
+  bool get isPaused => _paused;
 
   void pause() => _paused = true;
 
   void resume() => _paused = false;
 
   @internal
-  void onScaleStart(ScaleStartDetails details) {
-    if (details.pointerCount > 1) return;
+  void onPointerDownByChild(PointerDownEvent event) {
     if (_paused) return;
-    _currentPath = Path()
-      ..moveTo(details.localFocalPoint.dx, details.localFocalPoint.dy);
-    _currentPosition = details.localFocalPoint;
+    final pos = calculateContainerChildOffset(event.localPosition);
+    _currentPointer = event.pointer;
+    _currentPath = Path()..moveTo(pos.dx, pos.dy);
+    _currentPosition = pos;
     notifyListeners();
   }
 
   @internal
-  void onScaleUpdate(ScaleUpdateDetails details) {
-    if (details.pointerCount > 1) return;
+  void onPointerMoveByChild(PointerMoveEvent event) {
     if (_paused) return;
-    _currentPath?.lineTo(
-        details.localFocalPoint.dx, details.localFocalPoint.dy);
-    _currentPosition = details.localFocalPoint;
+    if (_currentPointer != event.pointer) return;
+    final pos = calculateContainerChildOffset(event.localPosition);
+    _currentPath?.lineTo(pos.dx, pos.dy);
+    _currentPosition = pos;
     notifyListeners();
   }
 
   @internal
-  void onScaleEnd(ScaleEndDetails details) {
+  void onPointerUpByChild(PointerUpEvent event) {
+    if (_currentPointer != event.pointer) return;
     try {
-      final containerSize = _containerSize;
-      if (containerSize == null) return;
       final currentPath = _currentPath;
       if (currentPath != null) {
+        final containerChildSize = requiredContainerChildSize;
         final pictureRecorder = ui.PictureRecorder();
         final canvas = Canvas(pictureRecorder);
         _image?.let((it) {
@@ -174,17 +168,26 @@ class DrawingBoardExtension extends ChangeNotifier {
         final picture = pictureRecorder.endRecording();
         try {
           final mergedImage = picture.toImageSync(
-              (containerSize.width * _kImageCanvasScale).floor(),
-              (containerSize.height * _kImageCanvasScale).floor());
+              (containerChildSize.width * _kImageCanvasScale).floor(),
+              (containerChildSize.height * _kImageCanvasScale).floor());
           _addImage(mergedImage);
         } finally {
           picture.dispose();
         }
       }
     } finally {
+      _currentPointer = null;
       _currentPath = null;
       _currentPosition = null;
     }
+  }
+
+  @internal
+  void onPointerCancelByChild(PointerCancelEvent event) {
+    _currentPointer = null;
+    _currentPath = null;
+    _currentPosition = null;
+    notifyListeners();
   }
 
   @override
