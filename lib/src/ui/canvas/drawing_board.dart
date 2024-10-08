@@ -209,6 +209,7 @@ class DrawingBoardPaint extends ChangeNotifier {
   DrawingBoardPaint() {
     _paint.style = PaintingStyle.stroke;
     _paint.strokeCap = StrokeCap.round;
+    _paint.strokeJoin = StrokeJoin.round;
     _paint.isAntiAlias = true;
     _paint.strokeWidth = 8;
   }
@@ -256,22 +257,48 @@ class DrawingBoardPaint extends ChangeNotifier {
   }
 }
 
+class DrawingBoardStyle {
+  final Color ringColor;
+  final double ringWidth;
+
+  const DrawingBoardStyle({
+    this.ringColor = Colors.white,
+    this.ringWidth = 2,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DrawingBoardStyle &&
+          runtimeType == other.runtimeType &&
+          ringColor == other.ringColor &&
+          ringWidth == other.ringWidth;
+
+  @override
+  int get hashCode => ringColor.hashCode ^ ringWidth.hashCode;
+
+  @override
+  String toString() {
+    return 'DrawingBoardStyle{ringColor: $ringColor, ringWidth: $ringWidth}';
+  }
+}
+
 class DrawingBoard extends StatelessWidget {
   final DrawingBoardExtension extension;
+  final DrawingBoardStyle style;
 
-  late final Paint _eraserPaint;
+  late final Paint _ringPaint;
   late final Paint _layerPaint;
 
   DrawingBoard({
     super.key,
     required this.extension,
-    double eraserStrokeWidth = 2,
-    Color eraserColor = Colors.white,
+    required this.style,
   }) {
-    _eraserPaint = Paint()
+    _ringPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = eraserStrokeWidth
-      ..color = eraserColor;
+      ..strokeWidth = style.ringWidth
+      ..color = style.ringColor;
     _layerPaint = Paint();
   }
 
@@ -285,9 +312,9 @@ class DrawingBoard extends StatelessWidget {
           painter: _DrawingBoardPainter(
             image: extension._image,
             path: extension._currentPath,
-            eraserPosition: extension._currentPosition,
+            ringPosition: extension._currentPosition,
             pathPaint: extension.paint._paint,
-            eraserPaint: _eraserPaint,
+            ringPaint: _ringPaint,
             layerPaint: _layerPaint,
           ),
         );
@@ -299,17 +326,17 @@ class DrawingBoard extends StatelessWidget {
 class _DrawingBoardPainter extends CustomPainter {
   final ui.Image? image;
   final Path? path;
-  final Offset? eraserPosition;
+  final Offset? ringPosition;
   final Paint pathPaint;
-  final Paint eraserPaint;
+  final Paint ringPaint;
   final Paint layerPaint;
 
   _DrawingBoardPainter({
     this.image,
     this.path,
-    this.eraserPosition,
+    this.ringPosition,
     required this.pathPaint,
-    required this.eraserPaint,
+    required this.ringPaint,
     required this.layerPaint,
   });
 
@@ -324,9 +351,9 @@ class _DrawingBoardPainter extends CustomPainter {
     if (path != null) {
       canvas.drawPath(path!, pathPaint);
     }
-    if (eraserPosition != null && BlendMode.clear == pathPaint.blendMode) {
-      canvas.drawCircle(
-          eraserPosition!, pathPaint.strokeWidth / 2, eraserPaint);
+    if (ringPosition != null) {
+      canvas.drawCircle(ringPosition!,
+          pathPaint.strokeWidth / 2 + ringPaint.strokeWidth / 2, ringPaint);
     }
     canvas.restore();
   }

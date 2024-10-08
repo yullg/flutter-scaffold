@@ -10,6 +10,7 @@ import 'drawing_board.dart';
 class CanvasContainer extends StatelessWidget {
   final CanvasContainerController controller;
   final CanvasContainerChild Function(BuildContext, BoxConstraints) builder;
+  final DrawingBoardStyle drawingBoardStyle;
   final AdjustBoundaryStyle adjustBoundaryStyle;
   final PointerDownEventListener? onPointerDown;
   final PointerMoveEventListener? onPointerMove;
@@ -20,6 +21,7 @@ class CanvasContainer extends StatelessWidget {
     super.key,
     required this.controller,
     required this.builder,
+    this.drawingBoardStyle = const DrawingBoardStyle(),
     this.adjustBoundaryStyle = const AdjustBoundaryStyle(),
     this.onPointerDown,
     this.onPointerMove,
@@ -93,6 +95,7 @@ class CanvasContainer extends StatelessWidget {
                             if (controller.drawingBoardEnabled)
                               DrawingBoard(
                                 extension: controller.drawingBoardExtension,
+                                style: drawingBoardStyle,
                               ),
                             if (controller.adjustBoundaryEnabled)
                               AdjustBoundary(

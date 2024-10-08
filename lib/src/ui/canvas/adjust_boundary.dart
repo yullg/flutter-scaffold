@@ -314,7 +314,7 @@ class AdjustBoundary extends StatelessWidget {
   const AdjustBoundary({
     super.key,
     required this.extension,
-    this.style = const AdjustBoundaryStyle(),
+    required this.style,
   });
 
   @override
