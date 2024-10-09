@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -33,17 +35,34 @@ class AdjustBoundaryExtension extends ChangeNotifier with CanvasContainerAware {
   set aspectRatio(double? value) {
     if (_aspectRatio != value) {
       _aspectRatio = value;
-      notifyListeners();
       _adjustBoundary(
         oldBoundary: Rect.fromLTWH(0, 0, requiredContainerChildSize.width,
             requiredContainerChildSize.height),
       );
+      notifyListeners();
     }
   }
 
   set adjustBoundaryMode(AdjustBoundaryMode? value) {
     if (_adjustBoundaryMode != value) {
       _adjustBoundaryMode = value;
+      notifyListeners();
+    }
+  }
+
+  void _moveBoundary({
+    required Rect oldBoundary,
+    required Offset offset,
+  }) {
+    final maxLeft = requiredContainerChildSize.width - oldBoundary.width;
+    final maxTop = requiredContainerChildSize.height - oldBoundary.height;
+    final newBoundary = Rect.fromLTWH(
+        max(0, min(maxLeft, oldBoundary.left + offset.dx)),
+        max(0, min(maxTop, oldBoundary.top + offset.dy)),
+        oldBoundary.width,
+        oldBoundary.height);
+    if (_boundary != newBoundary) {
+      _boundary = newBoundary;
       notifyListeners();
     }
   }
@@ -55,68 +74,68 @@ class AdjustBoundaryExtension extends ChangeNotifier with CanvasContainerAware {
     double? right,
     double? bottom,
   }) {
-    double newLeft = oldBoundary.left + (left ?? 0);
-    double newTop = oldBoundary.top + (top ?? 0);
-    double newRight = oldBoundary.right + (right ?? 0);
-    double newBottom = oldBoundary.bottom + (bottom ?? 0);
-    if (newLeft < 0 ||
-        newTop < 0 ||
-        newRight > requiredContainerChildSize.width ||
-        newBottom > requiredContainerChildSize.height ||
-        newLeft > newRight ||
-        newTop > newBottom) {
-      return;
-    }
-    Rect newBoundary = Rect.fromLTRB(newLeft, newTop, newRight, newBottom);
+    final maxRight = requiredContainerChildSize.width;
+    final maxBottom = requiredContainerChildSize.height;
+    double newRight = max(0, min(maxRight, oldBoundary.right + (right ?? 0)));
+    double newBottom =
+        max(0, min(maxBottom, oldBoundary.bottom + (bottom ?? 0)));
+    double newLeft = max(0, min(newRight, oldBoundary.left + (left ?? 0)));
+    double newTop = max(0, min(newBottom, oldBoundary.top + (top ?? 0)));
+    final newWidth = newRight - newLeft;
+    final newHeight = newBottom - newTop;
     final aspectRatio = this.aspectRatio;
-    if (aspectRatio != null) {
-      if (newBoundary.width / newBoundary.height > aspectRatio) {
-        if (left != null) {
-          newBoundary = Rect.fromLTRB(
-            newBoundary.right - newBoundary.height * aspectRatio,
-            newBoundary.top,
-            newBoundary.right,
-            newBoundary.bottom,
-          );
-        } else if (right != null) {
-          newBoundary = Rect.fromLTRB(
-            newBoundary.left,
-            newBoundary.top,
-            newBoundary.left + newBoundary.height * aspectRatio,
-            newBoundary.bottom,
-          );
+    if (aspectRatio != null && newWidth > 0 && newHeight > 0) {
+      if (left != null && top != null) {
+        if (newWidth / newHeight > aspectRatio) {
+          newLeft = newRight - newHeight * aspectRatio;
         } else {
-          newBoundary = Rect.fromCenter(
-            center: newBoundary.center,
-            width: newBoundary.height * aspectRatio,
-            height: newBoundary.height,
-          );
+          newTop = newBottom - newWidth / aspectRatio;
         }
-      } else {
-        if (top != null) {
-          newBoundary = Rect.fromLTRB(
-            newBoundary.left,
-            newBoundary.bottom - newBoundary.width / aspectRatio,
-            newBoundary.right,
-            newBoundary.bottom,
-          );
-        } else if (bottom != null) {
-          newBoundary = Rect.fromLTRB(
-            newBoundary.left,
-            newBoundary.top,
-            newBoundary.right,
-            newBoundary.top + newBoundary.width / aspectRatio,
-          );
+      } else if (right != null && top != null) {
+        if (newWidth / newHeight > aspectRatio) {
+          newRight = newLeft + newHeight * aspectRatio;
         } else {
-          newBoundary = Rect.fromCenter(
-            center: newBoundary.center,
-            width: newBoundary.width,
-            height: newBoundary.width / aspectRatio,
-          );
+          newTop = newBottom - newWidth / aspectRatio;
+        }
+      } else if (right != null && bottom != null) {
+        if (newWidth / newHeight > aspectRatio) {
+          newRight = newLeft + newHeight * aspectRatio;
+        } else {
+          newBottom = newTop + newWidth / aspectRatio;
+        }
+      } else if (left != null && bottom != null) {
+        if (newWidth / newHeight > aspectRatio) {
+          newLeft = newRight - newHeight * aspectRatio;
+        } else {
+          newBottom = newTop + newWidth / aspectRatio;
+        }
+      } else if (left != null || right != null) {
+        newTop = max(0, oldBoundary.center.dy - newWidth / aspectRatio / 2);
+        newBottom = newTop + newWidth / aspectRatio;
+      } else if (top != null || bottom != null) {
+        newLeft = max(0, oldBoundary.center.dx - newHeight * aspectRatio / 2);
+        newRight = newLeft + newHeight * aspectRatio;
+      } else {
+        if (newWidth / newHeight > aspectRatio) {
+          newLeft = oldBoundary.center.dx - newHeight * aspectRatio / 2;
+          newRight = oldBoundary.center.dx + newHeight * aspectRatio / 2;
+          newTop = oldBoundary.center.dy - newHeight / 2;
+          newBottom = oldBoundary.center.dy + newHeight / 2;
+        } else {
+          newLeft = oldBoundary.center.dx - newWidth / 2;
+          newRight = oldBoundary.center.dx + newWidth / 2;
+          newTop = oldBoundary.center.dy - newWidth / aspectRatio / 2;
+          newBottom = oldBoundary.center.dy + newWidth / aspectRatio / 2;
         }
       }
     }
-    if (!(newBoundary.size > minBoundarySize)) {
+    final newBoundary = Rect.fromLTRB(newLeft, newTop, newRight, newBottom);
+    if (newBoundary.left < 0 ||
+        newBoundary.top < 0 ||
+        newBoundary.right > requiredContainerChildSize.width ||
+        newBoundary.bottom > requiredContainerChildSize.height ||
+        newBoundary.width < minBoundarySize.width ||
+        newBoundary.height < minBoundarySize.height) {
       return;
     }
     if (_boundary != newBoundary) {
@@ -174,12 +193,9 @@ class AdjustBoundaryExtension extends ChangeNotifier with CanvasContainerAware {
     if (adjustBoundaryMode == null) return;
     switch (adjustBoundaryMode) {
       case AdjustBoundaryMode.inside:
-        _adjustBoundary(
+        _moveBoundary(
           oldBoundary: boundary,
-          left: event.localDelta.dx,
-          top: event.localDelta.dy,
-          right: event.localDelta.dx,
-          bottom: event.localDelta.dy,
+          offset: event.localDelta,
         );
       case AdjustBoundaryMode.leftTop:
         _adjustBoundary(
@@ -205,25 +221,25 @@ class AdjustBoundaryExtension extends ChangeNotifier with CanvasContainerAware {
           left: event.localDelta.dx,
           bottom: event.localDelta.dy,
         );
-      case AdjustBoundaryMode.topCenter:
-        _adjustBoundary(
-          oldBoundary: boundary,
-          top: event.localDelta.dy,
-        );
-      case AdjustBoundaryMode.bottomCenter:
-        _adjustBoundary(
-          oldBoundary: boundary,
-          bottom: event.localDelta.dy,
-        );
       case AdjustBoundaryMode.leftCenter:
         _adjustBoundary(
           oldBoundary: boundary,
           left: event.localDelta.dx,
         );
+      case AdjustBoundaryMode.topCenter:
+        _adjustBoundary(
+          oldBoundary: boundary,
+          top: event.localDelta.dy,
+        );
       case AdjustBoundaryMode.rightCenter:
         _adjustBoundary(
           oldBoundary: boundary,
           right: event.localDelta.dx,
+        );
+      case AdjustBoundaryMode.bottomCenter:
+        _adjustBoundary(
+          oldBoundary: boundary,
+          bottom: event.localDelta.dy,
         );
     }
   }
@@ -242,12 +258,12 @@ class AdjustBoundaryExtension extends ChangeNotifier with CanvasContainerAware {
 enum AdjustBoundaryMode {
   inside,
   leftTop,
-  leftCenter,
-  leftBottom,
-  topCenter,
   rightTop,
-  rightCenter,
+  leftBottom,
   rightBottom,
+  leftCenter,
+  topCenter,
+  rightCenter,
   bottomCenter,
 }
 
@@ -271,7 +287,7 @@ class AdjustBoundaryStyle {
     this.boundaryLength = 20,
     this.boundaryColor = Colors.white,
     this.activatedBoundaryColor = Colors.yellow,
-    this.showCenterIndicator = false,
+    this.showCenterIndicator = true,
   });
 
   @override

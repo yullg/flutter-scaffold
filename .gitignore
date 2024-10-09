@@ -6,6 +6,7 @@
 !/test/
 !/.gitignore
 !/.metadata
+!/.pubignore
 !/analysis_options.yaml
 !/CHANGELOG.md
 !/LICENSE
