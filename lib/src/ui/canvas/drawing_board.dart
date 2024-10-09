@@ -121,9 +121,10 @@ class DrawingBoardExtension extends ChangeNotifier with CanvasContainerAware {
   // ---------- 绘图管理 ----------
   bool _paused = false;
 
-  int? _currentPointer;
-  Path? _currentPath;
-  ui.Offset? _currentPosition;
+  int? _lastPointer;
+  int? _inUsePointer;
+  Path? _inUsePath;
+  ui.Offset? _inUsePosition;
 
   bool get isPaused => _paused;
 
@@ -134,59 +135,66 @@ class DrawingBoardExtension extends ChangeNotifier with CanvasContainerAware {
   @internal
   void onPointerDownByChild(PointerDownEvent event) {
     if (_paused) return;
-    final pos = calculateContainerChildOffset(event.localPosition);
-    _currentPointer = event.pointer;
-    _currentPath = Path()..moveTo(pos.dx, pos.dy);
-    _currentPosition = pos;
-    notifyListeners();
+    _lastPointer = event.pointer;
+    if (_inUsePointer == null) {
+      _inUsePointer = event.pointer;
+      final pos = calculateContainerChildOffset(event.localPosition);
+      _inUsePath = Path()..moveTo(pos.dx, pos.dy);
+      _inUsePosition = pos;
+      notifyListeners();
+    }
   }
 
   @internal
   void onPointerMoveByChild(PointerMoveEvent event) {
     if (_paused) return;
-    if (_currentPointer != event.pointer) return;
+    if (_inUsePointer != event.pointer || _inUsePointer != _lastPointer) return;
     final pos = calculateContainerChildOffset(event.localPosition);
-    _currentPath?.lineTo(pos.dx, pos.dy);
-    _currentPosition = pos;
+    _inUsePath?.lineTo(pos.dx, pos.dy);
+    _inUsePosition = pos;
     notifyListeners();
   }
 
   @internal
   void onPointerUpByChild(PointerUpEvent event) {
-    if (_currentPointer != event.pointer) return;
+    if (_inUsePointer != event.pointer) return;
     try {
-      final currentPath = _currentPath;
-      if (currentPath != null) {
-        final containerChildSize = requiredContainerChildSize;
-        final pictureRecorder = ui.PictureRecorder();
-        final canvas = Canvas(pictureRecorder);
-        _image?.let((it) {
-          canvas.drawImage(it, Offset.zero, Paint());
-        });
-        canvas.scale(_kImageCanvasScale);
-        canvas.drawPath(currentPath, paint._paint);
-        final picture = pictureRecorder.endRecording();
-        try {
-          final mergedImage = picture.toImageSync(
-              (containerChildSize.width * _kImageCanvasScale).floor(),
-              (containerChildSize.height * _kImageCanvasScale).floor());
-          _addImage(mergedImage);
-        } finally {
-          picture.dispose();
+      if (_inUsePointer == _lastPointer) {
+        final currentPath = _inUsePath;
+        if (currentPath != null) {
+          final containerChildSize = requiredContainerChildSize;
+          final pictureRecorder = ui.PictureRecorder();
+          final canvas = Canvas(pictureRecorder);
+          _image?.let((it) {
+            canvas.drawImage(it, Offset.zero, Paint());
+          });
+          canvas.scale(_kImageCanvasScale);
+          canvas.drawPath(currentPath, paint._paint);
+          final picture = pictureRecorder.endRecording();
+          try {
+            final mergedImage = picture.toImageSync(
+                (containerChildSize.width * _kImageCanvasScale).floor(),
+                (containerChildSize.height * _kImageCanvasScale).floor());
+            _addImage(mergedImage);
+          } finally {
+            picture.dispose();
+          }
         }
       }
     } finally {
-      _currentPointer = null;
-      _currentPath = null;
-      _currentPosition = null;
+      _inUsePointer = null;
+      _inUsePath = null;
+      _inUsePosition = null;
+      notifyListeners();
     }
   }
 
   @internal
   void onPointerCancelByChild(PointerCancelEvent event) {
-    _currentPointer = null;
-    _currentPath = null;
-    _currentPosition = null;
+    if (_inUsePointer != event.pointer) return;
+    _inUsePointer = null;
+    _inUsePath = null;
+    _inUsePosition = null;
     notifyListeners();
   }
 
@@ -311,8 +319,8 @@ class DrawingBoard extends StatelessWidget {
           size: Size.infinite,
           painter: _DrawingBoardPainter(
             image: extension._image,
-            path: extension._currentPath,
-            ringPosition: extension._currentPosition,
+            path: extension._inUsePath,
+            ringPosition: extension._inUsePosition,
             pathPaint: extension.paint._paint,
             ringPaint: _ringPaint,
             layerPaint: _layerPaint,
