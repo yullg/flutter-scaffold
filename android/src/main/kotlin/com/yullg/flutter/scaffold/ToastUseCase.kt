@@ -14,12 +14,12 @@ class ToastUseCase : BaseUseCase(
         when (call.method) {
             "show" -> {
                 val text = call.argument<String>("text")!!
-                val longTime = call.argument<Boolean>("longTime")!!
+                val longDuration = call.argument<Boolean>("longDuration")!!
                 toast?.cancel()
                 toast = Toast.makeText(
                     requiredFlutterPluginBinding.applicationContext,
                     text,
-                    if (longTime) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
+                    if (longDuration) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
                 ).apply {
                     show()
                 }

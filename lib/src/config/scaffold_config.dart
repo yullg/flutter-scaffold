@@ -2,8 +2,8 @@ import 'scaffold_cache_option.dart';
 import 'scaffold_database_option.dart';
 import 'scaffold_developer_option.dart';
 import 'scaffold_dio_option.dart';
-import 'scaffold_error_print_option.dart';
 import 'scaffold_logger_option.dart';
+import 'scaffold_messenger_option.dart';
 
 class ScaffoldConfig {
   static const kCacheManagerKeyGlobal = "yullg_cache_manager_global";
@@ -13,7 +13,7 @@ class ScaffoldConfig {
   static ScaffoldDeveloperOption? _developerOption;
   static ScaffoldCacheOption? _cacheOption;
   static ScaffoldDatabaseOption? _databaseOption;
-  static ScaffoldErrorPrintOption? _errorPrintOption;
+  static ScaffoldMessengerOption? _messengerOption;
   static ScaffoldLoggerOption? _loggerOption;
   static ScaffoldDioOption? _dioOption;
 
@@ -23,7 +23,7 @@ class ScaffoldConfig {
 
   static ScaffoldDatabaseOption? get databaseOption => _databaseOption;
 
-  static ScaffoldErrorPrintOption? get errorPrintOption => _errorPrintOption;
+  static ScaffoldMessengerOption? get messengerOption => _messengerOption;
 
   static ScaffoldLoggerOption? get loggerOption => _loggerOption;
 
@@ -33,14 +33,14 @@ class ScaffoldConfig {
     ScaffoldDeveloperOption? developerOption,
     ScaffoldCacheOption? cacheOption,
     ScaffoldDatabaseOption? databaseOption,
-    ScaffoldErrorPrintOption? errorPrintOption,
+    ScaffoldMessengerOption? messengerOption,
     ScaffoldLoggerOption? loggerOption,
     ScaffoldDioOption? dioOption,
   }) {
     _developerOption = developerOption;
     _cacheOption = cacheOption;
     _databaseOption = databaseOption;
-    _errorPrintOption = errorPrintOption;
+    _messengerOption = messengerOption;
     _loggerOption = loggerOption;
     _dioOption = dioOption;
   }
@@ -49,7 +49,7 @@ class ScaffoldConfig {
     _developerOption = null;
     _cacheOption = null;
     _databaseOption = null;
-    _errorPrintOption = null;
+    _messengerOption = null;
     _loggerOption = null;
     _dioOption = null;
   }

@@ -8,7 +8,7 @@ import '../../helper/string_helper.dart';
 import '../../internal/scaffold_logger.dart';
 import '../../support/preference/developer_preference.dart';
 import '../popup/alert_dialog.dart';
-import '../popup/scaffold_messengers.dart';
+import '../popup/messenger.dart';
 import '../widget/easy_switch_list_tile.dart';
 
 class DeveloperPreferencePage extends StatefulWidget {
@@ -282,14 +282,13 @@ class _DeveloperPreferenceFieldState
 extension _ShowSnackBar on State {
   void _showSuccessSnackBar() {
     if (mounted) {
-      ScaffoldMessengers.showSnackBar(context,
-          contentText: "Operation successful!");
+      Messenger.show(context, "Operation successful!");
     }
   }
 
   void _showFailedSnackBar() {
     if (mounted) {
-      ScaffoldMessengers.showErrorSnackBar(context,
+      Messenger.showError(context,
           message: "Operation failed, please try again!");
     }
   }

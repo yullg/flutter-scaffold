@@ -20,17 +20,6 @@ class NoConfigurationError extends Error {
   }
 }
 
-class NoInitializeError extends Error {
-  final Object? message;
-
-  NoInitializeError([this.message]);
-
-  @override
-  String toString() {
-    return 'NoInitializeError{message: ${Error.safeToString(message)}}';
-  }
-}
-
 class CancellationError extends Error {
   final Object? message;
 
@@ -58,7 +47,8 @@ class IncorrectResultSizeDatabaseError extends Error {
   final int? expectedSize;
   final int? actualSize;
 
-  IncorrectResultSizeDatabaseError({this.message, this.expectedSize, this.actualSize});
+  IncorrectResultSizeDatabaseError(
+      {this.message, this.expectedSize, this.actualSize});
 
   @override
   String toString() {

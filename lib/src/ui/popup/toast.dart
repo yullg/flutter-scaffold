@@ -7,21 +7,19 @@ import '../../plugin/android/android_toast_plugin.dart';
 
 class Toast {
   static void showShort(BuildContext context, String text) {
-    _show(context, text, false);
+    show(context, text, false);
   }
 
   static void showLong(BuildContext context, String text) {
-    _show(context, text, true);
+    show(context, text, true);
   }
 
   static OverlayEntry? _overlayEntry;
   static Timer? _timer;
 
-  static void _show(BuildContext context, String text, bool longTime) {
+  static void show(BuildContext context, String text, bool longDuration) {
     if (Platform.isAndroid) {
-      AndroidToastPlugin.show(text: text, longTime: longTime).catchError((e, s) {
-        // ignore
-      });
+      AndroidToastPlugin.show(text: text, longDuration: longDuration).ignore();
     } else {
       _dismissOverlayEntry();
       final overlayEntry = OverlayEntry(builder: (BuildContext context) {
@@ -32,7 +30,10 @@ class Toast {
             child: SafeArea(
               child: Container(
                 margin: const EdgeInsets.all(24),
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(8),
@@ -52,7 +53,7 @@ class Toast {
       });
       Overlay.of(context).insert(overlayEntry);
       _overlayEntry = overlayEntry;
-      _timer = Timer(Duration(seconds: longTime ? 4 : 2), () {
+      _timer = Timer(Duration(seconds: longDuration ? 4 : 2), () {
         _dismissOverlayEntry();
       });
     }

@@ -9,7 +9,7 @@ import '../../architecture/generic_state.dart';
 import '../../helper/format_helper.dart';
 import '../../internal/scaffold_logger.dart';
 import '../../plugin/document_manager_plugin.dart';
-import '../popup/scaffold_messengers.dart';
+import '../popup/messenger.dart';
 import '../widget/easy_list_tile.dart';
 
 class DeveloperFilesPage extends StatefulWidget {
@@ -261,14 +261,13 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
 extension _ShowSnackBar on State {
   void _showSuccessSnackBar() {
     if (mounted) {
-      ScaffoldMessengers.showSnackBar(context,
-          contentText: "Operation successful!");
+      Messenger.show(context, "Operation successful!");
     }
   }
 
   void _showFailedSnackBar() {
     if (mounted) {
-      ScaffoldMessengers.showErrorSnackBar(context,
+      Messenger.showError(context,
           message: "Operation failed, please try again!");
     }
   }
