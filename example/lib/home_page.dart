@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
+import 'android_intent_page.dart';
 import 'canvas_page.dart';
 import 'messenger_page.dart';
 
@@ -23,7 +26,7 @@ class _HomeState extends State<HomePage> {
               showCloseIcon: true,
             )),
         errorPrinters: [
-          CancellationErrorPrinter(),
+          DefaultErrorPrinter(),
         ],
       ),
     );
@@ -53,6 +56,14 @@ class _HomeState extends State<HomePage> {
                 to(context, const MessengerPage());
               },
             ),
+            if (Platform.isAndroid)
+              EasyListTile(
+                nameText: "Activity Intent Demo",
+                trailingIcon: Icons.arrow_forward_ios,
+                onTap: () {
+                  to(context, const AndroidIntentPage());
+                },
+              ),
           ],
         ).toList(),
       ),

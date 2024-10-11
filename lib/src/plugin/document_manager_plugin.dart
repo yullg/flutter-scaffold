@@ -7,14 +7,15 @@ import '../config/scaffold_config.dart';
 import '../helper/string_helper.dart';
 import '../helper/uuid_helper.dart';
 import '../support/storage/storage_type.dart';
-import 'android/android_activity_result_contracts_plugin.dart';
 import 'android/android_content_resolver_plugin.dart';
+import 'android/android_intent_plugin.dart';
 import 'ios/ios_document_picker_plugin.dart';
 import 'ios/ios_file_manager_plugin.dart';
 import 'ios/ios_url_plugin.dart';
 
 class DocumentManagerPlugin {
-  static Future<T> useSecurityScopedResource<T>(Uri uri, Future<T> Function() block) async {
+  static Future<T> useSecurityScopedResource<T>(
+      Uri uri, Future<T> Function() block) async {
     try {
       if (!Platform.isAndroid) {
         await IosUrlPlugin.startAccessingSecurityScopedResource(uri);
@@ -22,7 +23,8 @@ class DocumentManagerPlugin {
       return await block();
     } finally {
       if (!Platform.isAndroid) {
-        await IosUrlPlugin.stopAccessingSecurityScopedResource(uri).asyncIgnore();
+        await IosUrlPlugin.stopAccessingSecurityScopedResource(uri)
+            .asyncIgnore();
       }
     }
   }
@@ -31,7 +33,7 @@ class DocumentManagerPlugin {
     Uri? initialLocation,
   }) {
     if (Platform.isAndroid) {
-      return AndroidActivityResultContractsPlugin.openDocumentTree(
+      return AndroidIntentPlugin.openDocumentTree(
         initialLocation: initialLocation,
       );
     } else {
@@ -76,7 +78,11 @@ class DocumentManagerPlugin {
       );
     } else {
       return Future<Uri>(() async {
-        final fileURLWithPath = displayName?.let((it) => p.extension(it).isNotEmpty ? it : "$it${p.extension(file.path)}") ?? p.basename(file.path);
+        final fileURLWithPath = displayName?.let((it) =>
+                p.extension(it).isNotEmpty
+                    ? it
+                    : "$it${p.extension(file.path)}") ??
+            p.basename(file.path);
         final fileUri = await IosUrlPlugin.createFileURL(
           fileURLWithPath: fileURLWithPath,
           isDirectory: false,
@@ -97,21 +103,23 @@ class DocumentManagerPlugin {
   }) async {
     if (Platform.isAndroid) {
       final uris = allowsMultipleSelection
-          ? await AndroidActivityResultContractsPlugin.openMultipleDocuments(
+          ? await AndroidIntentPlugin.openMultipleDocuments(
               mimeTypes: documentTypes.map((e) => e.mimeType).toList(),
             )
-          : await AndroidActivityResultContractsPlugin.openDocument(
+          : await AndroidIntentPlugin.openDocument(
               mimeTypes: documentTypes.map((e) => e.mimeType).toList(),
             ).then((value) => [if (value != null) value]);
       final files = <File>[];
       final cacheDirectoryPath = (await StorageType.cache.directory).path;
       for (final uri in uris) {
-        final contentUriMetadata = await AndroidContentResolverPlugin.getMetadata(uri);
+        final contentUriMetadata =
+            await AndroidContentResolverPlugin.getMetadata(uri);
         final path = p.join(
           cacheDirectoryPath,
           ScaffoldConfig.kDocumentManagerDirectory,
           UuidHelper.v4(),
-          StringHelper.trimToNull(contentUriMetadata.displayName) ?? UuidHelper.v4(),
+          StringHelper.trimToNull(contentUriMetadata.displayName) ??
+              UuidHelper.v4(),
         );
         final file = File(path);
         await AndroidContentResolverPlugin.copyContentUriToFile(
@@ -123,7 +131,8 @@ class DocumentManagerPlugin {
       return files;
     } else {
       final uris = await IosDocumentPickerPlugin.import(
-        forOpeningContentTypes: documentTypes.map((e) => e.utType).toList(growable: false),
+        forOpeningContentTypes:
+            documentTypes.map((e) => e.utType).toList(growable: false),
         asCopy: false,
         allowsMultipleSelection: allowsMultipleSelection,
         shouldShowFileExtensions: true,
@@ -135,16 +144,19 @@ class DocumentManagerPlugin {
           cacheDirectoryPath,
           ScaffoldConfig.kDocumentManagerDirectory,
           UuidHelper.v4(),
-          StringHelper.trimToNull(uri.pathSegments.lastOrNull) ?? UuidHelper.v4(),
+          StringHelper.trimToNull(uri.pathSegments.lastOrNull) ??
+              UuidHelper.v4(),
         );
         try {
-          await IosUrlPlugin.startAccessingSecurityScopedResource(uri).asyncIgnore();
+          await IosUrlPlugin.startAccessingSecurityScopedResource(uri)
+              .asyncIgnore();
           await IosFileManagerPlugin.copyItem(
             at: uri,
             to: Uri.file(path),
           );
         } finally {
-          await IosUrlPlugin.stopAccessingSecurityScopedResource(uri).asyncIgnore();
+          await IosUrlPlugin.stopAccessingSecurityScopedResource(uri)
+              .asyncIgnore();
         }
         files.add(File(path));
       }
@@ -159,7 +171,7 @@ class DocumentManagerPlugin {
     if (Platform.isAndroid) {
       final uris = <Uri>[];
       if (files.isNotEmpty) {
-        final uri = await AndroidActivityResultContractsPlugin.openDocumentTree(
+        final uri = await AndroidIntentPlugin.openDocumentTree(
           initialLocation: initialLocation,
         );
         if (uri != null) {
@@ -176,7 +188,8 @@ class DocumentManagerPlugin {
       return uris;
     } else {
       final uris = await IosDocumentPickerPlugin.export(
-        forExporting: files.map((file) => Uri.file(file.absolute.path)).toList(),
+        forExporting:
+            files.map((file) => Uri.file(file.absolute.path)).toList(),
         asCopy: true,
         shouldShowFileExtensions: true,
       );
@@ -200,7 +213,11 @@ class DocumentType {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is DocumentType && runtimeType == other.runtimeType && mimeType == other.mimeType && utType == other.utType;
+      identical(this, other) ||
+      other is DocumentType &&
+          runtimeType == other.runtimeType &&
+          mimeType == other.mimeType &&
+          utType == other.utType;
 
   @override
   int get hashCode => mimeType.hashCode ^ utType.hashCode;

@@ -51,12 +51,12 @@ class _MessengerState extends State<MessengerPage> {
   }
 }
 
-class CancellationErrorPrinter implements ErrorPrinter {
+class DefaultErrorPrinter implements ErrorPrinter {
   @override
   String? print(BuildContext context, Object error) {
     if (error is CancellationError) {
       return "取消操作";
     }
-    return null;
+    return "未知错误";
   }
 }

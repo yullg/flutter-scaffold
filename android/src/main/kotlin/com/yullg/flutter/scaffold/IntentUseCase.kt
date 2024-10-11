@@ -1,7 +1,9 @@
 package com.yullg.flutter.scaffold
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
@@ -12,9 +14,10 @@ private const val REQUEST_CODE_CREATE_DOCUMENT = 7001001
 private const val REQUEST_CODE_OPEN_DOCUMENT = 7001002
 private const val REQUEST_CODE_OPEN_DOCUMENT_TREE = 7001003
 private const val REQUEST_CODE_OPEN_MULTIPLE_DOCUMENTS = 7001004
+private const val REQUEST_CODE_ACTION_PICK = 7001005
 
-class ActivityResultContractsUseCase : BaseUseCase(
-    methodChannelName = "com.yullg.flutter.scaffold/activity_result_contracts"
+class IntentUseCase : BaseUseCase(
+    methodChannelName = "com.yullg.flutter.scaffold/intent"
 ), PluginRegistry.ActivityResultListener {
 
     // createDocument
@@ -32,6 +35,9 @@ class ActivityResultContractsUseCase : BaseUseCase(
     // openMultipleDocuments
     private var openMultipleDocumentsContract: ActivityResultContracts.OpenMultipleDocuments? = null
     private var openMultipleDocumentsResult: MethodChannel.Result? = null
+
+    // actionPick
+    private var actionPickResult: MethodChannel.Result? = null
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
@@ -90,6 +96,31 @@ class ActivityResultContractsUseCase : BaseUseCase(
                 )
                 openMultipleDocumentsContract = contract
                 openMultipleDocumentsResult = result
+            }
+
+            "actionPick" -> {
+                val activity = requiredActivityPluginBinding.activity
+                val type = call.argument<String>("type")
+                val intent = when (type) {
+                    "audio" -> Intent(
+                        Intent.ACTION_PICK,
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                    )
+
+                    "image" -> Intent(
+                        Intent.ACTION_PICK,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                    )
+
+                    "video" -> Intent(
+                        Intent.ACTION_PICK,
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                    )
+
+                    else -> Intent(Intent.ACTION_PICK)
+                }
+                activity.startActivityForResult(intent, REQUEST_CODE_ACTION_PICK)
+                actionPickResult = result
             }
 
             else -> {
@@ -165,6 +196,16 @@ class ActivityResultContractsUseCase : BaseUseCase(
             openMultipleDocumentsContract = null
             openMultipleDocumentsResult = null
             return true
+        } else if (REQUEST_CODE_ACTION_PICK == requestCode) {
+            actionPickResult?.also {
+                if (Activity.RESULT_OK == resultCode) {
+                    it.success(data?.data?.toString())
+                } else {
+                    it.success(null)
+                }
+            }
+            actionPickResult = null;
+            return true;
         } else {
             return false
         }
@@ -181,4 +222,4 @@ class ActivityResultContractsUseCase : BaseUseCase(
     }
 }
 
-private const val ERROR_CODE = "ActivityResultContractsUseCaseError"
+private const val ERROR_CODE = "IntentUseCaseError"

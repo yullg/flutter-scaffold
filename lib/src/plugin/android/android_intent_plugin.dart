@@ -1,7 +1,12 @@
 import 'package:flutter/services.dart';
 
-class AndroidActivityResultContractsPlugin {
-  static const _methodChannel = MethodChannel("com.yullg.flutter.scaffold/activity_result_contracts");
+class AndroidIntentPlugin {
+  static const _methodChannel =
+      MethodChannel("com.yullg.flutter.scaffold/intent");
+
+  static const kActionPickTypeAudio = "audio";
+  static const kActionPickTypeImage = "image";
+  static const kActionPickTypeVideo = "video";
 
   static Future<Uri?> createDocument({
     required String mimeType,
@@ -34,8 +39,18 @@ class AndroidActivityResultContractsPlugin {
   }) {
     return _methodChannel.invokeListMethod<String>("openMultipleDocuments", {
       "mimeTypes": mimeTypes,
-    }).then((value) => value != null ? value.map((e) => Uri.parse(e)).toList() : List<Uri>.empty());
+    }).then((value) => value != null
+        ? value.map((e) => Uri.parse(e)).toList()
+        : List<Uri>.empty());
   }
 
-  AndroidActivityResultContractsPlugin._();
+  static Future<Uri?> actionPick({
+    required String type,
+  }) {
+    return _methodChannel.invokeMethod("actionPick", {
+      "type": type,
+    }).then<Uri?>((value) => value != null ? Uri.parse(value) : null);
+  }
+
+  AndroidIntentPlugin._();
 }
