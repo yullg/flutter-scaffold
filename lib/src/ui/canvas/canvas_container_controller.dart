@@ -1,176 +1,68 @@
-import 'dart:math';
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:meta/meta.dart';
 
-import 'adjust_boundary.dart';
-import 'canvas_container_aware.dart';
-import 'drawing_board.dart';
+import 'adjust_boundary_extension.dart';
+import 'canvas_container_controller_extensions.dart';
+import 'canvas_container_extension.dart';
+import 'drawing_board_extension.dart';
 
 class CanvasContainerController extends ChangeNotifier
-    with CanvasContainerAware {
+    implements CanvasContainerControllerExtensions {
+  @override
+  late final CanvasContainerExtension canvasContainerExtension;
+  @override
   late final DrawingBoardExtension drawingBoardExtension;
+  @override
   late final AdjustBoundaryExtension adjustBoundaryExtension;
 
   CanvasContainerController({
-    this.minScale = 0.3,
-    this.maxScale = 3.0,
-    bool scaleGestureEnabled = true,
-    bool rotationGestureEnabled = true,
-    bool translateGestureEnabled = true,
-    DrawingBoardExtension? drawingBoardExtension,
-    AdjustBoundaryExtension? adjustBoundaryExtension,
-  })  : _scaleGestureEnabled = scaleGestureEnabled,
-        _rotationGestureEnabled = rotationGestureEnabled,
-        _translateGestureEnabled = translateGestureEnabled {
-    this.drawingBoardExtension =
-        drawingBoardExtension ?? DrawingBoardExtension();
-    this.adjustBoundaryExtension =
-        adjustBoundaryExtension ?? AdjustBoundaryExtension();
+    CanvasContainerExtensionOption canvasContainerExtensionOption =
+        const CanvasContainerExtensionOption(),
+    AdjustBoundaryExtensionOption adjustBoundaryExtensionOption =
+        const AdjustBoundaryExtensionOption(),
+  }) {
+    canvasContainerExtension = CanvasContainerExtension(
+      extensions: this,
+      option: canvasContainerExtensionOption,
+    );
+    drawingBoardExtension = DrawingBoardExtension(
+      extensions: this,
+    );
+    adjustBoundaryExtension = AdjustBoundaryExtension(
+      extensions: this,
+      option: adjustBoundaryExtensionOption,
+    );
   }
 
+  Completer<void> _attachedCompleter = Completer<void>();
+
+  bool get isAttached => _attachedCompleter.isCompleted;
+
+  Future<void> waitAttached() => _attachedCompleter.future;
+
   @internal
-  void dispatchAttach({
+  void attach({
     required Size containerSize,
     required Size containerChildSize,
   }) {
-    attach(
+    canvasContainerExtension.attach(
         containerSize: containerSize, containerChildSize: containerChildSize);
-    drawingBoardExtension.attach(
-        containerSize: containerSize, containerChildSize: containerChildSize);
-    adjustBoundaryExtension.attach(
-        containerSize: containerSize, containerChildSize: containerChildSize);
+    adjustBoundaryExtension.attach();
+    if (!_attachedCompleter.isCompleted) {
+      _attachedCompleter.complete();
+    }
   }
 
   @internal
-  void dispatchDetach() {
-    detach();
-    drawingBoardExtension.detach();
-    adjustBoundaryExtension.detach();
-  }
-
-  // ---------- 缩放 ----------
-
-  final double? minScale;
-  final double? maxScale;
-
-  double? _scale;
-
-  bool _scaleGestureEnabled;
-
-  double? get scale => _scale;
-
-  bool get scaleGestureEnabled => _scaleGestureEnabled;
-
-  set scale(double? value) {
-    if (value != null) {
-      if (minScale != null) {
-        value = max(minScale!, value);
-      }
-      if (maxScale != null) {
-        value = min(maxScale!, value);
-      }
+  void detach() {
+    canvasContainerExtension.detach();
+    if (_attachedCompleter.isCompleted) {
+      _attachedCompleter = Completer<void>();
     }
-    if (_scale != value) {
-      _scale = value;
-      translate = translate;
-      notifyListeners();
-    }
-  }
-
-  set scaleGestureEnabled(bool value) {
-    if (_scaleGestureEnabled != value) {
-      _scaleGestureEnabled = value;
-      notifyListeners();
-    }
-  }
-
-  // ---------- 旋转 ----------
-
-  int? _rotation;
-
-  bool _rotationGestureEnabled;
-
-  int? get rotation => _rotation;
-
-  bool get rotationGestureEnabled => _rotationGestureEnabled;
-
-  set rotation(int? value) {
-    if (value != null) {
-      value = value % 360;
-    }
-    if (_rotation != value) {
-      _rotation = value;
-      translate = translate;
-      notifyListeners();
-    }
-  }
-
-  void rotate(int value) {
-    rotation = (rotation ?? 0) + value % 360;
-  }
-
-  set rotationGestureEnabled(bool value) {
-    if (_rotationGestureEnabled != value) {
-      _rotationGestureEnabled = value;
-      notifyListeners();
-    }
-  }
-
-  // ---------- 平移 ----------
-
-  Offset? _translate;
-
-  bool _translateGestureEnabled;
-
-  Offset? get translate => _translate;
-
-  bool get translateGestureEnabled => _translateGestureEnabled;
-
-  set translate(Offset? value) {
-    value = _clampTranslate(value);
-    if (_translate != value) {
-      _translate = value;
-      notifyListeners();
-    }
-  }
-
-  set translateGestureEnabled(bool value) {
-    if (_translateGestureEnabled != value) {
-      _translateGestureEnabled = value;
-      notifyListeners();
-    }
-  }
-
-  Offset? _clampTranslate(Offset? offset) {
-    if (offset == null) {
-      return offset;
-    }
-    final containerSize = requiredContainerSize;
-    final containerChildSize = requiredContainerChildSize;
-    double childWidth = containerChildSize.width;
-    double childHeight = containerChildSize.height;
-    final rotation = this.rotation;
-    if (rotation != null && rotation != 0) {
-      final rotationAngle = rotation * (pi / 180);
-      childWidth = (containerChildSize.width * cos(rotationAngle)).abs() +
-          (containerChildSize.height * sin(rotationAngle)).abs();
-      childHeight = (containerChildSize.height * cos(rotationAngle)).abs() +
-          (containerChildSize.width * sin(rotationAngle)).abs();
-    }
-    final scale = this.scale;
-    if (scale != null) {
-      childWidth = childWidth * scale;
-      childHeight = childHeight * scale;
-    }
-    final maxTranslateX = ((containerSize.width - childWidth) / 2).abs();
-    final minTranslateX = -maxTranslateX;
-    final maxTranslateY = ((containerSize.height - childHeight) / 2).abs();
-    final minTranslateY = -maxTranslateY;
-    return Offset(max(minTranslateX, min(maxTranslateX, offset.dx)),
-        max(minTranslateY, min(maxTranslateY, offset.dy)));
   }
 
   // ---------- 绘画功能 ----------
@@ -198,65 +90,47 @@ class CanvasContainerController extends ChangeNotifier
     }
   }
 
-  // ----------Widget事件----------
-
-  double? _previousScale;
-  int? _previousRotation;
+  // ----------手势事件----------
 
   @internal
-  void onScaleStartByContainer(ScaleStartDetails details) {
-    if (scaleGestureEnabled && details.pointerCount >= 2) {
-      _previousScale = scale;
-    }
-    if (rotationGestureEnabled && details.pointerCount >= 2) {
-      _previousRotation = rotation;
-    }
+  void onContainerScaleStart(ScaleStartDetails details) {
+    canvasContainerExtension.onScaleStart(details);
   }
 
   @internal
-  void onScaleUpdateByContainer(ScaleUpdateDetails details) {
-    if (scaleGestureEnabled && details.pointerCount >= 2) {
-      scale = (_previousScale ?? 1.0) * details.scale;
-    }
-    if (rotationGestureEnabled && details.pointerCount >= 2) {
-      rotation =
-          (_previousRotation ?? 0) + (details.rotation * (180 / pi)).toInt();
-    }
-    if (translateGestureEnabled && details.pointerCount >= 2) {
-      translate = (translate ?? Offset.zero) + details.focalPointDelta;
-    }
+  void onContainerScaleUpdate(ScaleUpdateDetails details) {
+    canvasContainerExtension.onScaleUpdate(details);
   }
 
   @internal
-  void onScaleEndByContainer(ScaleEndDetails details) {
-    _previousScale = null;
-    _previousRotation = null;
+  void onContainerScaleEnd(ScaleEndDetails details) {
+    canvasContainerExtension.onScaleEnd(details);
   }
 
   @internal
-  void onPointerDownByChild(PointerDownEvent event) {
+  void onChildPointerDown(PointerDownEvent event) {
     if (drawingBoardEnabled) {
-      drawingBoardExtension.onPointerDownByChild(event);
+      drawingBoardExtension.onPointerDown(event);
     }
     if (adjustBoundaryEnabled) {
-      adjustBoundaryExtension.onPointerDownByChild(event);
+      adjustBoundaryExtension.onPointerDown(event);
     }
   }
 
   @internal
-  void onPointerMoveByChild(PointerMoveEvent event) {
+  void onChildPointerMove(PointerMoveEvent event) {
     if (drawingBoardEnabled) {
-      drawingBoardExtension.onPointerMoveByChild(event);
+      drawingBoardExtension.onPointerMove(event);
     }
     if (adjustBoundaryEnabled) {
-      adjustBoundaryExtension.onPointerMoveByChild(event);
+      adjustBoundaryExtension.onPointerMove(event);
     }
   }
 
   @internal
-  void onPointerUpByChild(PointerUpEvent event) {
+  void onChildPointerUp(PointerUpEvent event) {
     if (drawingBoardEnabled) {
-      drawingBoardExtension.onPointerUpByChild(event);
+      drawingBoardExtension.onPointerUp(event);
     }
     if (adjustBoundaryEnabled) {
       adjustBoundaryExtension.onPointerUpByChild(event);
@@ -264,9 +138,9 @@ class CanvasContainerController extends ChangeNotifier
   }
 
   @internal
-  void onPointerCancelByChild(PointerCancelEvent event) {
+  void onChildPointerCancel(PointerCancelEvent event) {
     if (drawingBoardEnabled) {
-      drawingBoardExtension.onPointerCancelByChild(event);
+      drawingBoardExtension.onPointerCancel(event);
     }
     if (adjustBoundaryEnabled) {
       adjustBoundaryExtension.onPointerCancelByChild(event);
@@ -277,7 +151,11 @@ class CanvasContainerController extends ChangeNotifier
 
   @override
   void dispose() {
-    dispatchDetach();
+    if (!_attachedCompleter.isCompleted) {
+      _attachedCompleter
+          .completeError(StateError("Controller has been disposed"));
+    }
+    canvasContainerExtension.dispose();
     drawingBoardExtension.dispose();
     adjustBoundaryExtension.dispose();
     super.dispose();

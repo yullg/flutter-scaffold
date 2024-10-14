@@ -135,30 +135,36 @@ class _CanvasSettingsWidget extends StatelessWidget {
               ),
               EasyListTile(
                 nameText: "旋转",
-                valueText: controller.rotation?.toString() ?? "null",
+                valueText:
+                    controller.canvasContainerExtension.rotation?.toString() ??
+                        "null",
                 description: Slider(
                   min: 0,
                   max: 360,
-                  value: controller.rotation?.toDouble() ?? 0,
+                  value: controller.canvasContainerExtension.rotation
+                          ?.toDouble() ??
+                      0,
                   onChanged: (value) {
-                    controller.rotation = value.toInt();
+                    controller.canvasContainerExtension.rotation =
+                        value.toInt();
                   },
                 ),
               ),
               EasyListTile(
                 nameText: "缩放",
-                valueText: controller.scale?.let((it) =>
-                        FormatHelper.printNum(it, maxFractionDigits: 1)) ??
+                valueText: controller.canvasContainerExtension.scale?.let(
+                        (it) =>
+                            FormatHelper.printNum(it, maxFractionDigits: 1)) ??
                     "null",
                 description: Slider(
                   min: 0,
                   max: 3,
-                  value: controller.scale ?? 0,
+                  value: controller.canvasContainerExtension.scale ?? 0,
                   onChanged: (value) {
                     if (value > 0) {
-                      controller.scale = value;
+                      controller.canvasContainerExtension.scale = value;
                     } else {
-                      controller.scale = null;
+                      controller.canvasContainerExtension.scale = null;
                     }
                   },
                 ),

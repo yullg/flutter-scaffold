@@ -12,10 +12,7 @@ class CanvasContainer extends StatelessWidget {
   final CanvasContainerChild Function(BuildContext, BoxConstraints) builder;
   final DrawingBoardStyle drawingBoardStyle;
   final AdjustBoundaryStyle adjustBoundaryStyle;
-  final PointerDownEventListener? onPointerDown;
-  final PointerMoveEventListener? onPointerMove;
-  final PointerUpEventListener? onPointerUp;
-  final PointerCancelEventListener? onPointerCancel;
+  final GestureTapUpCallback? onTapUp;
 
   const CanvasContainer({
     super.key,
@@ -23,95 +20,102 @@ class CanvasContainer extends StatelessWidget {
     required this.builder,
     this.drawingBoardStyle = const DrawingBoardStyle(),
     this.adjustBoundaryStyle = const AdjustBoundaryStyle(),
-    this.onPointerDown,
-    this.onPointerMove,
-    this.onPointerUp,
-    this.onPointerCancel,
+    this.onTapUp,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onScaleStart: (details) {
-        controller.onScaleStartByContainer(details);
-      },
-      onScaleUpdate: (details) {
-        controller.onScaleUpdateByContainer(details);
-      },
-      onScaleEnd: (details) {
-        controller.onScaleEndByContainer(details);
-      },
-      child: Center(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final containerSize = constraints.biggest;
-            final containerChild = builder(context, constraints);
-            controller.dispatchAttach(
-              containerSize: containerSize,
-              containerChildSize: containerChild.size,
-            );
-            return ListenableBuilder(
-              listenable: controller,
-              builder: (context, _) {
-                final transform = Matrix4.identity();
-                controller.translate?.also((it) {
-                  transform.translate(it.dx, it.dy);
-                });
-                controller.rotation?.also((it) {
-                  transform.rotateZ(it * (pi / 180));
-                });
-                controller.scale?.also((it) {
-                  transform.scale(it);
-                });
-                return Transform(
-                  transform: transform,
-                  alignment: Alignment.center,
-                  child: Listener(
-                    behavior: HitTestBehavior.translucent,
-                    onPointerDown: (event) {
-                      controller.onPointerDownByChild(event);
-                      onPointerDown?.call(event);
-                    },
-                    onPointerMove: (event) {
-                      controller.onPointerMoveByChild(event);
-                      onPointerMove?.call(event);
-                    },
-                    onPointerUp: (event) {
-                      controller.onPointerUpByChild(event);
-                      onPointerUp?.call(event);
-                    },
-                    onPointerCancel: (event) {
-                      controller.onPointerCancelByChild(event);
-                      onPointerCancel?.call(event);
-                    },
-                    child: Center(
-                      child: SizedBox.fromSize(
-                        size: containerChild.size,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            containerChild.child,
-                            if (controller.drawingBoardEnabled)
-                              DrawingBoard(
-                                extension: controller.drawingBoardExtension,
-                                style: drawingBoardStyle,
+    return Center(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final containerSize = constraints.biggest;
+          final containerChild = builder(context, constraints);
+          controller.attach(
+            containerSize: containerSize,
+            containerChildSize: containerChild.size,
+          );
+          return ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) {
+              final drawingBoardEnabled = controller.drawingBoardEnabled;
+              final adjustBoundaryEnabled = controller.adjustBoundaryEnabled;
+              return GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTapUp: (details) {
+                  onTapUp?.call(details);
+                },
+                onScaleStart: (details) {
+                  controller.onContainerScaleStart(details);
+                },
+                onScaleUpdate: (details) {
+                  controller.onContainerScaleUpdate(details);
+                },
+                onScaleEnd: (details) {
+                  controller.onContainerScaleEnd(details);
+                },
+                child: SizedBox.expand(
+                  child: ListenableBuilder(
+                    listenable: controller.canvasContainerExtension,
+                    builder: (context, _) {
+                      final transform = Matrix4.identity();
+                      controller.canvasContainerExtension.translate?.also((it) {
+                        transform.translate(it.dx, it.dy);
+                      });
+                      controller.canvasContainerExtension.rotation?.also((it) {
+                        transform.rotateZ(it * (pi / 180));
+                      });
+                      controller.canvasContainerExtension.scale?.also((it) {
+                        transform.scale(it);
+                      });
+                      return Transform(
+                        transform: transform,
+                        alignment: Alignment.center,
+                        child: Listener(
+                          behavior: HitTestBehavior.translucent,
+                          onPointerDown: (event) {
+                            controller.onChildPointerDown(event);
+                          },
+                          onPointerMove: (event) {
+                            controller.onChildPointerMove(event);
+                          },
+                          onPointerUp: (event) {
+                            controller.onChildPointerUp(event);
+                          },
+                          onPointerCancel: (event) {
+                            controller.onChildPointerCancel(event);
+                          },
+                          child: Center(
+                            child: SizedBox.fromSize(
+                              size: containerChild.size,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  containerChild.child,
+                                  if (drawingBoardEnabled)
+                                    DrawingBoard(
+                                      extension:
+                                          controller.drawingBoardExtension,
+                                      style: drawingBoardStyle,
+                                    ),
+                                  if (adjustBoundaryEnabled)
+                                    AdjustBoundary(
+                                      extension:
+                                          controller.adjustBoundaryExtension,
+                                      style: adjustBoundaryStyle,
+                                    ),
+                                ],
                               ),
-                            if (controller.adjustBoundaryEnabled)
-                              AdjustBoundary(
-                                extension: controller.adjustBoundaryExtension,
-                                style: adjustBoundaryStyle,
-                              ),
-                          ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            );
-          },
-        ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
