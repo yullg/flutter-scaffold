@@ -1,9 +1,9 @@
-import 'video_filter.dart';
+import 'filter.dart';
 
 /// Scale (resize) the input video, using the libswscale library.
 ///
 /// See Also: https://www.ffmpeg.org/ffmpeg-filters.html#scale-1
-class ScaleVideoFilter implements VideoFilter {
+class ScaleFilter implements Filter {
   static const kForceOriginalAspectRatioDisable = "disable";
   static const kForceOriginalAspectRatioDecrease = "decrease";
   static const kForceOriginalAspectRatioIncrease = "increase";
@@ -11,46 +11,38 @@ class ScaleVideoFilter implements VideoFilter {
   @override
   final String name = "scale";
 
-  final String? width;
-  final String? height;
+  final String width;
+  final String height;
   final String? forceOriginalAspectRatio;
 
-  const ScaleVideoFilter({
-    this.width,
-    this.height,
+  const ScaleFilter({
+    this.width = "0",
+    this.height = "0",
     this.forceOriginalAspectRatio,
   });
 
-  const ScaleVideoFilter.contain({
+  const ScaleFilter.contain({
     int? maxWidth,
     int? maxHeight,
-  })  : width = maxWidth != null ? "min(iw, $maxWidth)" : null,
-        height = maxHeight != null ? "min(ih, $maxHeight)" : null,
+  })  : width = maxWidth != null ? "min(iw, $maxWidth)" : "-1",
+        height = maxHeight != null ? "min(ih, $maxHeight)" : "-1",
         forceOriginalAspectRatio = kForceOriginalAspectRatioDecrease;
 
   @override
   String? get options {
     final list = <String>[];
-    if (width != null) {
-      list.add("w=$width");
-    }
-    if (height != null) {
-      list.add("h=$height");
-    }
+    list.add("w=$width");
+    list.add("h=$height");
     if (forceOriginalAspectRatio != null) {
       list.add("force_original_aspect_ratio=$forceOriginalAspectRatio");
     }
-    if (list.isNotEmpty) {
-      return list.join(":");
-    } else {
-      return null;
-    }
+    return list.join(":");
   }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ScaleVideoFilter &&
+      other is ScaleFilter &&
           runtimeType == other.runtimeType &&
           name == other.name &&
           width == other.width &&
@@ -66,6 +58,6 @@ class ScaleVideoFilter implements VideoFilter {
 
   @override
   String toString() {
-    return 'ScaleVideoFilter{name: $name, width: $width, height: $height, forceOriginalAspectRatio: $forceOriginalAspectRatio}';
+    return 'ScaleFilter{name: $name, width: $width, height: $height, forceOriginalAspectRatio: $forceOriginalAspectRatio}';
   }
 }

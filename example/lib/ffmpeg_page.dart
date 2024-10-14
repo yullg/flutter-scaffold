@@ -1,6 +1,8 @@
-import 'dart:convert';
+import 'dart:async';
+import 'dart:io';
 
 import 'package:ffmpeg_kit_flutter_full/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_full/return_code.dart';
 import 'package:ffmpeg_kit_flutter_full/session_state.dart';
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
@@ -25,55 +27,114 @@ class _FFMpegState extends GenericState<FFMpegPage> {
           tiles: [
             EasyListTile(
               nameText: "Video Thumbnail",
-              onTap: () async {
-                final input = (await DocumentManagerPlugin.import(
-                  documentTypes: [
-                    const DocumentType(
-                        mimeType: "video/*", utType: "public.video"),
-                  ],
-                ))
-                    .firstOrNull;
+              onTap: () => run(() async {
+                final input = await pickVideo();
                 if (input == null) return;
                 final output = await StorageFile(
                         StorageType.cache, "${UuidHelper.v4()}.png")
                     .file;
+                output.parent.createSync(recursive: true);
                 final commander = VideoThumbnailCommander(
                   input: input,
                   output: output,
+                  encoder: const LibwebpEncoder(
+                    compressionLevel: 6,
+                    quality: 0,
+                  ),
+                  filter: const ScaleFilter.contain(),
                 );
-                if (!context.mounted) return;
-                defaultLoadingDialog.resetMetadata();
-                defaultLoadingDialog.show(context);
-                FFmpegKit.executeWithArgumentsAsync(
-                  commander.commandArguments(),
-                  (session) async {
-                    defaultLoadingDialog.dismiss();
-                    DefaultLogger.info(await session.getLogsAsString());
-                    final state = await session.getState();
-                    if (SessionState.completed == state) {
-                      GallerySavePlugin.saveImage(output).ignore();
-                    } else {
-                      DefaultLogger.error(
-                          "$state->${await session.getFailStackTrace()}");
-                    }
-                  },
-                  (log) => DefaultLogger.info(jsonEncode(log)),
-                  (statistics) {
-                    final statisticsStr = jsonEncode(statistics);
-                    DefaultLogger.info(statisticsStr);
-                    defaultLoadingDialog.message = statisticsStr;
-                  },
-                ).then((session) async {
-                  DefaultLogger.info(
-                      "then -> ${await session.getLogsAsString()}");
-                }, onError: (e, s) {
-                  DefaultLogger.error(null, e, s);
-                });
-              },
+                await executeFFmpeg(commander.commandArguments());
+                await GallerySavePlugin.saveImage(output);
+              }),
+            ),
+            EasyListTile(
+              nameText: "Video Compress",
+              onTap: () => run(() async {
+                final input = await pickVideo();
+                if (input == null) return;
+                final output = await StorageFile(
+                        StorageType.cache, "${UuidHelper.v4()}.mp4")
+                    .file;
+                output.parent.createSync(recursive: true);
+                final commander = VideoCompressCommander(
+                  input: input,
+                  output: output,
+                );
+                await executeFFmpeg(commander.commandArguments());
+                await GallerySavePlugin.saveVideo(output);
+              }),
             ),
           ],
         ).toList(),
       ),
     );
+  }
+
+  void run(Future<void> Function() block) async {
+    try {
+      await block();
+      if (mounted) {
+        Messenger.show(context, "Success");
+      }
+    } catch (e, s) {
+      DefaultLogger.error(null, e, s);
+      if (mounted) {
+        Messenger.showError(context, error: e);
+      }
+    }
+  }
+
+  Future<void> executeFFmpeg(List<String> commandArguments) {
+    defaultLoadingDialog.resetMetadata();
+    defaultLoadingDialog.show(context);
+    final completer = Completer<void>();
+    FFmpegKit.executeWithArgumentsAsync(
+      commandArguments,
+      (session) async {
+        DefaultLogger.info("CompleteCallback >>> ${session.getCommand()}");
+        defaultLoadingDialog.dismiss();
+        final state = await session.getState();
+        if (SessionState.completed == state) {
+          final returnCode = await session.getReturnCode();
+          if (ReturnCode.isSuccess(returnCode)) {
+            completer.complete();
+          } else if (ReturnCode.isCancel(returnCode)) {
+            completer.completeError(CancellationError());
+          } else {
+            completer.completeError(StateError("ReturnCode=$returnCode"));
+          }
+        } else if (SessionState.failed == state) {
+          DefaultLogger.error("$state->${await session.getFailStackTrace()}");
+          completer.completeError(StateError("State=$state"));
+        } else {
+          completer.completeError(StateError("State=$state"));
+        }
+      },
+      (log) => DefaultLogger.info(
+          "LogCallback >>> SessionId=${log.getSessionId()},Level=${log.getLevel()},Message=${log.getMessage()}"),
+      (statistics) => DefaultLogger.info(
+          "StatisticsCallback >>> SessionId=${statistics.getSessionId()},FrameNumber=${statistics.getVideoFrameNumber()},Fps=${statistics.getVideoFps()},Quality=${statistics.getVideoQuality()},Size=${statistics.getSize()},Time=${statistics.getTime()},Bitrate=${statistics.getBitrate()},Speed=${statistics.getSpeed()}"),
+    ).then((session) {
+      // 调用executeWithArgumentsAsync()后立即返回
+    }, onError: (e, s) {
+      completer.completeError(e, s);
+    });
+    return completer.future;
+  }
+
+  Future<File?> pickImage() async {
+    return DocumentManagerPlugin.import(
+      documentTypes: [
+        const DocumentType(mimeType: "image/*", utType: "public.image"),
+      ],
+    ).then((value) => value.firstOrNull);
+  }
+
+  Future<File?> pickVideo() async {
+    return DocumentManagerPlugin.import(
+      documentTypes: [
+        const DocumentType(mimeType: "video/*", utType: "public.video"),
+      ],
+    ).then((value) => value.firstOrNull);
   }
 }

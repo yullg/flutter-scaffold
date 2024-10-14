@@ -1,9 +1,9 @@
-import 'video_encoder.dart';
+import 'encoder.dart';
 
 /// libwebp WebP Image encoder wrapper.
 ///
 /// See Also: https://www.ffmpeg.org/ffmpeg-codecs.html#libwebp
-class LibwebpVideoEncoder implements VideoEncoder {
+class LibwebpEncoder implements Encoder {
   static const kPresetNone = "none";
   static const kPresetDefault = "default";
   static const kPresetPicture = "picture";
@@ -20,7 +20,7 @@ class LibwebpVideoEncoder implements VideoEncoder {
   final double? quality;
   final String? preset;
 
-  const LibwebpVideoEncoder({
+  const LibwebpEncoder({
     this.lossless,
     this.compressionLevel,
     this.quality,
@@ -28,7 +28,7 @@ class LibwebpVideoEncoder implements VideoEncoder {
   });
 
   @override
-  List<String> get options {
+  List<String>? get options {
     final list = <String>[];
     if (lossless != null) {
       list.add("-lossless");
@@ -52,7 +52,7 @@ class LibwebpVideoEncoder implements VideoEncoder {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is LibwebpVideoEncoder &&
+      other is LibwebpEncoder &&
           runtimeType == other.runtimeType &&
           name == other.name &&
           lossless == other.lossless &&
@@ -70,6 +70,6 @@ class LibwebpVideoEncoder implements VideoEncoder {
 
   @override
   String toString() {
-    return 'LibwebpVideoEncoder{name: $name, lossless: $lossless, compressionLevel: $compressionLevel, quality: $quality, preset: $preset}';
+    return 'LibwebpEncoder{name: $name, lossless: $lossless, compressionLevel: $compressionLevel, quality: $quality, preset: $preset}';
   }
 }
