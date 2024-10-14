@@ -5,6 +5,7 @@ import 'package:scaffold/scaffold.dart';
 
 import 'android_intent_page.dart';
 import 'canvas_page.dart';
+import 'ffmpeg_page.dart';
 import 'messenger_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -54,6 +55,13 @@ class _HomeState extends State<HomePage> {
               trailingIcon: Icons.arrow_forward_ios,
               onTap: () {
                 to(context, const MessengerPage());
+              },
+            ),
+            EasyListTile(
+              nameText: "FFmpeg Demo",
+              trailingIcon: Icons.arrow_forward_ios,
+              onTap: () {
+                to(context, const FFMpegPage());
               },
             ),
             if (Platform.isAndroid)

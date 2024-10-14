@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:meta/meta.dart';
 
+import 'adjust_boundary_mode.dart';
 import 'canvas_container_controller_extensions.dart';
 
 class AdjustBoundaryExtensionOption {
@@ -293,17 +294,4 @@ class AdjustBoundaryExtension extends ChangeNotifier {
   void onPointerCancelByChild(PointerCancelEvent event) {
     adjustBoundaryMode = null;
   }
-}
-
-@internal
-enum AdjustBoundaryMode {
-  inside,
-  leftTop,
-  rightTop,
-  leftBottom,
-  rightBottom,
-  leftCenter,
-  topCenter,
-  rightCenter,
-  bottomCenter,
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'adjust_boundary_extension.dart';
+import 'adjust_boundary_mode.dart';
 
 class AdjustBoundaryStyle {
   final Color? backgroundColor;

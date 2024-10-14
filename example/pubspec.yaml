@@ -25,6 +25,7 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
+  ffmpeg_kit_flutter_full: ^6.0.3
 
 dev_dependencies:
   flutter_test:
