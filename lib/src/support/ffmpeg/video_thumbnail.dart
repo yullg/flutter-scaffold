@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:scaffold/scaffold_lang.dart';
 
-import 'codecs/encoder.dart';
-import 'codecs/libwebp_encoder.dart';
-import 'filters/filter.dart';
-import 'filters/scale_filter.dart';
+import 'codec/encoder.dart';
+import 'codec/libwebp_encoder.dart';
+import 'filter/filter.dart';
+import 'filter/scale_filter.dart';
 
 class VideoThumbnailCommander {
   final File input;

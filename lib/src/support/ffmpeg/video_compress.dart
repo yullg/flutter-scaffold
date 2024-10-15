@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:scaffold/scaffold_lang.dart';
-import 'package:scaffold/src/support/ffmpeg/filters/scale_filter.dart';
 
-import 'codecs/encoder.dart';
-import 'filters/filter.dart';
+import 'codec/encoder.dart';
+import 'filter/filter.dart';
+import 'filter/scale_filter.dart';
 
 class VideoCompressCommander {
   final File input;
