@@ -14,6 +14,7 @@ class VideoResizeCommander {
   final int width;
   final int height;
   final Duration? duration;
+  final bool padding;
   final Color? padColor;
 
   const VideoResizeCommander({
@@ -22,6 +23,7 @@ class VideoResizeCommander {
     required this.width,
     required this.height,
     this.duration,
+    this.padding = false,
     this.padColor,
   });
 
@@ -42,13 +44,14 @@ class VideoResizeCommander {
         height: "$height",
         forceOriginalAspectRatio: "decrease",
       ),
-      PadFilter(
-        width: "$width",
-        height: "$height",
-        x: "(ow-iw)/2",
-        y: "(oh-ih)/2",
-        color: FFmpegUtil.toFFmpegColor(padColor),
-      ),
+      if (padding)
+        PadFilter(
+          width: "$width",
+          height: "$height",
+          x: "(ow-iw)/2",
+          y: "(oh-ih)/2",
+          color: FFmpegUtil.toFFmpegColor(padColor),
+        ),
     ];
     if (filters.isNotEmpty) {
       result.add("-vf");
