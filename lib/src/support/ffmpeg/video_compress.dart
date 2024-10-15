@@ -10,6 +10,7 @@ class VideoCompressCommander {
   final File input;
   final File output;
   final Duration? duration;
+  final int? crf;
   final int? fpsMax;
   final Encoder? encoder;
   final Encoder? videoEncoder;
@@ -20,6 +21,7 @@ class VideoCompressCommander {
     required this.input,
     required this.output,
     this.duration,
+    this.crf,
     this.fpsMax,
     this.encoder,
     this.videoEncoder,
@@ -40,6 +42,10 @@ class VideoCompressCommander {
     duration?.also((it) {
       result.add("-t");
       result.add("${it.inSeconds}");
+    });
+    crf?.also((it) {
+      result.add("-crf");
+      result.add("$it");
     });
     fpsMax?.also((it) {
       result.add("-fpsmax");
