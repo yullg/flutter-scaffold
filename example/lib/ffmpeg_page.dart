@@ -37,11 +37,11 @@ class _FFMpegState extends GenericState<FFMpegPage> {
                 final commander = VideoThumbnailCommander(
                   input: input,
                   output: output,
-                  encoder: const LibwebpEncoder(
-                    compressionLevel: 6,
-                    quality: 0,
-                  ),
-                  filter: const ScaleFilter.contain(),
+                  compressionLevel: 6,
+                  quality: 0,
+                  selectIFrame: true,
+                  maxWidth: 480,
+                  maxHeight: 480,
                 );
                 await executeFFmpeg(commander.commandArguments());
                 await GallerySavePlugin.saveImage(output);
@@ -59,6 +59,32 @@ class _FFMpegState extends GenericState<FFMpegPage> {
                 final commander = VideoCompressCommander(
                   input: input,
                   output: output,
+                  duration: const Duration(minutes: 1),
+                  crf: 10,
+                  fpsMax: 20,
+                  maxWidth: 1080,
+                  maxHeight: 1080,
+                );
+                await executeFFmpeg(commander.commandArguments());
+                await GallerySavePlugin.saveVideo(output);
+              }),
+            ),
+            EasyListTile(
+              nameText: "Video Resize",
+              onTap: () => run(() async {
+                final input = await pickVideo();
+                if (input == null) return;
+                final output = await StorageFile(
+                        StorageType.cache, "${UuidHelper.v4()}.mp4")
+                    .file;
+                output.parent.createSync(recursive: true);
+                final commander = VideoResizeCommander(
+                  input: input,
+                  output: output,
+                  duration: const Duration(minutes: 1),
+                  width: 1080,
+                  height: 1080,
+                  padColor: Colors.blue,
                 );
                 await executeFFmpeg(commander.commandArguments());
                 await GallerySavePlugin.saveVideo(output);

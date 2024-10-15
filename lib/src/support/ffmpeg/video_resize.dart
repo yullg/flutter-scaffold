@@ -1,27 +1,28 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:scaffold/scaffold_lang.dart';
 
+import 'ffmpeg_util.dart';
 import 'filter/filter.dart';
+import 'filter/pad_filter.dart';
 import 'filter/scale_filter.dart';
 
-class VideoCompressCommander {
+class VideoResizeCommander {
   final File input;
   final File output;
+  final int width;
+  final int height;
   final Duration? duration;
-  final int? crf;
-  final int? fpsMax;
-  final int? maxWidth;
-  final int? maxHeight;
+  final Color? padColor;
 
-  const VideoCompressCommander({
+  const VideoResizeCommander({
     required this.input,
     required this.output,
+    required this.width,
+    required this.height,
     this.duration,
-    this.crf,
-    this.fpsMax,
-    this.maxWidth,
-    this.maxHeight,
+    this.padColor,
   });
 
   String command() => commandArguments().join(" ");
@@ -35,21 +36,19 @@ class VideoCompressCommander {
       result.add("-t");
       result.add("${it.inSeconds}");
     });
-    crf?.also((it) {
-      result.add("-crf");
-      result.add("$it");
-    });
-    fpsMax?.also((it) {
-      result.add("-fpsmax");
-      result.add("$it");
-    });
     final filters = <Filter>[
-      if (maxWidth != null || maxHeight != null)
-        ScaleFilter(
-          width: maxWidth != null ? "min(iw, $maxWidth)" : "-1",
-          height: maxHeight != null ? "min(ih, $maxHeight)" : "-1",
-          forceOriginalAspectRatio: "decrease",
-        )
+      ScaleFilter(
+        width: "$width",
+        height: "$height",
+        forceOriginalAspectRatio: "decrease",
+      ),
+      PadFilter(
+        width: "$width",
+        height: "$height",
+        x: "(ow-iw)/2",
+        y: "(oh-ih)/2",
+        color: FFmpegUtil.toFFmpegColor(padColor),
+      ),
     ];
     if (filters.isNotEmpty) {
       result.add("-vf");

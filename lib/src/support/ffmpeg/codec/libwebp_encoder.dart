@@ -1,3 +1,5 @@
+import 'package:scaffold/scaffold_lang.dart';
+
 import 'encoder.dart';
 
 /// libwebp WebP Image encoder wrapper.
@@ -28,24 +30,24 @@ class LibwebpEncoder implements Encoder {
   });
 
   @override
-  List<String>? get options {
+  Iterable<String>? get options {
     final list = <String>[];
-    if (lossless != null) {
+    lossless?.also((it) {
       list.add("-lossless");
-      list.add(lossless! ? "1" : "0");
-    }
-    if (compressionLevel != null) {
+      list.add(it ? "1" : "0");
+    });
+    compressionLevel?.also((it) {
       list.add("-compression_level");
-      list.add("$compressionLevel");
-    }
-    if (quality != null) {
+      list.add("$it");
+    });
+    quality?.also((it) {
       list.add("-quality");
-      list.add("$quality");
-    }
-    if (preset != null) {
+      list.add("$it");
+    });
+    preset?.also((it) {
       list.add("-preset");
-      list.add(preset!);
-    }
+      list.add(it);
+    });
     return list;
   }
 
