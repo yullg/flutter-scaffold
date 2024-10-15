@@ -12,7 +12,10 @@ class CanvasContainer extends StatelessWidget {
   final CanvasContainerChild Function(BuildContext, BoxConstraints) builder;
   final DrawingBoardStyle drawingBoardStyle;
   final AdjustBoundaryStyle adjustBoundaryStyle;
-  final GestureTapUpCallback? onTapUp;
+  final PointerDownEventListener? onPointerDown;
+  final PointerMoveEventListener? onPointerMove;
+  final PointerUpEventListener? onPointerUp;
+  final PointerCancelEventListener? onPointerCancel;
 
   const CanvasContainer({
     super.key,
@@ -20,7 +23,10 @@ class CanvasContainer extends StatelessWidget {
     required this.builder,
     this.drawingBoardStyle = const DrawingBoardStyle(),
     this.adjustBoundaryStyle = const AdjustBoundaryStyle(),
-    this.onTapUp,
+    this.onPointerDown,
+    this.onPointerMove,
+    this.onPointerUp,
+    this.onPointerCancel,
   });
 
   @override
@@ -41,9 +47,6 @@ class CanvasContainer extends StatelessWidget {
               final adjustBoundaryEnabled = controller.adjustBoundaryEnabled;
               return GestureDetector(
                 behavior: HitTestBehavior.translucent,
-                onTapUp: (details) {
-                  onTapUp?.call(details);
-                },
                 onScaleStart: (details) {
                   controller.onContainerScaleStart(details);
                 },
@@ -74,15 +77,19 @@ class CanvasContainer extends StatelessWidget {
                           behavior: HitTestBehavior.translucent,
                           onPointerDown: (event) {
                             controller.onChildPointerDown(event);
+                            onPointerDown?.call(event);
                           },
                           onPointerMove: (event) {
                             controller.onChildPointerMove(event);
+                            onPointerMove?.call(event);
                           },
                           onPointerUp: (event) {
                             controller.onChildPointerUp(event);
+                            onPointerUp?.call(event);
                           },
                           onPointerCancel: (event) {
                             controller.onChildPointerCancel(event);
+                            onPointerCancel?.call(event);
                           },
                           child: Center(
                             child: SizedBox.fromSize(
