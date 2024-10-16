@@ -2,17 +2,17 @@ import 'package:scaffold/scaffold_lang.dart';
 
 import 'filter.dart';
 
-/// Scale (resize) the input video, using the libswscale library.
-///
 /// See Also: https://www.ffmpeg.org/ffmpeg-filters.html#scale-1
 class ScaleFilter implements Filter {
   final String? width;
   final String? height;
+  final String? eval;
   final String? forceOriginalAspectRatio;
 
   const ScaleFilter({
     this.width,
     this.height,
+    this.eval,
     this.forceOriginalAspectRatio,
   });
 
@@ -28,6 +28,9 @@ class ScaleFilter implements Filter {
     height?.also((it) {
       list.add("h=$it");
     });
+    eval?.also((it) {
+      list.add("eval=$eval");
+    });
     forceOriginalAspectRatio?.also((it) {
       list.add("force_original_aspect_ratio=$it");
     });
@@ -41,14 +44,18 @@ class ScaleFilter implements Filter {
           runtimeType == other.runtimeType &&
           width == other.width &&
           height == other.height &&
+          eval == other.eval &&
           forceOriginalAspectRatio == other.forceOriginalAspectRatio;
 
   @override
   int get hashCode =>
-      width.hashCode ^ height.hashCode ^ forceOriginalAspectRatio.hashCode;
+      width.hashCode ^
+      height.hashCode ^
+      eval.hashCode ^
+      forceOriginalAspectRatio.hashCode;
 
   @override
   String toString() {
-    return 'ScaleFilter{width: $width, height: $height, forceOriginalAspectRatio: $forceOriginalAspectRatio}';
+    return 'ScaleFilter{width: $width, height: $height, eval: $eval, forceOriginalAspectRatio: $forceOriginalAspectRatio}';
   }
 }

@@ -8,23 +8,27 @@ import 'filter/filter.dart';
 import 'filter/pad_filter.dart';
 import 'filter/scale_filter.dart';
 
+/// See Also:
+/// * https://www.ffmpeg.org/ffmpeg.html
+/// * https://www.ffmpeg.org/ffmpeg-filters.html#scale-1
+/// * https://www.ffmpeg.org/ffmpeg-filters.html#pad-1
 class VideoResizeCommander {
   final File input;
   final File output;
   final int width;
   final int height;
-  final Duration? duration;
   final bool padding;
   final Color? padColor;
+  final Duration? duration;
 
   const VideoResizeCommander({
     required this.input,
     required this.output,
     required this.width,
     required this.height,
-    this.duration,
     this.padding = false,
     this.padColor,
+    this.duration,
   });
 
   String command() => commandArguments().join(" ");

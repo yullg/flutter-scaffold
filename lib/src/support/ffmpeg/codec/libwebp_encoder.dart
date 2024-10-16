@@ -2,21 +2,8 @@ import 'package:scaffold/scaffold_lang.dart';
 
 import 'encoder.dart';
 
-/// libwebp WebP Image encoder wrapper.
-///
 /// See Also: https://www.ffmpeg.org/ffmpeg-codecs.html#libwebp
 class LibwebpEncoder implements Encoder {
-  static const kPresetNone = "none";
-  static const kPresetDefault = "default";
-  static const kPresetPicture = "picture";
-  static const kPresetPhoto = "photo";
-  static const kPresetDrawing = "drawing";
-  static const kPresetIcon = "icon";
-  static const kPresetText = "text";
-
-  @override
-  final String name = "libwebp";
-
   final bool? lossless;
   final int? compressionLevel;
   final double? quality;
@@ -28,6 +15,9 @@ class LibwebpEncoder implements Encoder {
     this.quality,
     this.preset,
   });
+
+  @override
+  String get name => "libwebp";
 
   @override
   Iterable<String>? get options {
@@ -56,7 +46,6 @@ class LibwebpEncoder implements Encoder {
       identical(this, other) ||
       other is LibwebpEncoder &&
           runtimeType == other.runtimeType &&
-          name == other.name &&
           lossless == other.lossless &&
           compressionLevel == other.compressionLevel &&
           quality == other.quality &&
@@ -64,7 +53,6 @@ class LibwebpEncoder implements Encoder {
 
   @override
   int get hashCode =>
-      name.hashCode ^
       lossless.hashCode ^
       compressionLevel.hashCode ^
       quality.hashCode ^
@@ -72,6 +60,6 @@ class LibwebpEncoder implements Encoder {
 
   @override
   String toString() {
-    return 'LibwebpEncoder{name: $name, lossless: $lossless, compressionLevel: $compressionLevel, quality: $quality, preset: $preset}';
+    return 'LibwebpEncoder{lossless: $lossless, compressionLevel: $compressionLevel, quality: $quality, preset: $preset}';
   }
 }

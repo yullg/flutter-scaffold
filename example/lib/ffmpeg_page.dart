@@ -60,7 +60,6 @@ class _FFMpegState extends GenericState<FFMpegPage> {
                   input: input,
                   output: output,
                   duration: const Duration(minutes: 1),
-                  crf: 10,
                   fpsMax: 20,
                   maxWidth: 1080,
                   maxHeight: 1080,

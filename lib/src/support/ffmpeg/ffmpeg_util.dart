@@ -1,5 +1,8 @@
 import 'dart:ui';
 
+import 'package:meta/meta.dart';
+
+@internal
 class FFmpegUtil {
   static String? toFFmpegColor(Color? color) {
     if (color == null) return null;

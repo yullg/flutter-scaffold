@@ -2,9 +2,6 @@ import 'package:scaffold/scaffold_lang.dart';
 
 import 'filter.dart';
 
-/// Add paddings to the input image, and place the original input at the
-/// provided x, y coordinates.
-///
 /// See Also: https://www.ffmpeg.org/ffmpeg-filters.html#pad-1
 class PadFilter implements Filter {
   final String? width;
