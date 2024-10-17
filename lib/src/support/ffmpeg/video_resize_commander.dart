@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:scaffold/scaffold_lang.dart';
 
+import 'codec/encoder.dart';
 import 'ffmpeg_util.dart';
 import 'filter/filter.dart';
 import 'filter/pad_filter.dart';
@@ -20,6 +21,8 @@ class VideoResizeCommander {
   final bool padding;
   final Color? padColor;
   final Duration? duration;
+  final Encoder? videoEncoder;
+  final Encoder? audioEncoder;
 
   const VideoResizeCommander({
     required this.input,
@@ -29,6 +32,8 @@ class VideoResizeCommander {
     this.padding = false,
     this.padColor,
     this.duration,
+    this.videoEncoder,
+    this.audioEncoder,
   });
 
   String command() => commandArguments().join(" ");
@@ -41,6 +46,20 @@ class VideoResizeCommander {
     duration?.also((it) {
       result.add("-t");
       result.add("${it.inSeconds}");
+    });
+    videoEncoder?.also((it) {
+      result.add("-vcodec");
+      result.add(it.name);
+      it.options?.also((it) {
+        result.addAll(it);
+      });
+    });
+    audioEncoder?.also((it) {
+      result.add("-acodec");
+      result.add(it.name);
+      it.options?.also((it) {
+        result.addAll(it);
+      });
     });
     final filters = <Filter>[
       ScaleFilter(

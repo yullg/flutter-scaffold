@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:ffmpeg_kit_flutter_full/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter_full/return_code.dart';
-import 'package:ffmpeg_kit_flutter_full/session_state.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/return_code.dart';
+import 'package:ffmpeg_kit_flutter_full_gpl/session_state.dart';
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
@@ -83,7 +83,10 @@ class _FFMpegState extends GenericState<FFMpegPage> {
                   duration: const Duration(minutes: 1),
                   width: 1080,
                   height: 1080,
+                  padding: true,
                   padColor: Colors.blue,
+                  videoEncoder: const EncoderImpl("libx264"),
+                  audioEncoder: const EncoderImpl("copy"),
                 );
                 await executeFFmpeg(commander.commandArguments());
                 await GallerySavePlugin.saveVideo(output);

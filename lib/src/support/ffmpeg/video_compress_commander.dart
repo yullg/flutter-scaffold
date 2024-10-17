@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:scaffold/scaffold_lang.dart';
 
+import 'codec/encoder.dart';
 import 'filter/filter.dart';
 import 'filter/scale_filter.dart';
 
@@ -15,6 +16,8 @@ class VideoCompressCommander {
   final int? maxWidth;
   final int? maxHeight;
   final Duration? duration;
+  final Encoder? videoEncoder;
+  final Encoder? audioEncoder;
 
   const VideoCompressCommander({
     required this.input,
@@ -23,6 +26,8 @@ class VideoCompressCommander {
     this.maxWidth,
     this.maxHeight,
     this.duration,
+    this.videoEncoder,
+    this.audioEncoder,
   });
 
   String command() => commandArguments().join(" ");
@@ -39,6 +44,20 @@ class VideoCompressCommander {
     fpsMax?.also((it) {
       result.add("-fpsmax");
       result.add("$it");
+    });
+    videoEncoder?.also((it) {
+      result.add("-vcodec");
+      result.add(it.name);
+      it.options?.also((it) {
+        result.addAll(it);
+      });
+    });
+    audioEncoder?.also((it) {
+      result.add("-acodec");
+      result.add(it.name);
+      it.options?.also((it) {
+        result.addAll(it);
+      });
     });
     final filters = <Filter>[
       if (maxWidth != null || maxHeight != null)
