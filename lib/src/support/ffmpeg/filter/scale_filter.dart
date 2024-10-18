@@ -8,12 +8,14 @@ class ScaleFilter implements Filter {
   final String? height;
   final String? eval;
   final String? forceOriginalAspectRatio;
+  final String? forceDivisibleBy;
 
   const ScaleFilter({
     this.width,
     this.height,
     this.eval,
     this.forceOriginalAspectRatio,
+    this.forceDivisibleBy,
   });
 
   @override
@@ -33,6 +35,9 @@ class ScaleFilter implements Filter {
     });
     forceOriginalAspectRatio?.also((it) {
       list.add("force_original_aspect_ratio=$it");
+    });
+    forceDivisibleBy?.also((it) {
+      list.add("force_divisible_by=$it");
     });
     return list.isNotEmpty ? list.join(":") : null;
   }

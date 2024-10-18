@@ -46,6 +46,7 @@ export 'src/support/ffmpeg/codec/libwebp_encoder.dart';
 export 'src/support/ffmpeg/filter/filter.dart';
 export 'src/support/ffmpeg/filter/pad_filter.dart';
 export 'src/support/ffmpeg/filter/scale_filter.dart';
+export 'src/support/ffmpeg/image_compress_commander.dart';
 export 'src/support/ffmpeg/video_compress_commander.dart';
 export 'src/support/ffmpeg/video_resize_commander.dart';
 export 'src/support/ffmpeg/video_thumbnail_commander.dart';

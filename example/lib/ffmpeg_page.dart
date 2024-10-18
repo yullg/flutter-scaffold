@@ -92,6 +92,26 @@ class _FFMpegState extends GenericState<FFMpegPage> {
                 await GallerySavePlugin.saveVideo(output);
               }),
             ),
+            EasyListTile(
+              nameText: "Image Compress",
+              onTap: () => run(() async {
+                final input = await pickImage();
+                if (input == null) return;
+                final output = await StorageFile(
+                        StorageType.cache, "${UuidHelper.v4()}.png")
+                    .file;
+                output.parent.createSync(recursive: true);
+                final commander = ImageCompressCommander(
+                  input: input,
+                  output: output,
+                  maxWidth: 1280,
+                  maxHeight: 1280,
+                  forceDivisibleBy: 8,
+                );
+                await executeFFmpeg(commander.commandArguments());
+                await GallerySavePlugin.saveImage(output);
+              }),
+            ),
           ],
         ).toList(),
       ),
