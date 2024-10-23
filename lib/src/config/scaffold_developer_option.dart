@@ -2,43 +2,45 @@ import 'package:flutter/widgets.dart';
 
 class ScaffoldDeveloperOption {
   final String? password;
-  final Iterable<ScaffoldDOPreferenceFiled>? preferenceFileds;
+  final Iterable<ScaffoldDOPreferenceField>? preferenceFields;
 
   const ScaffoldDeveloperOption({
     this.password,
-    this.preferenceFileds,
+    this.preferenceFields,
   });
 
   @override
   String toString() {
-    return 'ScaffoldDeveloperOption{password: $password, preferenceFileds: $preferenceFileds}';
+    return 'ScaffoldDeveloperOption{password: $password, preferenceFields: $preferenceFields}';
   }
 }
 
-enum ScaffoldDOPreferenceFiledType {
+enum ScaffoldDOPreferenceFieldType {
   boolField,
   intField,
   doubleField,
   stringField,
 }
 
-class ScaffoldDOPreferenceFiled {
+class ScaffoldDOPreferenceField {
   final String key;
-  final ScaffoldDOPreferenceFiledType type;
+  final ScaffoldDOPreferenceFieldType type;
   final String name;
+  final String? hintText;
   final String? description;
   final TextInputType? keyboardType;
 
-  const ScaffoldDOPreferenceFiled({
+  const ScaffoldDOPreferenceField({
     required this.key,
     required this.type,
     required this.name,
+    this.hintText,
     this.description,
     this.keyboardType,
   });
 
   @override
   String toString() {
-    return 'ScaffoldDOPreferenceFiled{key: $key, type: $type, name: $name, description: $description, keyboardType: $keyboardType}';
+    return 'ScaffoldDOPreferenceField{key: $key, type: $type, name: $name, hintText: $hintText, description: $description, keyboardType: $keyboardType}';
   }
 }

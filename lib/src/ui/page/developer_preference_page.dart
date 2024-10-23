@@ -21,8 +21,8 @@ class DeveloperPreferencePage extends StatefulWidget {
 class _DeveloperPreferenceState extends GenericState<DeveloperPreferencePage> {
   @override
   Widget build(BuildContext context) {
-    final preferenceFiledList = [
-      ...?ScaffoldConfig.developerOption?.preferenceFileds
+    final preferenceFieldList = [
+      ...?ScaffoldConfig.developerOption?.preferenceFields
     ];
     return Scaffold(
       appBar: AppBar(
@@ -60,12 +60,12 @@ class _DeveloperPreferenceState extends GenericState<DeveloperPreferencePage> {
           ),
         ],
       ),
-      body: preferenceFiledList.isNotEmpty
+      body: preferenceFieldList.isNotEmpty
           ? ListView.builder(
               key: UniqueKey(),
-              itemCount: preferenceFiledList.length,
+              itemCount: preferenceFieldList.length,
               itemBuilder: (context, index) {
-                final preferenceFiled = preferenceFiledList[index];
+                final preferenceFiled = preferenceFieldList[index];
                 return _DeveloperPreferenceFieldWidget(preferenceFiled);
               },
             )
@@ -83,7 +83,7 @@ class _DeveloperPreferenceState extends GenericState<DeveloperPreferencePage> {
 }
 
 class _DeveloperPreferenceFieldWidget extends StatefulWidget {
-  final ScaffoldDOPreferenceFiled preferenceFiled;
+  final ScaffoldDOPreferenceField preferenceFiled;
 
   const _DeveloperPreferenceFieldWidget(this.preferenceFiled);
 
@@ -100,14 +100,14 @@ class _DeveloperPreferenceFieldState
   void initState() {
     super.initState();
     switch (widget.preferenceFiled.type) {
-      case ScaffoldDOPreferenceFiledType.boolField:
+      case ScaffoldDOPreferenceFieldType.boolField:
         DeveloperPreference().getBool(widget.preferenceFiled.key).then((value) {
           boolFieldValue = value;
           setStateIfMounted();
         }, onError: (e, s) {
           ScaffoldLogger().error(null, e, s);
         });
-      case ScaffoldDOPreferenceFiledType.intField:
+      case ScaffoldDOPreferenceFieldType.intField:
         textEditingController = TextEditingController();
         DeveloperPreference().getInt(widget.preferenceFiled.key).then((value) {
           if (value != null) {
@@ -116,7 +116,7 @@ class _DeveloperPreferenceFieldState
         }, onError: (e, s) {
           ScaffoldLogger().error(null, e, s);
         });
-      case ScaffoldDOPreferenceFiledType.doubleField:
+      case ScaffoldDOPreferenceFieldType.doubleField:
         textEditingController = TextEditingController();
         DeveloperPreference().getDouble(widget.preferenceFiled.key).then(
             (value) {
@@ -126,7 +126,7 @@ class _DeveloperPreferenceFieldState
         }, onError: (e, s) {
           ScaffoldLogger().error(null, e, s);
         });
-      case ScaffoldDOPreferenceFiledType.stringField:
+      case ScaffoldDOPreferenceFieldType.stringField:
         textEditingController = TextEditingController();
         DeveloperPreference().getString(widget.preferenceFiled.key).then(
             (value) {
@@ -142,7 +142,7 @@ class _DeveloperPreferenceFieldState
   @override
   Widget build(BuildContext context) {
     return switch (widget.preferenceFiled.type) {
-      ScaffoldDOPreferenceFiledType.boolField => EasySwitchListTile(
+      ScaffoldDOPreferenceFieldType.boolField => EasySwitchListTile(
           titleText: widget.preferenceFiled.name,
           subtitleText: widget.preferenceFiled.description,
           value: boolFieldValue,
@@ -159,7 +159,7 @@ class _DeveloperPreferenceFieldState
             });
           },
         ),
-      ScaffoldDOPreferenceFiledType.intField => Padding(
+      ScaffoldDOPreferenceFieldType.intField => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: TextField(
             controller: textEditingController,
@@ -168,6 +168,7 @@ class _DeveloperPreferenceFieldState
                 widget.preferenceFiled.keyboardType ?? TextInputType.number,
             decoration: InputDecoration(
               labelText: widget.preferenceFiled.name,
+              hintText: widget.preferenceFiled.hintText,
               helperText: widget.preferenceFiled.description,
               helperMaxLines: 999,
             ),
@@ -196,7 +197,7 @@ class _DeveloperPreferenceFieldState
             },
           ),
         ),
-      ScaffoldDOPreferenceFiledType.doubleField => Padding(
+      ScaffoldDOPreferenceFieldType.doubleField => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: TextField(
             controller: textEditingController,
@@ -205,6 +206,7 @@ class _DeveloperPreferenceFieldState
                 widget.preferenceFiled.keyboardType ?? TextInputType.number,
             decoration: InputDecoration(
               labelText: widget.preferenceFiled.name,
+              hintText: widget.preferenceFiled.hintText,
               helperText: widget.preferenceFiled.description,
               helperMaxLines: 999,
             ),
@@ -233,7 +235,7 @@ class _DeveloperPreferenceFieldState
             },
           ),
         ),
-      ScaffoldDOPreferenceFiledType.stringField => Padding(
+      ScaffoldDOPreferenceFieldType.stringField => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: TextField(
             controller: textEditingController,
@@ -241,6 +243,7 @@ class _DeveloperPreferenceFieldState
             keyboardType: widget.preferenceFiled.keyboardType,
             decoration: InputDecoration(
               labelText: widget.preferenceFiled.name,
+              hintText: widget.preferenceFiled.hintText,
               helperText: widget.preferenceFiled.description,
               helperMaxLines: 999,
             ),
