@@ -31,10 +31,10 @@ class _AndroidIntentState extends State<AndroidIntentPage> {
                     onPressed: () {
                       actionPick(AndroidIntentPlugin.kActionPickTypeAudio).then(
                           (value) {
-                        DefaultLogger.info(value);
+                        DefaultLogger().info(value);
                         Messenger.show(context, value.toString());
                       }, onError: (e, s) {
-                        DefaultLogger.error(null, e, s);
+                        DefaultLogger().error(null, e, s);
                         Messenger.showError(context, error: e);
                       });
                     },
@@ -44,10 +44,10 @@ class _AndroidIntentState extends State<AndroidIntentPage> {
                     onPressed: () {
                       actionPick(AndroidIntentPlugin.kActionPickTypeImage).then(
                           (value) {
-                        DefaultLogger.info(value);
+                        DefaultLogger().info(value);
                         Messenger.show(context, value.toString());
                       }, onError: (e, s) {
-                        DefaultLogger.error(null, e, s);
+                        DefaultLogger().error(null, e, s);
                         Messenger.showError(context, error: e);
                       });
                     },
@@ -57,10 +57,10 @@ class _AndroidIntentState extends State<AndroidIntentPage> {
                     onPressed: () {
                       actionPick(AndroidIntentPlugin.kActionPickTypeVideo).then(
                           (value) {
-                        DefaultLogger.info(value);
+                        DefaultLogger().info(value);
                         Messenger.show(context, value.toString());
                       }, onError: (e, s) {
-                        DefaultLogger.error(null, e, s);
+                        DefaultLogger().error(null, e, s);
                         Messenger.showError(context, error: e);
                       });
                     },
@@ -69,10 +69,10 @@ class _AndroidIntentState extends State<AndroidIntentPage> {
                   OutlinedButton(
                     onPressed: () {
                       actionPick("").then((value) {
-                        DefaultLogger.info(value);
+                        DefaultLogger().info(value);
                         Messenger.show(context, value.toString());
                       }, onError: (e, s) {
-                        DefaultLogger.error(null, e, s);
+                        DefaultLogger().error(null, e, s);
                         Messenger.showError(context, error: e);
                       });
                     },
@@ -101,5 +101,6 @@ class _AndroidIntentState extends State<AndroidIntentPage> {
       );
       return file;
     }
+    return null;
   }
 }

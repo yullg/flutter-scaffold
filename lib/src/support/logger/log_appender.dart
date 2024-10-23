@@ -22,7 +22,7 @@ class LogAppender {
 
   static void _doAppendConsoleLog(Log log) {
     final sb = StringBuffer(
-        "${log.name}\t${log.level.name}\t${log.time.toIso8601String()}");
+        "${log.time.toIso8601String()}\t[${log.name}]\t${log.level.name}");
     if (log.message != null) {
       sb.write("\t${log.message}");
     }

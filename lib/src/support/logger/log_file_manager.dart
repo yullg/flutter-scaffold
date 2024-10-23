@@ -5,7 +5,7 @@ import 'package:path/path.dart' as p;
 import '../../config/scaffold_logger_option.dart';
 import '../../internal/scaffold_logger.dart';
 import 'log_file_handler.dart';
-import 'logger.dart';
+import 'logger_messaging.dart';
 
 /// 管理日志文件
 class LogFileManager {
@@ -14,8 +14,12 @@ class LogFileManager {
   /// 删除过期的日志文件
   static Future<void> deleteExpiredLogFile() async {
     try {
-      ScaffoldLogger.info(Logger.message(
-          library: _kLogLibrary, part: "DeleteExpiredLogFile", what: "begin"));
+      ScaffoldLogger()
+          .messaging(
+              library: _kLogLibrary,
+              part: "DeleteExpiredLogFile",
+              what: "begin")
+          .info();
       final logDirectory = await LogFileHandler.logDirectoryFuture;
       if (await logDirectory.exists()) {
         await for (FileSystemEntity entity
@@ -25,10 +29,12 @@ class LogFileManager {
             final fileName = p.basename(entity.path);
             final fileNameMatch = _logFileNameRE.firstMatch(fileName);
             if (fileNameMatch == null) {
-              ScaffoldLogger.warn(Logger.message(
-                  library: _kLogLibrary,
-                  part: "DeleteExpiredLogFile",
-                  what: "File[$entity] not supported"));
+              ScaffoldLogger()
+                  .messaging(
+                      library: _kLogLibrary,
+                      part: "DeleteExpiredLogFile",
+                      what: "File[$entity] not supported")
+                  .warn();
               continue;
             }
             final name = fileNameMatch.group(1)!;
@@ -40,43 +46,43 @@ class LogFileManager {
                 .subtract(ScaffoldLoggerOption.logFileLifetime(name));
             if (time.isBefore(minDateTime)) {
               await LogFileHandler(fileName).delete();
-              ScaffoldLogger.debug(Logger.message(
-                library: _kLogLibrary,
-                part: "DeleteExpiredLogFile",
-                what: "delete",
-                namedArgs: {
-                  "file": entity,
-                  "expiredDate": minDateTime.toIso8601String(),
-                },
-                result: "success",
-              ));
+              ScaffoldLogger()
+                  .messaging(
+                      library: _kLogLibrary,
+                      part: "DeleteExpiredLogFile",
+                      what: "delete",
+                      namedArgs: {
+                        "file": entity,
+                        "expiredDate": minDateTime.toIso8601String(),
+                      },
+                      result: "success")
+                  .debug();
             }
           } catch (e, s) {
-            ScaffoldLogger.error(
-                Logger.message(
-                  library: _kLogLibrary,
-                  part: "DeleteExpiredLogFile",
-                  what: "delete",
-                  namedArgs: {
-                    "file": entity,
-                  },
-                  result: "failed",
-                ),
-                e,
-                s);
+            ScaffoldLogger()
+                .messaging(
+                    library: _kLogLibrary,
+                    part: "DeleteExpiredLogFile",
+                    what: "delete",
+                    namedArgs: {
+                      "file": entity,
+                    },
+                    result: "failed")
+                .error(e, s);
           }
         }
       }
-      ScaffoldLogger.info(Logger.message(
-          library: _kLogLibrary, part: "DeleteExpiredLogFile", what: "end"));
+      ScaffoldLogger()
+          .messaging(
+              library: _kLogLibrary, part: "DeleteExpiredLogFile", what: "end")
+          .info();
     } catch (e, s) {
-      ScaffoldLogger.error(
-          Logger.message(
+      ScaffoldLogger()
+          .messaging(
               library: _kLogLibrary,
               part: "DeleteExpiredLogFile",
-              what: "failed"),
-          e,
-          s);
+              what: "failed")
+          .error(e, s);
       rethrow;
     }
   }
@@ -84,8 +90,10 @@ class LogFileManager {
   /// 上传所有日志文件。
   static Future<void> uploadAllLogFile() async {
     try {
-      ScaffoldLogger.info(Logger.message(
-          library: _kLogLibrary, part: "UploadAllLogFile", what: "begin"));
+      ScaffoldLogger()
+          .messaging(
+              library: _kLogLibrary, part: "UploadAllLogFile", what: "begin")
+          .info();
       final logUploadDirectory = await LogFileHandler.logUploadDirectoryFuture;
       await _uploadAllLogFileInDirectory(logUploadDirectory);
       final logDirectory = await LogFileHandler.logDirectoryFuture;
@@ -97,53 +105,54 @@ class LogFileManager {
             final fileName = p.basename(entity.path);
             final uploadFile = File(p.join(logUploadDirectory.path, fileName));
             if (await uploadFile.exists()) {
-              ScaffoldLogger.warn(Logger.message(
-                library: _kLogLibrary,
-                part: "UploadAllLogFile",
-                what: "clone",
-                namedArgs: {
-                  "file": entity,
-                },
-                result: "conflict",
-              ));
+              ScaffoldLogger()
+                  .messaging(
+                      library: _kLogLibrary,
+                      part: "UploadAllLogFile",
+                      what: "clone",
+                      namedArgs: {
+                        "file": entity,
+                      },
+                      result: "conflict")
+                  .warn();
             } else {
               await uploadFile.parent.create(recursive: true);
               await LogFileHandler(fileName).move(uploadFile.path);
-              ScaffoldLogger.debug(Logger.message(
-                library: _kLogLibrary,
-                part: "UploadAllLogFile",
-                what: "clone",
-                namedArgs: {
-                  "file": entity,
-                },
-                result: "success",
-              ));
+              ScaffoldLogger()
+                  .messaging(
+                      library: _kLogLibrary,
+                      part: "UploadAllLogFile",
+                      what: "clone",
+                      namedArgs: {
+                        "file": entity,
+                      },
+                      result: "success")
+                  .debug();
             }
           } catch (e, s) {
-            ScaffoldLogger.error(
-                Logger.message(
-                  library: _kLogLibrary,
-                  part: "UploadAllLogFile",
-                  what: "clone",
-                  namedArgs: {
-                    "file": entity,
-                  },
-                  result: "failed",
-                ),
-                e,
-                s);
+            ScaffoldLogger()
+                .messaging(
+                    library: _kLogLibrary,
+                    part: "UploadAllLogFile",
+                    what: "clone",
+                    namedArgs: {
+                      "file": entity,
+                    },
+                    result: "failed")
+                .error(e, s);
           }
         }
       }
       await _uploadAllLogFileInDirectory(logUploadDirectory);
-      ScaffoldLogger.info(Logger.message(
-          library: _kLogLibrary, part: "UploadAllLogFile", what: "end"));
+      ScaffoldLogger()
+          .messaging(
+              library: _kLogLibrary, part: "UploadAllLogFile", what: "end")
+          .info();
     } catch (e, s) {
-      ScaffoldLogger.error(
-          Logger.message(
-              library: _kLogLibrary, part: "UploadAllLogFile", what: "failed"),
-          e,
-          s);
+      ScaffoldLogger()
+          .messaging(
+              library: _kLogLibrary, part: "UploadAllLogFile", what: "failed")
+          .error(e, s);
       rethrow;
     }
   }
@@ -157,45 +166,48 @@ class LogFileManager {
         final fileName = p.basename(entity.path);
         final fileNameMatch = _logFileNameRE.firstMatch(fileName);
         if (fileNameMatch == null) {
-          ScaffoldLogger.warn(Logger.message(
-              library: _kLogLibrary,
-              part: "UploadAllLogFile",
-              what: "File[$entity] not supported"));
+          ScaffoldLogger()
+              .messaging(
+                  library: _kLogLibrary,
+                  part: "UploadAllLogFile",
+                  what: "File[$entity] not supported")
+              .warn();
           continue;
         }
         final name = fileNameMatch.group(1)!;
         final uploader = ScaffoldLoggerOption.uploader(name);
         if (uploader == null) {
-          ScaffoldLogger.warn(Logger.message(
-              library: _kLogLibrary,
-              part: "UploadAllLogFile",
-              what: "Uploader[$name] not provided"));
+          ScaffoldLogger()
+              .messaging(
+                  library: _kLogLibrary,
+                  part: "UploadAllLogFile",
+                  what: "Uploader[$name] not provided")
+              .warn();
           continue;
         }
         await uploader.upload(entity);
         await entity.delete();
-        ScaffoldLogger.debug(Logger.message(
-          library: _kLogLibrary,
-          part: "UploadAllLogFile",
-          what: "upload",
-          namedArgs: {
-            "file": entity,
-          },
-          result: "success",
-        ));
+        ScaffoldLogger()
+            .messaging(
+                library: _kLogLibrary,
+                part: "UploadAllLogFile",
+                what: "upload",
+                namedArgs: {
+                  "file": entity,
+                },
+                result: "success")
+            .debug();
       } catch (e, s) {
-        ScaffoldLogger.error(
-            Logger.message(
-              library: _kLogLibrary,
-              part: "UploadAllLogFile",
-              what: "upload",
-              namedArgs: {
-                "file": entity,
-              },
-              result: "failed",
-            ),
-            e,
-            s);
+        ScaffoldLogger()
+            .messaging(
+                library: _kLogLibrary,
+                part: "UploadAllLogFile",
+                what: "upload",
+                namedArgs: {
+                  "file": entity,
+                },
+                result: "failed")
+            .error(e, s);
       }
     }
   }

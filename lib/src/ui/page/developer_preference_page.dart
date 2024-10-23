@@ -45,7 +45,7 @@ class _DeveloperPreferenceState extends GenericState<DeveloperPreferencePage> {
                   setStateIfMounted();
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
-                  ScaffoldLogger.error(null, e, s);
+                  ScaffoldLogger().error(null, e, s);
                   _showFailedSnackBar();
                 });
               });
@@ -105,7 +105,7 @@ class _DeveloperPreferenceFieldState
           boolFieldValue = value;
           setStateIfMounted();
         }, onError: (e, s) {
-          ScaffoldLogger.error(null, e, s);
+          ScaffoldLogger().error(null, e, s);
         });
       case ScaffoldDOPreferenceFiledType.intField:
         textEditingController = TextEditingController();
@@ -114,7 +114,7 @@ class _DeveloperPreferenceFieldState
             textEditingController?.text = value.toString();
           }
         }, onError: (e, s) {
-          ScaffoldLogger.error(null, e, s);
+          ScaffoldLogger().error(null, e, s);
         });
       case ScaffoldDOPreferenceFiledType.doubleField:
         textEditingController = TextEditingController();
@@ -124,7 +124,7 @@ class _DeveloperPreferenceFieldState
             textEditingController?.text = value.toString();
           }
         }, onError: (e, s) {
-          ScaffoldLogger.error(null, e, s);
+          ScaffoldLogger().error(null, e, s);
         });
       case ScaffoldDOPreferenceFiledType.stringField:
         textEditingController = TextEditingController();
@@ -134,7 +134,7 @@ class _DeveloperPreferenceFieldState
             textEditingController?.text = value;
           }
         }, onError: (e, s) {
-          ScaffoldLogger.error(null, e, s);
+          ScaffoldLogger().error(null, e, s);
         });
     }
   }
@@ -154,7 +154,7 @@ class _DeveloperPreferenceFieldState
               setStateIfMounted();
               _showSuccessSnackBar();
             }, onError: (e, s) {
-              ScaffoldLogger.error(null, e, s);
+              ScaffoldLogger().error(null, e, s);
               _showFailedSnackBar();
             });
           },
@@ -180,7 +180,7 @@ class _DeveloperPreferenceFieldState
                   textEditingController?.text = newValue.toString();
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
-                  ScaffoldLogger.error(null, e, s);
+                  ScaffoldLogger().error(null, e, s);
                   _showFailedSnackBar();
                 });
               } else {
@@ -189,7 +189,7 @@ class _DeveloperPreferenceFieldState
                   textEditingController?.clear();
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
-                  ScaffoldLogger.error(null, e, s);
+                  ScaffoldLogger().error(null, e, s);
                   _showFailedSnackBar();
                 });
               }
@@ -217,7 +217,7 @@ class _DeveloperPreferenceFieldState
                   textEditingController?.text = newValue.toString();
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
-                  ScaffoldLogger.error(null, e, s);
+                  ScaffoldLogger().error(null, e, s);
                   _showFailedSnackBar();
                 });
               } else {
@@ -226,7 +226,7 @@ class _DeveloperPreferenceFieldState
                   textEditingController?.clear();
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
-                  ScaffoldLogger.error(null, e, s);
+                  ScaffoldLogger().error(null, e, s);
                   _showFailedSnackBar();
                 });
               }
@@ -253,7 +253,7 @@ class _DeveloperPreferenceFieldState
                   textEditingController?.text = newValue;
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
-                  ScaffoldLogger.error(null, e, s);
+                  ScaffoldLogger().error(null, e, s);
                   _showFailedSnackBar();
                 });
               } else {
@@ -262,7 +262,7 @@ class _DeveloperPreferenceFieldState
                   textEditingController?.clear();
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
-                  ScaffoldLogger.error(null, e, s);
+                  ScaffoldLogger().error(null, e, s);
                   _showFailedSnackBar();
                 });
               }

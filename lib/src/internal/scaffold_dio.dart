@@ -18,7 +18,7 @@ class ScaffoldDio extends DioForNative {
     interceptors.add(LogInterceptor(
       requestBody: true,
       responseBody: true,
-      logPrint: (log) => ScaffoldLogger.debug(log),
+      logPrint: (log) => ScaffoldLogger().debug(log),
     ));
   }
 

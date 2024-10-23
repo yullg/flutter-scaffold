@@ -1,43 +1,13 @@
 import '../../config/scaffold_logger_option.dart';
-import 'log.dart';
 import 'logger.dart';
 
-class DefaultLogger {
-  static const _logger = Logger(ScaffoldLoggerOption.kLoggerNameDefault);
+final class DefaultLogger extends LoggerForward {
+  static DefaultLogger? _instance;
 
-  static String get name => _logger.name;
+  factory DefaultLogger() {
+    return _instance ??= DefaultLogger._();
+  }
 
-  static void trace(Object? message, [Object? error, StackTrace? trace]) =>
-      _logger.trace(message, error, trace);
-
-  static void debug(Object? message, [Object? error, StackTrace? trace]) =>
-      _logger.debug(message, error, trace);
-
-  static void info(Object? message, [Object? error, StackTrace? trace]) =>
-      _logger.info(message, error, trace);
-
-  static void warn(Object? message, [Object? error, StackTrace? trace]) =>
-      _logger.warn(message, error, trace);
-
-  static void error(Object? message, [Object? error, StackTrace? trace]) =>
-      _logger.error(message, error, trace);
-
-  static void fatal(Object? message, [Object? error, StackTrace? trace]) =>
-      _logger.fatal(message, error, trace);
-
-  static void log(Log log) => _logger.log(log);
-
-  static bool isTraceEnabled() => _logger.isTraceEnabled();
-
-  static bool isDebugEnabled() => _logger.isDebugEnabled();
-
-  static bool isInfoEnabled() => _logger.isInfoEnabled();
-
-  static bool isWarnEnabled() => _logger.isWarnEnabled();
-
-  static bool isErrorEnabled() => _logger.isErrorEnabled();
-
-  static bool isFatalEnabled() => _logger.isFatalEnabled();
-
-  static bool isEnabled(LogLevel logLevel) => _logger.isEnabled(logLevel);
+  DefaultLogger._()
+      : super(const Logger(ScaffoldLoggerOption.kLoggerNameDefault));
 }

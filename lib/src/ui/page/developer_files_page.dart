@@ -103,7 +103,7 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
       }
       _entities.addAll(entities);
     } catch (e, s) {
-      ScaffoldLogger.error(null, e, s);
+      ScaffoldLogger().error(null, e, s);
       rethrow;
     } finally {
       setStateIfMounted();
@@ -252,7 +252,7 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
       );
       return uris.isNotEmpty;
     } catch (e, s) {
-      ScaffoldLogger.error(null, e, s);
+      ScaffoldLogger().error(null, e, s);
       rethrow;
     }
   }

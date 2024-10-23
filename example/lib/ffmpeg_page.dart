@@ -125,7 +125,7 @@ class _FFMpegState extends GenericState<FFMpegPage> {
         Messenger.show(context, "Success");
       }
     } catch (e, s) {
-      DefaultLogger.error(null, e, s);
+      DefaultLogger().error(null, e, s);
       if (mounted) {
         Messenger.showError(context, error: e);
       }
@@ -139,7 +139,7 @@ class _FFMpegState extends GenericState<FFMpegPage> {
     FFmpegKit.executeWithArgumentsAsync(
       commandArguments,
       (session) async {
-        DefaultLogger.info("CompleteCallback >>> ${session.getCommand()}");
+        DefaultLogger().info("CompleteCallback >>> ${session.getCommand()}");
         defaultLoadingDialog.dismiss();
         final state = await session.getState();
         if (SessionState.completed == state) {
@@ -152,15 +152,15 @@ class _FFMpegState extends GenericState<FFMpegPage> {
             completer.completeError(StateError("ReturnCode=$returnCode"));
           }
         } else if (SessionState.failed == state) {
-          DefaultLogger.error("$state->${await session.getFailStackTrace()}");
+          DefaultLogger().error("$state->${await session.getFailStackTrace()}");
           completer.completeError(StateError("State=$state"));
         } else {
           completer.completeError(StateError("State=$state"));
         }
       },
-      (log) => DefaultLogger.info(
+      (log) => DefaultLogger().info(
           "LogCallback >>> SessionId=${log.getSessionId()},Level=${log.getLevel()},Message=${log.getMessage()}"),
-      (statistics) => DefaultLogger.info(
+      (statistics) => DefaultLogger().info(
           "StatisticsCallback >>> SessionId=${statistics.getSessionId()},FrameNumber=${statistics.getVideoFrameNumber()},Fps=${statistics.getVideoFps()},Quality=${statistics.getVideoQuality()},Size=${statistics.getSize()},Time=${statistics.getTime()},Bitrate=${statistics.getBitrate()},Speed=${statistics.getSpeed()}"),
     ).then((session) {
       // 调用executeWithArgumentsAsync()后立即返回
