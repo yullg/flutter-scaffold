@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
-import 'CanvasClipPage.dart';
 import 'android_intent_page.dart';
+import 'canvas_clip_page.dart';
 import 'canvas_page.dart';
 import 'ffmpeg_page.dart';
 import 'messenger_page.dart';
