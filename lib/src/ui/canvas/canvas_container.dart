@@ -91,26 +91,30 @@ class CanvasContainer extends StatelessWidget {
                             controller.onChildPointerCancel(event);
                             onPointerCancel?.call(event);
                           },
-                          child: Center(
-                            child: SizedBox.fromSize(
-                              size: containerChild.size,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  containerChild.child,
-                                  if (drawingBoardEnabled)
-                                    DrawingBoard(
-                                      extension:
-                                          controller.drawingBoardExtension,
-                                      style: drawingBoardStyle,
-                                    ),
-                                  if (adjustBoundaryEnabled)
-                                    AdjustBoundary(
-                                      extension:
-                                          controller.adjustBoundaryExtension,
-                                      style: adjustBoundaryStyle,
-                                    ),
-                                ],
+                          child: OverflowBox(
+                            maxWidth: double.infinity,
+                            maxHeight: double.infinity,
+                            child: Center(
+                              child: SizedBox.fromSize(
+                                size: containerChild.size,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    containerChild.child,
+                                    if (drawingBoardEnabled)
+                                      DrawingBoard(
+                                        extension:
+                                            controller.drawingBoardExtension,
+                                        style: drawingBoardStyle,
+                                      ),
+                                    if (adjustBoundaryEnabled)
+                                      AdjustBoundary(
+                                        extension:
+                                            controller.adjustBoundaryExtension,
+                                        style: adjustBoundaryStyle,
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -145,9 +149,15 @@ class CanvasContainerChild {
     required Size boxSize,
     required Size childSize,
     required this.child,
-  }) : size = _calculateSize(boxSize, childSize);
+  }) : size = _calculateContainSize(boxSize, childSize);
 
-  static Size _calculateSize(Size boxSize, Size childSize) {
+  CanvasContainerChild.cover({
+    required Size boxSize,
+    required Size childSize,
+    required this.child,
+  }) : size = _calculateCoverSize(boxSize, childSize);
+
+  static Size _calculateContainSize(Size boxSize, Size childSize) {
     if (!boxSize.isFinite) {
       throw ArgumentError("BoxSize must be finite");
     }
@@ -159,6 +169,19 @@ class CanvasContainerChild {
     final scale = childAspectRatio > boxAspectRatio
         ? boxSize.width / childSize.width
         : boxSize.height / childSize.height;
+    return Size(childSize.width * scale, childSize.height * scale);
+  }
+
+  static Size _calculateCoverSize(Size boxSize, Size childSize) {
+    if (!boxSize.isFinite) {
+      throw ArgumentError("BoxSize must be finite");
+    }
+    if (!childSize.isFinite) {
+      throw ArgumentError("ChildSize must be finite");
+    }
+    final scaleX = boxSize.width / childSize.width;
+    final scaleY = boxSize.height / childSize.height;
+    final scale = max(scaleX, scaleY);
     return Size(childSize.width * scale, childSize.height * scale);
   }
 }

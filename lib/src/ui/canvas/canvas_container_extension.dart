@@ -13,6 +13,7 @@ class CanvasContainerExtensionOption {
   final bool scaleGestureEnabled;
   final bool rotationGestureEnabled;
   final bool translateGestureEnabled;
+  final bool singleFingerTranslation;
 
   const CanvasContainerExtensionOption({
     this.minScale = 0.3,
@@ -20,6 +21,7 @@ class CanvasContainerExtensionOption {
     this.scaleGestureEnabled = true,
     this.rotationGestureEnabled = true,
     this.translateGestureEnabled = true,
+    this.singleFingerTranslation = false,
   });
 
   @override
@@ -31,7 +33,8 @@ class CanvasContainerExtensionOption {
           maxScale == other.maxScale &&
           scaleGestureEnabled == other.scaleGestureEnabled &&
           rotationGestureEnabled == other.rotationGestureEnabled &&
-          translateGestureEnabled == other.translateGestureEnabled;
+          translateGestureEnabled == other.translateGestureEnabled &&
+          singleFingerTranslation == other.singleFingerTranslation;
 
   @override
   int get hashCode =>
@@ -39,11 +42,12 @@ class CanvasContainerExtensionOption {
       maxScale.hashCode ^
       scaleGestureEnabled.hashCode ^
       rotationGestureEnabled.hashCode ^
-      translateGestureEnabled.hashCode;
+      translateGestureEnabled.hashCode ^
+      singleFingerTranslation.hashCode;
 
   @override
   String toString() {
-    return 'CanvasContainerExtensionOption{minScale: $minScale, maxScale: $maxScale, scaleGestureEnabled: $scaleGestureEnabled, rotationGestureEnabled: $rotationGestureEnabled, translateGestureEnabled: $translateGestureEnabled}';
+    return 'CanvasContainerExtensionOption{minScale: $minScale, maxScale: $maxScale, scaleGestureEnabled: $scaleGestureEnabled, rotationGestureEnabled: $rotationGestureEnabled, translateGestureEnabled: $translateGestureEnabled, singleFingerTranslation: $singleFingerTranslation}';
   }
 }
 
@@ -57,6 +61,7 @@ class CanvasContainerExtension extends ChangeNotifier {
         _scaleGestureEnabled = option.scaleGestureEnabled,
         _rotationGestureEnabled = option.rotationGestureEnabled,
         _translateGestureEnabled = option.translateGestureEnabled,
+        _singleFingerTranslation = option.singleFingerTranslation,
         _minScale = option.minScale,
         _maxScale = option.maxScale;
 
@@ -180,6 +185,7 @@ class CanvasContainerExtension extends ChangeNotifier {
   // ---------- 平移 ----------
 
   bool _translateGestureEnabled;
+  final bool _singleFingerTranslation;
   Offset? _translate;
 
   bool get translateGestureEnabled => _translateGestureEnabled;
@@ -254,7 +260,8 @@ class CanvasContainerExtension extends ChangeNotifier {
       rotation =
           (_previousRotation ?? 0) + (details.rotation * (180 / pi)).toInt();
     }
-    if (translateGestureEnabled && details.pointerCount >= 2) {
+    if (translateGestureEnabled &&
+        (_singleFingerTranslation || details.pointerCount >= 2)) {
       translate = (translate ?? Offset.zero) + details.focalPointDelta;
     }
   }

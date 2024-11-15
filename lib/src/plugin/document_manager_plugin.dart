@@ -202,6 +202,12 @@ class DocumentManagerPlugin {
 
 class DocumentType {
   static const all = DocumentType(mimeType: "*/*", utType: "public.item");
+  static const image =
+      DocumentType(mimeType: "image/*", utType: "public.image");
+  static const video =
+      DocumentType(mimeType: "video/*", utType: "public.movie");
+  static const audio =
+      DocumentType(mimeType: "audio/*", utType: "public.audio");
 
   final String mimeType;
   final String utType;

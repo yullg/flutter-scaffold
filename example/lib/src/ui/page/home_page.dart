@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
+import 'CanvasClipPage.dart';
 import 'android_intent_page.dart';
 import 'canvas_page.dart';
 import 'ffmpeg_page.dart';
@@ -48,6 +49,13 @@ class _HomeState extends State<HomePage> {
               trailingIcon: Icons.arrow_forward_ios,
               onTap: () {
                 to(context, const CanvasPage());
+              },
+            ),
+            EasyListTile(
+              nameText: "Canvas-Clip Demo",
+              trailingIcon: Icons.arrow_forward_ios,
+              onTap: () {
+                to(context, const CanvasClipPage());
               },
             ),
             EasyListTile(
