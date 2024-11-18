@@ -136,16 +136,16 @@ class _CanvasSettingsWidget extends StatelessWidget {
               EasyListTile(
                 nameText: "旋转",
                 valueText:
-                    controller.canvasContainerExtension.rotation?.toString() ??
+                    controller.canvasContainerExtension.rotate?.toString() ??
                         "null",
                 description: Slider(
                   min: 0,
                   max: 360,
-                  value: controller.canvasContainerExtension.rotation
+                  value: controller.canvasContainerExtension.rotate
                           ?.toDouble() ??
                       0,
                   onChanged: (value) {
-                    controller.canvasContainerExtension.rotation =
+                    controller.canvasContainerExtension.rotate =
                         value.toInt();
                   },
                 ),

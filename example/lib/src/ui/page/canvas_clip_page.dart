@@ -30,8 +30,8 @@ class _CanvasClipState extends GenericState<CanvasClipPage> {
       canvasContainerExtensionOption: const CanvasContainerExtensionOption(
         minScale: 1,
         maxScale: 5,
-        rotationGestureEnabled: false,
-        singleFingerTranslation: true,
+        rotateGestureEnabled: false,
+        singleFingerTranslate: true,
       ),
     );
   }

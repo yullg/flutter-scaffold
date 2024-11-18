@@ -64,7 +64,7 @@ class CanvasContainer extends StatelessWidget {
                       controller.canvasContainerExtension.translate?.also((it) {
                         transform.translate(it.dx, it.dy);
                       });
-                      controller.canvasContainerExtension.rotation?.also((it) {
+                      controller.canvasContainerExtension.rotate?.also((it) {
                         transform.rotateZ(it * (pi / 180));
                       });
                       controller.canvasContainerExtension.scale?.also((it) {

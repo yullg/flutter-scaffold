@@ -11,17 +11,17 @@ class CanvasContainerExtensionOption {
   final double? minScale;
   final double? maxScale;
   final bool scaleGestureEnabled;
-  final bool rotationGestureEnabled;
+  final bool rotateGestureEnabled;
   final bool translateGestureEnabled;
-  final bool singleFingerTranslation;
+  final bool singleFingerTranslate;
 
   const CanvasContainerExtensionOption({
     this.minScale = 0.3,
     this.maxScale = 3.0,
     this.scaleGestureEnabled = true,
-    this.rotationGestureEnabled = true,
+    this.rotateGestureEnabled = true,
     this.translateGestureEnabled = true,
-    this.singleFingerTranslation = false,
+    this.singleFingerTranslate = false,
   });
 
   @override
@@ -32,22 +32,22 @@ class CanvasContainerExtensionOption {
           minScale == other.minScale &&
           maxScale == other.maxScale &&
           scaleGestureEnabled == other.scaleGestureEnabled &&
-          rotationGestureEnabled == other.rotationGestureEnabled &&
+          rotateGestureEnabled == other.rotateGestureEnabled &&
           translateGestureEnabled == other.translateGestureEnabled &&
-          singleFingerTranslation == other.singleFingerTranslation;
+          singleFingerTranslate == other.singleFingerTranslate;
 
   @override
   int get hashCode =>
       minScale.hashCode ^
       maxScale.hashCode ^
       scaleGestureEnabled.hashCode ^
-      rotationGestureEnabled.hashCode ^
+      rotateGestureEnabled.hashCode ^
       translateGestureEnabled.hashCode ^
-      singleFingerTranslation.hashCode;
+      singleFingerTranslate.hashCode;
 
   @override
   String toString() {
-    return 'CanvasContainerExtensionOption{minScale: $minScale, maxScale: $maxScale, scaleGestureEnabled: $scaleGestureEnabled, rotationGestureEnabled: $rotationGestureEnabled, translateGestureEnabled: $translateGestureEnabled, singleFingerTranslation: $singleFingerTranslation}';
+    return 'CanvasContainerExtensionOption{minScale: $minScale, maxScale: $maxScale, scaleGestureEnabled: $scaleGestureEnabled, rotateGestureEnabled: $rotateGestureEnabled, translateGestureEnabled: $translateGestureEnabled, singleFingerTranslate: $singleFingerTranslate}';
   }
 }
 
@@ -59,9 +59,9 @@ class CanvasContainerExtension extends ChangeNotifier {
     required CanvasContainerExtensionOption option,
   })  : _extensions = extensions,
         _scaleGestureEnabled = option.scaleGestureEnabled,
-        _rotationGestureEnabled = option.rotationGestureEnabled,
+        _rotateGestureEnabled = option.rotateGestureEnabled,
         _translateGestureEnabled = option.translateGestureEnabled,
-        _singleFingerTranslation = option.singleFingerTranslation,
+        _singleFingerTranslate = option.singleFingerTranslate,
         _minScale = option.minScale,
         _maxScale = option.maxScale;
 
@@ -153,39 +153,39 @@ class CanvasContainerExtension extends ChangeNotifier {
 
   // ---------- 旋转 ----------
 
-  bool _rotationGestureEnabled;
-  int? _rotation;
+  bool _rotateGestureEnabled;
+  int? _rotate;
 
-  bool get rotationGestureEnabled => _rotationGestureEnabled;
+  bool get rotateGestureEnabled => _rotateGestureEnabled;
 
-  set rotationGestureEnabled(bool value) {
-    if (_rotationGestureEnabled != value) {
-      _rotationGestureEnabled = value;
+  set rotateGestureEnabled(bool value) {
+    if (_rotateGestureEnabled != value) {
+      _rotateGestureEnabled = value;
       notifyListeners();
     }
   }
 
-  int? get rotation => _rotation;
+  int? get rotate => _rotate;
 
-  set rotation(int? value) {
+  set rotate(int? value) {
     if (value != null) {
       value = value % 360;
     }
-    if (_rotation != value) {
-      _rotation = value;
+    if (_rotate != value) {
+      _rotate = value;
       translate = translate;
       notifyListeners();
     }
   }
 
-  void rotate(int value) {
-    rotation = (rotation ?? 0) + value % 360;
+  void rotateBy(int value) {
+    rotate = (rotate ?? 0) + value % 360;
   }
 
   // ---------- 平移 ----------
 
   bool _translateGestureEnabled;
-  final bool _singleFingerTranslation;
+  final bool _singleFingerTranslate;
   Offset? _translate;
 
   bool get translateGestureEnabled => _translateGestureEnabled;
@@ -207,6 +207,10 @@ class CanvasContainerExtension extends ChangeNotifier {
     }
   }
 
+  void translateBy(Offset value) {
+    translate = (translate ?? Offset.zero) + value;
+  }
+
   Offset? _clampTranslate(Offset? offset) {
     if (offset == null) {
       return offset;
@@ -215,9 +219,9 @@ class CanvasContainerExtension extends ChangeNotifier {
     final containerChildSize = requiredContainerChildSize;
     double childWidth = containerChildSize.width;
     double childHeight = containerChildSize.height;
-    final rotation = this.rotation;
-    if (rotation != null && rotation != 0) {
-      final rotationAngle = rotation * (pi / 180);
+    final rotate = this.rotate;
+    if (rotate != null && rotate != 0) {
+      final rotationAngle = rotate * (pi / 180);
       childWidth = (containerChildSize.width * cos(rotationAngle)).abs() +
           (containerChildSize.height * sin(rotationAngle)).abs();
       childHeight = (containerChildSize.height * cos(rotationAngle)).abs() +
@@ -239,15 +243,15 @@ class CanvasContainerExtension extends ChangeNotifier {
   // ----------手势事件----------
 
   double? _previousScale;
-  int? _previousRotation;
+  int? _previousRotate;
 
   @internal
   void onScaleStart(ScaleStartDetails details) {
     if (scaleGestureEnabled && details.pointerCount >= 2) {
       _previousScale = scale;
     }
-    if (rotationGestureEnabled && details.pointerCount >= 2) {
-      _previousRotation = rotation;
+    if (rotateGestureEnabled && details.pointerCount >= 2) {
+      _previousRotate = rotate;
     }
   }
 
@@ -256,12 +260,11 @@ class CanvasContainerExtension extends ChangeNotifier {
     if (scaleGestureEnabled && details.pointerCount >= 2) {
       scale = (_previousScale ?? 1.0) * details.scale;
     }
-    if (rotationGestureEnabled && details.pointerCount >= 2) {
-      rotation =
-          (_previousRotation ?? 0) + (details.rotation * (180 / pi)).toInt();
+    if (rotateGestureEnabled && details.pointerCount >= 2) {
+      rotate = (_previousRotate ?? 0) + (details.rotation * (180 / pi)).toInt();
     }
     if (translateGestureEnabled &&
-        (_singleFingerTranslation || details.pointerCount >= 2)) {
+        (_singleFingerTranslate || details.pointerCount >= 2)) {
       translate = (translate ?? Offset.zero) + details.focalPointDelta;
     }
   }
@@ -269,6 +272,6 @@ class CanvasContainerExtension extends ChangeNotifier {
   @internal
   void onScaleEnd(ScaleEndDetails details) {
     _previousScale = null;
-    _previousRotation = null;
+    _previousRotate = null;
   }
 }
