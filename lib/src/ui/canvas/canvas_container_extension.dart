@@ -75,6 +75,8 @@ class CanvasContainerExtension extends ChangeNotifier {
   }) {
     _containerSize = containerSize;
     _containerChildSize = containerChildSize;
+    // 更新位移以适配新的Widget窗口大小
+    translate = translate;
   }
 
   @internal
