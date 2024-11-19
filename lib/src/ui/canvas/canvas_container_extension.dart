@@ -75,8 +75,8 @@ class CanvasContainerExtension extends ChangeNotifier {
   }) {
     _containerSize = containerSize;
     _containerChildSize = containerChildSize;
-    // 更新位移以适配新的Widget窗口大小
-    translate = translate;
+    // 校正位移以适配新的Widget窗口大小
+    _adjustTranslateWithoutNotify();
   }
 
   @internal
@@ -148,7 +148,7 @@ class CanvasContainerExtension extends ChangeNotifier {
     }
     if (_scale != value) {
       _scale = value;
-      translate = translate;
+      _adjustTranslateWithoutNotify();
       notifyListeners();
     }
   }
@@ -175,7 +175,7 @@ class CanvasContainerExtension extends ChangeNotifier {
     }
     if (_rotate != value) {
       _rotate = value;
-      translate = translate;
+      _adjustTranslateWithoutNotify();
       notifyListeners();
     }
   }
@@ -211,6 +211,13 @@ class CanvasContainerExtension extends ChangeNotifier {
 
   void translateBy(Offset value) {
     translate = (translate ?? Offset.zero) + value;
+  }
+
+  void _adjustTranslateWithoutNotify() {
+    final newTranslate = _clampTranslate(translate);
+    if (_translate != newTranslate) {
+      _translate = newTranslate;
+    }
   }
 
   Offset? _clampTranslate(Offset? offset) {
