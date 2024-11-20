@@ -43,6 +43,7 @@ export 'src/support/database/database_schema.dart';
 export 'src/support/database/global_database.dart';
 export 'src/support/ffmpeg/codec/encoder.dart';
 export 'src/support/ffmpeg/codec/libwebp_encoder.dart';
+export 'src/support/ffmpeg/filter/crop_filter.dart';
 export 'src/support/ffmpeg/filter/filter.dart';
 export 'src/support/ffmpeg/filter/pad_filter.dart';
 export 'src/support/ffmpeg/filter/scale_filter.dart';
