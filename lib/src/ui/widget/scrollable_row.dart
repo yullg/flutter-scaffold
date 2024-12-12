@@ -2,6 +2,10 @@ import 'package:flutter/widgets.dart';
 
 class ScrollableRow extends StatelessWidget {
   final bool reverse;
+  final EdgeInsetsGeometry? padding;
+  final ScrollPhysics? physics;
+  final ScrollController? controller;
+  final HitTestBehavior hitTestBehavior;
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;
   final List<Widget> children;
@@ -9,6 +13,10 @@ class ScrollableRow extends StatelessWidget {
   const ScrollableRow({
     super.key,
     this.reverse = false,
+    this.padding,
+    this.physics,
+    this.controller,
+    this.hitTestBehavior = HitTestBehavior.opaque,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.children = const <Widget>[],
@@ -19,6 +27,10 @@ class ScrollableRow extends StatelessWidget {
         builder: (context, constraints) => SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           reverse: reverse,
+          padding: padding,
+          physics: physics,
+          controller: controller,
+          hitTestBehavior: hitTestBehavior,
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minWidth: constraints.maxWidth,
@@ -36,6 +48,10 @@ class ScrollableRow extends StatelessWidget {
 
 class ScrollableIntrinsicWidthRow extends StatelessWidget {
   final bool reverse;
+  final EdgeInsetsGeometry? padding;
+  final ScrollPhysics? physics;
+  final ScrollController? controller;
+  final HitTestBehavior hitTestBehavior;
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;
   final List<Widget> children;
@@ -43,6 +59,10 @@ class ScrollableIntrinsicWidthRow extends StatelessWidget {
   const ScrollableIntrinsicWidthRow({
     super.key,
     this.reverse = false,
+    this.padding,
+    this.physics,
+    this.controller,
+    this.hitTestBehavior = HitTestBehavior.opaque,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.children = const <Widget>[],
@@ -53,6 +73,10 @@ class ScrollableIntrinsicWidthRow extends StatelessWidget {
         builder: (context, constraints) => SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           reverse: reverse,
+          padding: padding,
+          physics: physics,
+          controller: controller,
+          hitTestBehavior: hitTestBehavior,
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minWidth: constraints.maxWidth,
