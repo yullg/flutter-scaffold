@@ -6,7 +6,7 @@ import '../internal/scaffold_preference.dart';
 
 class ThemeModeManager extends ChangeNotifier
     implements ValueListenable<ThemeMode?> {
-  static const kSpKey = "yg_theme_mode";
+  static const kSpKey = "yullg_theme_mode";
 
   static ThemeModeManager? _instance;
 
