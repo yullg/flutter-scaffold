@@ -10,6 +10,7 @@ class PagedListWidget<T> extends StatelessWidget {
   final WidgetBuilder? emptyBuilder;
   final WidgetBuilder? finishedBuilder;
   final WidgetBuilder? failedBuilder;
+  final bool reverse;
 
   const PagedListWidget({
     super.key,
@@ -20,12 +21,14 @@ class PagedListWidget<T> extends StatelessWidget {
     this.emptyBuilder,
     this.finishedBuilder,
     this.failedBuilder,
+    this.reverse = false,
   });
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
         listenable: controller,
         builder: (context, child) => ListView.separated(
+          reverse: reverse,
           itemCount: controller.data.length + 1,
           itemBuilder: (context, index) {
             if (index < controller.data.length) {
@@ -51,7 +54,8 @@ class PagedListWidget<T> extends StatelessWidget {
             }
           },
           separatorBuilder: (BuildContext context, int index) {
-            return separatorBuilder?.call(context, index) ?? const SizedBox.shrink();
+            return separatorBuilder?.call(context, index) ??
+                const SizedBox.shrink();
           },
         ),
       );
