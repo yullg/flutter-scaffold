@@ -32,7 +32,7 @@ class PagedListWidget<T> extends StatelessWidget {
           itemCount: controller.data.length + 1,
           itemBuilder: (context, index) {
             if (index < controller.data.length) {
-              return builder(context, index, controller.data[index]);
+              return builder(context, index, controller.data.elementAt(index));
             } else {
               switch (controller.status) {
                 case PagedControllerStatus.idle:
@@ -88,7 +88,7 @@ class PagedSliverListWidget<T> extends StatelessWidget {
           itemCount: controller.data.length + 1,
           itemBuilder: (context, index) {
             if (index < controller.data.length) {
-              return builder(context, index, controller.data[index]);
+              return builder(context, index, controller.data.elementAt(index));
             } else {
               switch (controller.status) {
                 case PagedControllerStatus.idle:

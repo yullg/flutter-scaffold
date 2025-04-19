@@ -8,7 +8,7 @@ abstract class PagedController<T> extends ChangeNotifier {
   final List<T> _data;
   PagedControllerStatus _status;
 
-  List<T> get data => _data; // 目前直接将内部集合传递给调用方是高效的且不会影响此类的功能。
+  Iterable<T> get data => _data;
 
   PagedControllerStatus get status => _status;
 
