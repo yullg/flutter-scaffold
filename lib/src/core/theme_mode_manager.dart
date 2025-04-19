@@ -1,6 +1,6 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:scaffold/scaffold_lang.dart';
 
 import '../internal/scaffold_preference.dart';
 

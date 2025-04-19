@@ -15,35 +15,6 @@ extension ExtensionTakeUnless<T> on T {
       predicate(this) ? null : this;
 }
 
-extension ExtensionList<T> on List<T> {
-  T? firstWhereOrNull(bool Function(T element) test) {
-    for (final element in this) {
-      if (test(element)) {
-        return element;
-      }
-    }
-    return null;
-  }
-
-  T? lastWhereOrNull(bool Function(T element) test) {
-    for (int i = length - 1; i >= 0; i--) {
-      if (test(this[i])) {
-        return this[i];
-      }
-    }
-    return null;
-  }
-
-  void sortedBy<R extends Comparable<R>>(R Function(T element) selector) {
-    sort((a, b) => Comparable.compare(selector(a), selector(b)));
-  }
-
-  void sortedByDescending<R extends Comparable<R>>(
-      R Function(T element) selector) {
-    sort((a, b) => Comparable.compare(selector(b), selector(a)));
-  }
-}
-
 extension ExtensionFuture<T> on Future<T> {
   Future<void> asyncIgnore() => then<void>(_ignore, onError: _ignore);
 
