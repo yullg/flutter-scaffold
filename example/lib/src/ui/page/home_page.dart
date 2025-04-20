@@ -51,13 +51,13 @@ class _HomeState extends State<HomePage> {
                 to(context, const CanvasPage());
               },
             ),
-            EasyListTile(
-              nameText: "Canvas-Clip Demo",
-              trailingIcon: Icons.arrow_forward_ios,
-              onTap: () {
-                to(context, const CanvasClipPage());
-              },
-            ),
+            // EasyListTile(
+            //   nameText: "Canvas-Clip Demo",
+            //   trailingIcon: Icons.arrow_forward_ios,
+            //   onTap: () {
+            //     to(context, const CanvasClipPage());
+            //   },
+            // ),
             EasyListTile(
               nameText: "Messenger Demo",
               trailingIcon: Icons.arrow_forward_ios,
@@ -65,13 +65,13 @@ class _HomeState extends State<HomePage> {
                 to(context, const MessengerPage());
               },
             ),
-            EasyListTile(
-              nameText: "FFmpeg Demo",
-              trailingIcon: Icons.arrow_forward_ios,
-              onTap: () {
-                to(context, const FFMpegPage());
-              },
-            ),
+            // EasyListTile(
+            //   nameText: "FFmpeg Demo",
+            //   trailingIcon: Icons.arrow_forward_ios,
+            //   onTap: () {
+            //     to(context, const FFMpegPage());
+            //   },
+            // ),
             if (Platform.isAndroid)
               EasyListTile(
                 nameText: "Activity Intent Demo",
