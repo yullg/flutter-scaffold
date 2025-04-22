@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
 import 'android_intent_page.dart';
-import 'canvas_clip_page.dart';
 import 'canvas_page.dart';
-import 'ffmpeg_page.dart';
 import 'messenger_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -32,6 +30,13 @@ class _HomeState extends State<HomePage> {
         ],
       ),
     );
+    if (Platform.isAndroid) {
+      AndroidNotificationPlugin.createNotificationChannel(
+              id: "test", importance: 4, name: "test-name")
+          .then((_) {
+        DefaultLogger().info("createNotificationChannel");
+      });
+    }
   }
 
   @override
@@ -51,13 +56,13 @@ class _HomeState extends State<HomePage> {
                 to(context, const CanvasPage());
               },
             ),
-            EasyListTile(
-              nameText: "Canvas-Clip Demo",
-              trailingIcon: Icons.arrow_forward_ios,
-              onTap: () {
-                to(context, const CanvasClipPage());
-              },
-            ),
+            // EasyListTile(
+            //   nameText: "Canvas-Clip Demo",
+            //   trailingIcon: Icons.arrow_forward_ios,
+            //   onTap: () {
+            //     to(context, const CanvasClipPage());
+            //   },
+            // ),
             EasyListTile(
               nameText: "Messenger Demo",
               trailingIcon: Icons.arrow_forward_ios,
@@ -65,13 +70,13 @@ class _HomeState extends State<HomePage> {
                 to(context, const MessengerPage());
               },
             ),
-            EasyListTile(
-              nameText: "FFmpeg Demo",
-              trailingIcon: Icons.arrow_forward_ios,
-              onTap: () {
-                to(context, const FFMpegPage());
-              },
-            ),
+            // EasyListTile(
+            //   nameText: "FFmpeg Demo",
+            //   trailingIcon: Icons.arrow_forward_ios,
+            //   onTap: () {
+            //     to(context, const FFMpegPage());
+            //   },
+            // ),
             if (Platform.isAndroid)
               EasyListTile(
                 nameText: "Activity Intent Demo",
@@ -80,6 +85,44 @@ class _HomeState extends State<HomePage> {
                   to(context, const AndroidIntentPage());
                 },
               ),
+            EasyListTile(
+              nameText: "AndroidMediaProjectionPlugin.start",
+              onTap: () {
+                AndroidMediaProjectionPlugin.start().catchError((e, s) {
+                  DefaultLogger().error(null, e, s);
+                });
+              },
+            ),
+            EasyListTile(
+              nameText: "AndroidMediaProjectionPlugin.stop",
+              onTap: () {
+                AndroidMediaProjectionPlugin.stop().catchError((e, s) {
+                  DefaultLogger().error(null, e, s);
+                });
+              },
+            ),
+            EasyListTile(
+              nameText: "startAudioPlaybackCapture",
+              onTap: () {
+                AndroidAudioRecordPlugin.startAudioPlaybackCapture(
+                  notificationId: 3,
+                  notificationChannelId: "test",
+                  notificationContentTitle: "测试标题",
+                  notificationContentText: "测试内容",
+                ).catchError((e, s) {
+                  DefaultLogger().error(null, e, s);
+                });
+              },
+            ),
+            EasyListTile(
+              nameText: "stopAudioPlaybackCapture",
+              onTap: () {
+                AndroidAudioRecordPlugin.stopAudioPlaybackCapture()
+                    .catchError((e, s) {
+                  DefaultLogger().error(null, e, s);
+                });
+              },
+            ),
           ],
         ).toList(),
       ),

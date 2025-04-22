@@ -26,6 +26,9 @@ abstract class BaseUseCase(
     private var eventChannel: EventChannel? = null
     private var methodChannel: MethodChannel? = null
 
+    protected var eventChannelSink: EventChannel.EventSink? = null
+        private set
+
     @CallSuper
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         flutterPluginBinding = binding
@@ -52,9 +55,11 @@ abstract class BaseUseCase(
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+        eventChannelSink = events
     }
 
     override fun onCancel(arguments: Any?) {
+        eventChannelSink = null
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {

@@ -10,12 +10,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
 
-private const val REQUEST_CODE_CREATE_DOCUMENT = 7001001
-private const val REQUEST_CODE_OPEN_DOCUMENT = 7001002
-private const val REQUEST_CODE_OPEN_DOCUMENT_TREE = 7001003
-private const val REQUEST_CODE_OPEN_MULTIPLE_DOCUMENTS = 7001004
-private const val REQUEST_CODE_ACTION_PICK = 7001005
-
 class IntentUseCase : BaseUseCase(
     methodChannelName = "com.yullg.flutter.scaffold/intent"
 ), PluginRegistry.ActivityResultListener {
@@ -51,7 +45,7 @@ class IntentUseCase : BaseUseCase(
                 )
                 requiredActivityPluginBinding.activity.startActivityForResult(
                     intent,
-                    REQUEST_CODE_CREATE_DOCUMENT,
+                    RequestCode.INTENT_CREATE_DOCUMENT.code,
                 )
                 createDocumentContract = contract
                 createDocumentResult = result
@@ -64,7 +58,7 @@ class IntentUseCase : BaseUseCase(
                     contract.createIntent(requiredActivityPluginBinding.activity, mimeTypes)
                 requiredActivityPluginBinding.activity.startActivityForResult(
                     intent,
-                    REQUEST_CODE_OPEN_DOCUMENT,
+                    RequestCode.INTENT_OPEN_DOCUMENT.code,
                 )
                 openDocumentContract = contract
                 openDocumentResult = result
@@ -79,7 +73,7 @@ class IntentUseCase : BaseUseCase(
                     contract.createIntent(requiredActivityPluginBinding.activity, initialLocation)
                 requiredActivityPluginBinding.activity.startActivityForResult(
                     intent,
-                    REQUEST_CODE_OPEN_DOCUMENT_TREE,
+                    RequestCode.INTENT_OPEN_DOCUMENT_TREE.code,
                 )
                 openDocumentTreeContract = contract
                 openDocumentTreeResult = result
@@ -92,7 +86,7 @@ class IntentUseCase : BaseUseCase(
                     contract.createIntent(requiredActivityPluginBinding.activity, mimeTypes)
                 requiredActivityPluginBinding.activity.startActivityForResult(
                     intent,
-                    REQUEST_CODE_OPEN_MULTIPLE_DOCUMENTS,
+                    RequestCode.INTENT_OPEN_MULTIPLE_DOCUMENTS.code,
                 )
                 openMultipleDocumentsContract = contract
                 openMultipleDocumentsResult = result
@@ -119,7 +113,7 @@ class IntentUseCase : BaseUseCase(
 
                     else -> Intent(Intent.ACTION_PICK)
                 }
-                activity.startActivityForResult(intent, REQUEST_CODE_ACTION_PICK)
+                activity.startActivityForResult(intent, RequestCode.INTENT_ACTION_PICK.code)
                 actionPickResult = result
             }
 
@@ -140,7 +134,7 @@ class IntentUseCase : BaseUseCase(
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        if (REQUEST_CODE_CREATE_DOCUMENT == requestCode) {
+        if (RequestCode.INTENT_CREATE_DOCUMENT.code == requestCode) {
             createDocumentContract?.let { contract ->
                 createDocumentResult?.let { result ->
                     try {
@@ -154,7 +148,7 @@ class IntentUseCase : BaseUseCase(
             createDocumentContract = null
             createDocumentResult = null
             return true
-        } else if (REQUEST_CODE_OPEN_DOCUMENT == requestCode) {
+        } else if (RequestCode.INTENT_OPEN_DOCUMENT.code == requestCode) {
             openDocumentContract?.let { contract ->
                 openDocumentResult?.let { result ->
                     try {
@@ -168,7 +162,7 @@ class IntentUseCase : BaseUseCase(
             openDocumentContract = null
             openDocumentResult = null
             return true
-        } else if (REQUEST_CODE_OPEN_DOCUMENT_TREE == requestCode) {
+        } else if (RequestCode.INTENT_OPEN_DOCUMENT_TREE.code == requestCode) {
             openDocumentTreeContract?.let { contract ->
                 openDocumentTreeResult?.let { result ->
                     try {
@@ -182,7 +176,7 @@ class IntentUseCase : BaseUseCase(
             openDocumentTreeContract = null
             openDocumentTreeResult = null
             return true
-        } else if (REQUEST_CODE_OPEN_MULTIPLE_DOCUMENTS == requestCode) {
+        } else if (RequestCode.INTENT_OPEN_MULTIPLE_DOCUMENTS.code == requestCode) {
             openMultipleDocumentsContract?.let { contract ->
                 openMultipleDocumentsResult?.let { result ->
                     try {
@@ -196,7 +190,7 @@ class IntentUseCase : BaseUseCase(
             openMultipleDocumentsContract = null
             openMultipleDocumentsResult = null
             return true
-        } else if (REQUEST_CODE_ACTION_PICK == requestCode) {
+        } else if (RequestCode.INTENT_ACTION_PICK.code == requestCode) {
             actionPickResult?.also {
                 if (Activity.RESULT_OK == resultCode) {
                     it.success(data?.data?.toString())
