@@ -22,7 +22,15 @@ class AndroidAudioRecordPlugin {
     });
   }
 
-  static Future<void> stopAudioPlaybackCapture() {
-    return _methodChannel.invokeMethod("stopAudioPlaybackCapture");
+  static Future<void> resume() {
+    return _methodChannel.invokeMethod("resume");
+  }
+
+  static Future<void> stop() {
+    return _methodChannel.invokeMethod("stop");
+  }
+
+  static Future<void> release() {
+    return _methodChannel.invokeMethod("release");
   }
 }

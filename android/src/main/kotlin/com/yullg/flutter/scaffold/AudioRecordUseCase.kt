@@ -5,7 +5,6 @@ import android.content.Intent
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioPlaybackCaptureConfiguration
-import android.media.AudioRecord
 import android.media.projection.MediaProjection
 import android.os.Build
 import android.util.Log
@@ -14,14 +13,13 @@ import com.yullg.flutter.scaffold.core.AudioRecorder
 import com.yullg.flutter.scaffold.service.MediaProjectionService
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import java.util.concurrent.Executors
+import java.nio.ByteBuffer
 
 object AudioRecordUseCase : BaseUseCase(
-    eventChannelName = "com.yullg.flutter.scaffold/audio_record_event",
-    methodChannelName = "com.yullg.flutter.scaffold/audio_record_method"
+        eventChannelName = "com.yullg.flutter.scaffold/audio_record_event",
+        methodChannelName = "com.yullg.flutter.scaffold/audio_record_method"
 ), AudioRecorder.Listener {
 
-    private val executor = Executors.newSingleThreadExecutor()
     private var audioRecorder: AudioRecorder? = null;
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -36,8 +34,8 @@ object AudioRecordUseCase : BaseUseCase(
                     requiredFlutterPluginBinding.applicationContext.also {
                         val intent = Intent(it, MediaProjectionService::class.java).apply {
                             putExtra(
-                                "action",
-                                MediaProjectionService.ACTION_START_AUDIO_PLAYBACK_CAPTURE
+                                    "action",
+                                    MediaProjectionService.ACTION_START_AUDIO_PLAYBACK_CAPTURE
                             )
                             putExtra("resultCode", token.resultCode)
                             putExtra("data", token.data)
@@ -56,15 +54,18 @@ object AudioRecordUseCase : BaseUseCase(
 
             "resume" -> {
                 audioRecorder?.start()
+                result.success(null)
             }
 
             "stop" -> {
                 audioRecorder?.stop()
+                result.success(null)
             }
 
             "release" -> {
                 audioRecorder?.release()
                 audioRecorder = null
+                result.success(null)
             }
         }
     }
@@ -73,35 +74,32 @@ object AudioRecordUseCase : BaseUseCase(
     fun startAudioPlaybackCapture(mediaProjection: MediaProjection) {
         if (Build.VERSION.SDK_INT < 29) return
         val format = AudioFormat.Builder()
-            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-            .setSampleRate(44100)
-            .setChannelMask(AudioFormat.CHANNEL_IN_STEREO)
-            .build()
-        val minBufferSize = AudioRecord.getMinBufferSize(
-            format.sampleRate,
-            format.channelMask,
-            format.encoding
-        )
-        val recorder = AudioRecord.Builder()
-            .setAudioPlaybackCaptureConfig(
-                AudioPlaybackCaptureConfiguration.Builder(mediaProjection)
-                    .excludeUsage(AudioAttributes.USAGE_UNKNOWN)
-                    .build()
-            )
-            .setAudioFormat(format)
-            .setBufferSizeInBytes(minBufferSize * 2)
-            .build()
-        this.audioRecorder = AudioRecorder(
-            recorder,
-            executor,
-            minBufferSize * 2,
-            this
-        )
+                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                .setSampleRate(44100)
+                .setChannelMask(AudioFormat.CHANNEL_IN_STEREO)
+                .build()
+        val config = AudioPlaybackCaptureConfiguration.Builder(mediaProjection)
+                .excludeUsage(AudioAttributes.USAGE_UNKNOWN)
+                .build()
+        audioRecorder = AudioRecorder(
+                format = format,
+                config = config
+        ).apply {
+            listener = this@AudioRecordUseCase
+        }
         audioRecorder?.start()
     }
 
-    override fun onData(data: ShortArray) {
-        Log.i("AudioRecordUseCase", "onData: " + data.size)
+    override fun onStatus(status: AudioRecorder.Status) {
+        Log.i("AudioReordUserCase", "onStatus: $status")
+    }
+
+    override fun onData(data: ByteBuffer) {
+        Log.i("AudioReordUserCase", "onData: $data")
+    }
+
+    override fun onError(error: Throwable) {
+        Log.e("AudioReordUserCase", "onError: ", error)
     }
 
 }

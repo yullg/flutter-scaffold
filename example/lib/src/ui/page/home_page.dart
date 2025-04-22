@@ -115,10 +115,25 @@ class _HomeState extends State<HomePage> {
               },
             ),
             EasyListTile(
-              nameText: "stopAudioPlaybackCapture",
+              nameText: "resume",
               onTap: () {
-                AndroidAudioRecordPlugin.stopAudioPlaybackCapture()
-                    .catchError((e, s) {
+                AndroidAudioRecordPlugin.resume().catchError((e, s) {
+                  DefaultLogger().error(null, e, s);
+                });
+              },
+            ),
+            EasyListTile(
+              nameText: "stop",
+              onTap: () {
+                AndroidAudioRecordPlugin.stop().catchError((e, s) {
+                  DefaultLogger().error(null, e, s);
+                });
+              },
+            ),
+            EasyListTile(
+              nameText: "release",
+              onTap: () {
+                AndroidAudioRecordPlugin.release().catchError((e, s) {
                   DefaultLogger().error(null, e, s);
                 });
               },
