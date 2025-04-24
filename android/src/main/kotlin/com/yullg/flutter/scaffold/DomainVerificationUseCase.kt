@@ -5,6 +5,7 @@ import android.content.pm.verify.domain.DomainVerificationManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import com.yullg.flutter.scaffold.core.BaseUseCase
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 

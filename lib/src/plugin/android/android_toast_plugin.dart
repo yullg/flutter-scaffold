@@ -6,11 +6,11 @@ class AndroidToastPlugin {
 
   static Future<void> show({
     required String text,
-    bool longDuration = false,
-  }) async {
-    await _methodChannel.invokeMethod("show", {
+    bool isLongLength = false,
+  }) {
+    return _methodChannel.invokeMethod<void>("show", {
       "text": text,
-      "longDuration": longDuration,
+      "isLongLength": isLongLength,
     });
   }
 

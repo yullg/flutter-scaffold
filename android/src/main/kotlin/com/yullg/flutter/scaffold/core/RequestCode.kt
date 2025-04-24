@@ -1,4 +1,4 @@
-package com.yullg.flutter.scaffold
+package com.yullg.flutter.scaffold.core
 
 enum class RequestCode(val code: Int) {
     INTENT_CREATE_DOCUMENT(7001001),

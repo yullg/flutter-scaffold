@@ -1,4 +1,4 @@
-package com.yullg.flutter.scaffold.service
+package com.yullg.flutter.scaffold.android
 
 import android.app.Service
 import android.content.Intent

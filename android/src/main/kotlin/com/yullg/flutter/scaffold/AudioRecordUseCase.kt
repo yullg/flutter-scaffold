@@ -10,7 +10,8 @@ import android.os.Build
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.yullg.flutter.scaffold.core.AudioRecorder
-import com.yullg.flutter.scaffold.service.MediaProjectionService
+import com.yullg.flutter.scaffold.core.BaseUseCase
+import com.yullg.flutter.scaffold.android.MediaProjectionService
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.nio.ByteBuffer

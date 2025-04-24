@@ -2,6 +2,7 @@ package com.yullg.flutter.scaffold
 
 import android.net.Uri
 import androidx.core.content.FileProvider
+import com.yullg.flutter.scaffold.core.BaseUseCase
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.File

@@ -1,4 +1,4 @@
-package com.yullg.flutter.scaffold
+package com.yullg.flutter.scaffold.core
 
 import androidx.annotation.CallSuper
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -9,37 +9,33 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
 abstract class BaseUseCase(
-    private val eventChannelName: String? = null,
-    private val methodChannelName: String? = null,
-) : FlutterPlugin, ActivityAware, EventChannel.StreamHandler, MethodChannel.MethodCallHandler {
+        private val methodChannelName: String? = null,
+        private val eventChannelName: String? = null,
+) : FlutterPlugin, ActivityAware, MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
 
     protected var flutterPluginBinding: FlutterPlugin.FlutterPluginBinding? = null
         private set
     protected var activityPluginBinding: ActivityPluginBinding? = null
         private set
-
     protected val requiredFlutterPluginBinding: FlutterPlugin.FlutterPluginBinding
         get() = flutterPluginBinding!!
     protected val requiredActivityPluginBinding: ActivityPluginBinding
         get() = activityPluginBinding!!
 
-    private var eventChannel: EventChannel? = null
     private var methodChannel: MethodChannel? = null
-
-    protected var eventChannelSink: EventChannel.EventSink? = null
-        private set
+    private var eventChannel: EventChannel? = null
 
     @CallSuper
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         flutterPluginBinding = binding
-        eventChannelName?.let {
-            eventChannel = EventChannel(binding.binaryMessenger, it).apply {
-                setStreamHandler(this@BaseUseCase)
-            }
-        }
         methodChannelName?.let {
             methodChannel = MethodChannel(binding.binaryMessenger, it).apply {
                 setMethodCallHandler(this@BaseUseCase)
+            }
+        }
+        eventChannelName?.let {
+            eventChannel = EventChannel(binding.binaryMessenger, it).apply {
+                setStreamHandler(this@BaseUseCase)
             }
         }
     }
@@ -54,17 +50,13 @@ abstract class BaseUseCase(
         activityPluginBinding = binding
     }
 
-    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-        eventChannelSink = events
-    }
-
-    override fun onCancel(arguments: Any?) {
-        eventChannelSink = null
-    }
-
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         result.notImplemented()
     }
+
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {}
+
+    override fun onCancel(arguments: Any?) {}
 
     @CallSuper
     override fun onDetachedFromActivityForConfigChanges() {
@@ -78,11 +70,12 @@ abstract class BaseUseCase(
 
     @CallSuper
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        eventChannel?.setStreamHandler(null)
-        eventChannel = null
         methodChannel?.setMethodCallHandler(null)
         methodChannel = null
+        eventChannel?.setStreamHandler(null)
+        eventChannel = null
         flutterPluginBinding = null
+        activityPluginBinding = null
     }
 
 }

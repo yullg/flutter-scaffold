@@ -37,7 +37,7 @@
         </activity>
 
         <service
-            android:name="com.yullg.flutter.scaffold.service.MediaProjectionService"
+            android:name="com.yullg.flutter.scaffold.android.MediaProjectionService"
             android:exported="false"
             android:foregroundServiceType="mediaProjection" />
 

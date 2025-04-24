@@ -1,11 +1,12 @@
 package com.yullg.flutter.scaffold
 
 import android.widget.Toast
+import com.yullg.flutter.scaffold.core.BaseUseCase
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
-class ToastUseCase : BaseUseCase(
-    methodChannelName = "com.yullg.flutter.scaffold/toast",
+object ToastUseCase : BaseUseCase(
+        methodChannelName = "com.yullg.flutter.scaffold/toast",
 ) {
 
     private var toast: Toast? = null
@@ -14,12 +15,12 @@ class ToastUseCase : BaseUseCase(
         when (call.method) {
             "show" -> {
                 val text = call.argument<String>("text")!!
-                val longDuration = call.argument<Boolean>("longDuration")!!
+                val isLongLength = call.argument<Boolean>("isLongLength")!!
                 toast?.cancel()
                 toast = Toast.makeText(
-                    requiredFlutterPluginBinding.applicationContext,
-                    text,
-                    if (longDuration) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
+                        requiredFlutterPluginBinding.applicationContext,
+                        text,
+                        if (isLongLength) Toast.LENGTH_LONG else Toast.LENGTH_SHORT
                 ).apply {
                     show()
                 }

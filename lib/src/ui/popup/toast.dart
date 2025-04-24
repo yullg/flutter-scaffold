@@ -19,7 +19,7 @@ class Toast {
 
   static void show(BuildContext context, String text, bool longDuration) {
     if (Platform.isAndroid) {
-      AndroidToastPlugin.show(text: text, longDuration: longDuration).ignore();
+      AndroidToastPlugin.show(text: text, isLongLength: longDuration).ignore();
     } else {
       _dismissOverlayEntry();
       final overlayEntry = OverlayEntry(builder: (BuildContext context) {

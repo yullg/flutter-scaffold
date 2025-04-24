@@ -86,17 +86,9 @@ class _HomeState extends State<HomePage> {
                 },
               ),
             EasyListTile(
-              nameText: "AndroidMediaProjectionPlugin.start",
+              nameText: "AndroidMediaProjectionPlugin.authorize",
               onTap: () {
-                AndroidMediaProjectionPlugin.start().catchError((e, s) {
-                  DefaultLogger().error(null, e, s);
-                });
-              },
-            ),
-            EasyListTile(
-              nameText: "AndroidMediaProjectionPlugin.stop",
-              onTap: () {
-                AndroidMediaProjectionPlugin.stop().catchError((e, s) {
+                AndroidMediaProjectionPlugin.authorize().catchError((e, s) {
                   DefaultLogger().error(null, e, s);
                 });
               },

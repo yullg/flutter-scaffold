@@ -5,6 +5,7 @@ import android.app.DownloadManager.Request
 import android.net.Uri
 import android.os.Environment
 import androidx.core.content.ContextCompat
+import com.yullg.flutter.scaffold.core.BaseUseCase
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.UUID

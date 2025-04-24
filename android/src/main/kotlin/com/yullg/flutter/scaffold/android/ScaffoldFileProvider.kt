@@ -1,4 +1,4 @@
-package com.yullg.flutter.scaffold
+package com.yullg.flutter.scaffold.android
 
 import androidx.annotation.RestrictTo
 import androidx.core.content.FileProvider
