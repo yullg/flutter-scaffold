@@ -12,7 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 
-class ContentResolverUseCase : BaseUseCase(
+object ContentResolverUseCase : BaseUseCase(
     methodChannelName = "com.yullg.flutter.scaffold/content_resolver"
 ) {
 

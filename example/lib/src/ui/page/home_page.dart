@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
-import 'android_intent_page.dart';
-import 'canvas_page.dart';
 import 'messenger_page.dart';
+import 'scaffold/plugin/android/intent_page.dart';
+import 'scaffold/plugin/android/media_store_page.dart';
+import 'scaffold/plugin/android/toast_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,13 +29,6 @@ class _HomeState extends State<HomePage> {
         ],
       ),
     );
-    if (Platform.isAndroid) {
-      AndroidNotificationPlugin.createNotificationChannel(
-              id: "test", importance: 4, name: "test-name")
-          .then((_) {
-        DefaultLogger().info("createNotificationChannel");
-      });
-    }
   }
 
   @override
@@ -45,93 +37,89 @@ class _HomeState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: ListView(
-        children: ListTile.divideTiles(
-          context: context,
-          tiles: [
-            EasyListTile(
-              nameText: "Canvas Demo",
-              trailingIcon: Icons.arrow_forward_ios,
-              onTap: () {
-                to(context, const CanvasPage());
-              },
-            ),
-            // EasyListTile(
-            //   nameText: "Canvas-Clip Demo",
-            //   trailingIcon: Icons.arrow_forward_ios,
-            //   onTap: () {
-            //     to(context, const CanvasClipPage());
-            //   },
-            // ),
-            EasyListTile(
-              nameText: "Messenger Demo",
-              trailingIcon: Icons.arrow_forward_ios,
-              onTap: () {
-                to(context, const MessengerPage());
-              },
-            ),
-            // EasyListTile(
-            //   nameText: "FFmpeg Demo",
-            //   trailingIcon: Icons.arrow_forward_ios,
-            //   onTap: () {
-            //     to(context, const FFMpegPage());
-            //   },
-            // ),
-            if (Platform.isAndroid)
-              EasyListTile(
-                nameText: "Activity Intent Demo",
-                trailingIcon: Icons.arrow_forward_ios,
-                onTap: () {
-                  to(context, const AndroidIntentPage());
-                },
+      body: CustomScrollView(
+        slivers: <Widget>[
+          TreeSliver<TreeSliverNodeContent>(
+            tree: [
+              TreeSliverNode(
+                TreeSliverNodeContent(name: "scaffold"),
+                children: [
+                  TreeSliverNode(
+                    TreeSliverNodeContent(name: "plugin"),
+                    children: [
+                      TreeSliverNode(
+                        TreeSliverNodeContent(name: "android"),
+                        children: [
+                          TreeSliverNode(
+                            TreeSliverNodeContent(
+                              name: "toast",
+                              onClick: () => to(context, const ToastPage()),
+                            ),
+                          ),
+                          TreeSliverNode(
+                            TreeSliverNodeContent(
+                              name: "intent",
+                              onClick: () => to(context, const IntentPage()),
+                            ),
+                          ),
+                          TreeSliverNode(
+                            TreeSliverNodeContent(
+                              name: "media_store",
+                              onClick: () =>
+                                  to(context, const MediaStorePage()),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            EasyListTile(
-              nameText: "AndroidMediaProjectionPlugin.authorize",
-              onTap: () {
-                AndroidMediaProjectionPlugin.authorize().catchError((e, s) {
-                  DefaultLogger().error(null, e, s);
-                });
-              },
+            ],
+            treeNodeBuilder: _treeNodeBuilder,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _treeNodeBuilder(
+    BuildContext context,
+    TreeSliverNode<Object?> node,
+    AnimationStyle toggleAnimationStyle,
+  ) {
+    final Duration animationDuration =
+        toggleAnimationStyle.duration ?? TreeSliver.defaultAnimationDuration;
+    final Curve animationCurve =
+        toggleAnimationStyle.curve ?? TreeSliver.defaultAnimationCurve;
+    final int index = TreeSliverController.of(context).getActiveIndexFor(node)!;
+    return InkWell(
+      onTap: () {
+        TreeSliverController.of(context).toggleNode(node);
+        if (node.content is TreeSliverNodeContent) {
+          (node.content as TreeSliverNodeContent).onClick?.call();
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: <Widget>[
+            SizedBox.square(
+              dimension: 30.0,
+              child: node.children.isNotEmpty
+                  ? AnimatedRotation(
+                      key: ValueKey<int>(index),
+                      turns: node.isExpanded ? 0.25 : 0.0,
+                      duration: animationDuration,
+                      curve: animationCurve,
+                      child: const Icon(IconData(0x25BA), size: 14),
+                    )
+                  : null,
             ),
-            EasyListTile(
-              nameText: "startAudioPlaybackCapture",
-              onTap: () {
-                AndroidAudioRecordPlugin.startAudioPlaybackCapture(
-                  notificationId: 3,
-                  notificationChannelId: "test",
-                  notificationContentTitle: "测试标题",
-                  notificationContentText: "测试内容",
-                ).catchError((e, s) {
-                  DefaultLogger().error(null, e, s);
-                });
-              },
-            ),
-            EasyListTile(
-              nameText: "resume",
-              onTap: () {
-                AndroidAudioRecordPlugin.resume().catchError((e, s) {
-                  DefaultLogger().error(null, e, s);
-                });
-              },
-            ),
-            EasyListTile(
-              nameText: "stop",
-              onTap: () {
-                AndroidAudioRecordPlugin.stop().catchError((e, s) {
-                  DefaultLogger().error(null, e, s);
-                });
-              },
-            ),
-            EasyListTile(
-              nameText: "release",
-              onTap: () {
-                AndroidAudioRecordPlugin.release().catchError((e, s) {
-                  DefaultLogger().error(null, e, s);
-                });
-              },
-            ),
+            const SizedBox(width: 8.0),
+            Text(node.content.toString()),
           ],
-        ).toList(),
+        ),
       ),
     );
   }
@@ -142,4 +130,17 @@ class _HomeState extends State<HomePage> {
           builder: (context) => page,
         ),
       );
+}
+
+class TreeSliverNodeContent {
+  final String name;
+  final VoidCallback? onClick;
+
+  TreeSliverNodeContent({
+    required this.name,
+    this.onClick,
+  });
+
+  @override
+  String toString() => name;
 }

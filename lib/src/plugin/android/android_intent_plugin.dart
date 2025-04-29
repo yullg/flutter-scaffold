@@ -8,6 +8,30 @@ class AndroidIntentPlugin {
   static const kActionPickTypeImage = "image";
   static const kActionPickTypeVideo = "video";
 
+  static Future<bool> imageCapture({
+    required Uri outputContentUri,
+    bool forcingChooser = false,
+    String? chooserTitle,
+  }) {
+    return _methodChannel.invokeMethod<bool>("imageCapture", {
+      "outputContentUri": outputContentUri.toString(),
+      "forcingChooser": forcingChooser,
+      "chooserTitle": chooserTitle,
+    }).then<bool>((value) => value!);
+  }
+
+  static Future<bool> videoCapture({
+    required Uri outputContentUri,
+    bool forcingChooser = false,
+    String? chooserTitle,
+  }) {
+    return _methodChannel.invokeMethod<bool>("videoCapture", {
+      "outputContentUri": outputContentUri.toString(),
+      "forcingChooser": forcingChooser,
+      "chooserTitle": chooserTitle,
+    }).then<bool>((value) => value!);
+  }
+
   static Future<Uri?> createDocument({
     required String mimeType,
     required String name,

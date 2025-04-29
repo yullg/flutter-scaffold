@@ -5,7 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class AndroidMediaStorePlugin {
-  static const _methodChannel = MethodChannel("com.yullg.flutter.scaffold/media_store");
+  static const _methodChannel =
+      MethodChannel("com.yullg.flutter.scaffold/media_store");
 
   static Future<bool> hasInsertPermission() async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
@@ -21,40 +22,60 @@ class AndroidMediaStorePlugin {
     if (androidInfo.version.sdkInt >= 29) {
       return true;
     } else {
-      return Permission.storage.request().then<bool>((status) => status.isGranted);
+      return Permission.storage
+          .request()
+          .then<bool>((status) => status.isGranted);
     }
   }
 
-  static Future<Uri> insertAudio({
+  static Future<Uri?> insertAudio() {
+    return _methodChannel
+        .invokeMethod<String>("insertAudio")
+        .then<Uri?>((value) => value != null ? Uri.parse(value) : null);
+  }
+
+  static Future<Uri?> insertImage() {
+    return _methodChannel
+        .invokeMethod<String>("insertImage")
+        .then<Uri?>((value) => value != null ? Uri.parse(value) : null);
+  }
+
+  static Future<Uri?> insertVideo() {
+    return _methodChannel
+        .invokeMethod<String>("insertVideo")
+        .then<Uri?>((value) => value != null ? Uri.parse(value) : null);
+  }
+
+  static Future<Uri> insertAudioFile({
     required File file,
     String? displayName,
     String? mimeType,
   }) {
-    return _methodChannel.invokeMethod<String>("insertAudio", {
+    return _methodChannel.invokeMethod<String>("insertAudioFile", {
       "file": file.absolute.path,
       "displayName": displayName,
       "mimeType": mimeType,
     }).then<Uri>((value) => Uri.parse(value!));
   }
 
-  static Future<Uri> insertImage({
+  static Future<Uri> insertImageFile({
     required File file,
     String? displayName,
     String? mimeType,
   }) {
-    return _methodChannel.invokeMethod<String>("insertImage", {
+    return _methodChannel.invokeMethod<String>("insertImageFile", {
       "file": file.absolute.path,
       "displayName": displayName,
       "mimeType": mimeType,
     }).then<Uri>((value) => Uri.parse(value!));
   }
 
-  static Future<Uri> insertVideo({
+  static Future<Uri> insertVideoFile({
     required File file,
     String? displayName,
     String? mimeType,
   }) {
-    return _methodChannel.invokeMethod<String>("insertVideo", {
+    return _methodChannel.invokeMethod<String>("insertVideoFile", {
       "file": file.absolute.path,
       "displayName": displayName,
       "mimeType": mimeType,
@@ -66,7 +87,7 @@ class AndroidMediaStorePlugin {
     String? displayName,
     String? mimeType,
   }) {
-    return _methodChannel.invokeMethod<String>("insertDownload", {
+    return _methodChannel.invokeMethod<String>("insertDownloadFile", {
       "file": file.absolute.path,
       "displayName": displayName,
       "mimeType": mimeType,

@@ -7,17 +7,17 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 class ScaffoldPlugin : FlutterPlugin, ActivityAware {
 
     private val useCaseArray = arrayOf(
-            ToastUseCase,
-            PackageInstallUseCase(),
-            DomainVerificationUseCase(),
-            ContentResolverUseCase(),
-            IntentUseCase(),
-            FileProviderUseCase(),
-            MediaStoreUseCase(),
-            DownloadUseCase(),
-            NotificationUseCase(),
-            MediaProjectionUseCase,
-            AudioRecordUseCase
+        ToastUseCase,
+        IntentUseCase,
+        ContentResolverUseCase,
+        MediaStoreUseCase,
+        PackageInstallUseCase(),
+        DomainVerificationUseCase(),
+        FileProviderUseCase(),
+        DownloadUseCase(),
+        NotificationUseCase(),
+        MediaProjectionUseCase,
+        AudioRecordUseCase
     )
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {

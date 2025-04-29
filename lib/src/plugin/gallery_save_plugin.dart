@@ -26,7 +26,7 @@ class GallerySavePlugin {
     String? mimeType,
   }) {
     if (Platform.isAndroid) {
-      return AndroidMediaStorePlugin.insertImage(file: file, displayName: displayName, mimeType: mimeType);
+      return AndroidMediaStorePlugin.insertImageFile(file: file, displayName: displayName, mimeType: mimeType);
     } else {
       return IosPhotoLibraryPlugin.saveImage(file: file);
     }
@@ -38,7 +38,7 @@ class GallerySavePlugin {
     String? mimeType,
   }) {
     if (Platform.isAndroid) {
-      return AndroidMediaStorePlugin.insertVideo(file: file, displayName: displayName, mimeType: mimeType);
+      return AndroidMediaStorePlugin.insertVideoFile(file: file, displayName: displayName, mimeType: mimeType);
     } else {
       return IosPhotoLibraryPlugin.saveVideo(file: file);
     }

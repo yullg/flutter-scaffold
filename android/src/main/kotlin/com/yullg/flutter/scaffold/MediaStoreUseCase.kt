@@ -17,14 +17,42 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 
-class MediaStoreUseCase : BaseUseCase(
+object MediaStoreUseCase : BaseUseCase(
     methodChannelName = "com.yullg.flutter.scaffold/media_store"
 ) {
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
+
             "insertAudio" -> {
+                val contentValues = ContentValues()
+                val rowUri = requiredFlutterPluginBinding.applicationContext.contentResolver.insert(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    contentValues
+                )
+                result.success(rowUri?.toString())
+            }
+
+            "insertImage" -> {
+                val contentValues = ContentValues()
+                val rowUri = requiredFlutterPluginBinding.applicationContext.contentResolver.insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    contentValues
+                )
+                result.success(rowUri?.toString())
+            }
+
+            "insertVideo" -> {
+                val contentValues = ContentValues()
+                val rowUri = requiredFlutterPluginBinding.applicationContext.contentResolver.insert(
+                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                    contentValues
+                )
+                result.success(rowUri?.toString())
+            }
+
+            "insertAudioFile" -> {
                 val applicationContext = requiredFlutterPluginBinding.applicationContext
                 val file = File(call.argument<String>("file")!!)
                 val displayName = call.argument<String>("displayName")
@@ -65,13 +93,12 @@ class MediaStoreUseCase : BaseUseCase(
                             result.success(targetFileUri.toString())
                         }
                     } catch (e: Throwable) {
-                        Log.e(TAG, "InsertAudio", e)
                         result.error(ERROR_CODE, e.message, null)
                     }
                 }
             }
 
-            "insertImage" -> {
+            "insertImageFile" -> {
                 val applicationContext = requiredFlutterPluginBinding.applicationContext
                 val file = File(call.argument<String>("file")!!)
                 val displayName = call.argument<String>("displayName")
@@ -119,7 +146,7 @@ class MediaStoreUseCase : BaseUseCase(
 
             }
 
-            "insertVideo" -> {
+            "insertVideoFile" -> {
                 val applicationContext = requiredFlutterPluginBinding.applicationContext
                 val file = File(call.argument<String>("file")!!)
                 val displayName = call.argument<String>("displayName")
@@ -166,7 +193,7 @@ class MediaStoreUseCase : BaseUseCase(
                 }
             }
 
-            "insertDownload" -> {
+            "insertDownloadFile" -> {
                 val applicationContext = requiredFlutterPluginBinding.applicationContext
                 val file = File(call.argument<String>("file")!!)
                 val displayName = call.argument<String>("displayName")

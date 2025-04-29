@@ -12,9 +12,15 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
 
-class IntentUseCase : BaseUseCase(
+object IntentUseCase : BaseUseCase(
     methodChannelName = "com.yullg.flutter.scaffold/intent"
 ), PluginRegistry.ActivityResultListener {
+
+    // imageCapture
+    private var imageCaptureResult: MethodChannel.Result? = null
+
+    // videoCapture
+    private var videoCaptureResult: MethodChannel.Result? = null
 
     // createDocument
     private var createDocumentContract: ActivityResultContracts.CreateDocument? = null
@@ -37,6 +43,58 @@ class IntentUseCase : BaseUseCase(
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
+            "imageCapture" -> {
+                val activity = requiredActivityPluginBinding.activity
+                val outputContentUri = Uri.parse(call.argument<String>("outputContentUri")!!)
+                val forcingChooser = call.argument<Boolean>("forcingChooser")!!
+                val chooserTitle = call.argument<String>("chooserTitle")
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                    putExtra(MediaStore.EXTRA_OUTPUT, outputContentUri)
+                }
+                if (intent.resolveActivity(activity.packageManager) != null) {
+                    if (forcingChooser) {
+                        activity.startActivityForResult(
+                            Intent.createChooser(intent, chooserTitle),
+                            RequestCode.INTENT_IMAGE_CAPTURE.code
+                        )
+                    } else {
+                        activity.startActivityForResult(
+                            intent,
+                            RequestCode.INTENT_IMAGE_CAPTURE.code
+                        )
+                    }
+                    imageCaptureResult = result
+                } else {
+                    result.success(false)
+                }
+            }
+
+            "videoCapture" -> {
+                val activity = requiredActivityPluginBinding.activity
+                val outputContentUri = Uri.parse(call.argument<String>("outputContentUri")!!)
+                val forcingChooser = call.argument<Boolean>("forcingChooser")!!
+                val chooserTitle = call.argument<String>("chooserTitle")
+                val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE).apply {
+                    putExtra(MediaStore.EXTRA_OUTPUT, outputContentUri)
+                }
+                if (intent.resolveActivity(activity.packageManager) != null) {
+                    if (forcingChooser) {
+                        activity.startActivityForResult(
+                            Intent.createChooser(intent, chooserTitle),
+                            RequestCode.INTENT_VIDEO_CAPTURE.code
+                        )
+                    } else {
+                        activity.startActivityForResult(
+                            intent,
+                            RequestCode.INTENT_VIDEO_CAPTURE.code
+                        )
+                    }
+                    videoCaptureResult = result
+                } else {
+                    result.success(false)
+                }
+            }
+
             "createDocument" -> {
                 val contract = ActivityResultContracts.CreateDocument(
                     call.argument<String>("mimeType")!!
@@ -136,7 +194,27 @@ class IntentUseCase : BaseUseCase(
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        if (RequestCode.INTENT_CREATE_DOCUMENT.code == requestCode) {
+        if (RequestCode.INTENT_IMAGE_CAPTURE.code == requestCode) {
+            imageCaptureResult?.also {
+                if (Activity.RESULT_OK == resultCode) {
+                    it.success(true)
+                } else {
+                    it.success(false)
+                }
+            }
+            imageCaptureResult = null
+            return true
+        } else if (RequestCode.INTENT_VIDEO_CAPTURE.code == requestCode) {
+            videoCaptureResult?.also {
+                if (Activity.RESULT_OK == resultCode) {
+                    it.success(true)
+                } else {
+                    it.success(false)
+                }
+            }
+            videoCaptureResult = null
+            return true
+        } else if (RequestCode.INTENT_CREATE_DOCUMENT.code == requestCode) {
             createDocumentContract?.let { contract ->
                 createDocumentResult?.let { result ->
                     try {
