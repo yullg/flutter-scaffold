@@ -57,12 +57,10 @@ class AndroidMediaStorePlugin {
   static Future<Uri> insertDownload({
     required File file,
     String? displayName,
-    String? mimeType,
   }) {
     return _methodChannel.invokeMethod<String>("insertDownloadFile", {
       "file": file.absolute.path,
       "displayName": displayName,
-      "mimeType": mimeType,
     }).then<Uri>((value) => Uri.parse(value!));
   }
 
