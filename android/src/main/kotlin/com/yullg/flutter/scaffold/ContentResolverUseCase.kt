@@ -7,6 +7,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.yullg.flutter.scaffold.core.BaseUseCase
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ object ContentResolverUseCase : BaseUseCase(
     methodChannelName = "com.yullg.flutter.scaffold/content_resolver"
 ) {
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "getMetadata" -> {

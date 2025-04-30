@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 class AndroidContentResolverPlugin {
-  static const _methodChannel = MethodChannel("com.yullg.flutter.scaffold/content_resolver");
+  static const _methodChannel =
+      MethodChannel("com.yullg.flutter.scaffold/content_resolver");
 
   static Future<ContentUriMetadata> getMetadata(Uri contentUri) {
     return _methodChannel
@@ -18,8 +19,8 @@ class AndroidContentResolverPlugin {
   static Future<void> copyFileToContentUri({
     required File file,
     required Uri contentUri,
-  }) async {
-    await _methodChannel.invokeMethod("copyFileToContentUri", {
+  }) {
+    return _methodChannel.invokeMethod<void>("copyFileToContentUri", {
       "file": file.absolute.path,
       "contentUri": contentUri.toString(),
     });

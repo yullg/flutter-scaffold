@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
+import 'scaffold/plugin/android/content_resolver_page.dart';
 import 'scaffold/plugin/android/intent_page.dart';
 import 'scaffold/plugin/android/media_store_page.dart';
 import 'scaffold/plugin/android/toast_page.dart';
@@ -31,7 +32,7 @@ class _HomeState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Plugin example app'),
+        title: const Text('Scaffold example app'),
       ),
       body: CustomScrollView(
         slivers: <Widget>[
@@ -63,6 +64,13 @@ class _HomeState extends State<HomePage> {
                               name: "media_store",
                               onClick: () =>
                                   to(context, const MediaStorePage()),
+                            ),
+                          ),
+                          TreeSliverNode(
+                            TreeSliverNodeContent(
+                              name: "content_resolver",
+                              onClick: () =>
+                                  to(context, const ContentResolverPage()),
                             ),
                           ),
                         ],
