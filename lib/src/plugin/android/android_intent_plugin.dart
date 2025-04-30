@@ -4,28 +4,40 @@ class AndroidIntentPlugin {
   static const _methodChannel =
       MethodChannel("com.yullg.flutter.scaffold/intent");
 
-  static const kActionPickTypeAudio = "audio";
-  static const kActionPickTypeImage = "image";
-  static const kActionPickTypeVideo = "video";
+  static const int kActionPickTypeAudio = 1;
+  static const int kActionPickTypeImage = 2;
+  static const int kActionPickTypeVideo = 3;
 
-  static Future<bool> imageCapture({
+  static Future<Uri?> actionPick({
+    required int type,
+    bool forcingChooser = false,
+    String? chooserTitle,
+  }) {
+    return _methodChannel.invokeMethod("actionPick", {
+      "type": type,
+      "forcingChooser": forcingChooser,
+      "chooserTitle": chooserTitle,
+    }).then<Uri?>((value) => value != null ? Uri.parse(value) : null);
+  }
+
+  static Future<bool> takePicture({
     required Uri outputContentUri,
     bool forcingChooser = false,
     String? chooserTitle,
   }) {
-    return _methodChannel.invokeMethod<bool>("imageCapture", {
+    return _methodChannel.invokeMethod<bool>("takePicture", {
       "outputContentUri": outputContentUri.toString(),
       "forcingChooser": forcingChooser,
       "chooserTitle": chooserTitle,
     }).then<bool>((value) => value!);
   }
 
-  static Future<bool> videoCapture({
+  static Future<bool> captureVideo({
     required Uri outputContentUri,
     bool forcingChooser = false,
     String? chooserTitle,
   }) {
-    return _methodChannel.invokeMethod<bool>("videoCapture", {
+    return _methodChannel.invokeMethod<bool>("captureVideo", {
       "outputContentUri": outputContentUri.toString(),
       "forcingChooser": forcingChooser,
       "chooserTitle": chooserTitle,
@@ -66,14 +78,6 @@ class AndroidIntentPlugin {
     }).then((value) => value != null
         ? value.map((e) => Uri.parse(e)).toList()
         : List<Uri>.empty());
-  }
-
-  static Future<Uri?> actionPick({
-    required String type,
-  }) {
-    return _methodChannel.invokeMethod("actionPick", {
-      "type": type,
-    }).then<Uri?>((value) => value != null ? Uri.parse(value) : null);
   }
 
   AndroidIntentPlugin._();

@@ -20,7 +20,6 @@ export 'src/helper/format_helper.dart';
 export 'src/helper/guid_helper.dart';
 export 'src/helper/network_time_helper.dart';
 export 'src/helper/process_helper.dart';
-export 'src/helper/settings_helper.dart';
 export 'src/helper/string_helper.dart';
 export 'src/helper/uri_helper.dart';
 export 'src/helper/uuid_helper.dart';

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
-import 'messenger_page.dart';
 import 'scaffold/plugin/android/intent_page.dart';
 import 'scaffold/plugin/android/media_store_page.dart';
 import 'scaffold/plugin/android/toast_page.dart';
@@ -24,9 +23,6 @@ class _HomeState extends State<HomePage> {
               foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
               showCloseIcon: true,
             )),
-        errorPrinters: [
-          DefaultErrorPrinter(),
-        ],
       ),
     );
   }

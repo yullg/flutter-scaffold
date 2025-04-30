@@ -16,10 +16,58 @@ class IntentPage extends StatelessWidget {
           runSpacing: 8,
           children: [
             ElevatedButton(
+              onPressed: () {
+                AndroidIntentPlugin.actionPick(
+                  type: AndroidIntentPlugin.kActionPickTypeAudio,
+                  forcingChooser: true,
+                  chooserTitle: "测试标题",
+                ).then((value) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$value'),
+                    ),
+                  );
+                });
+              },
+              child: const Text("actionPick(Audio)"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                AndroidIntentPlugin.actionPick(
+                  type: AndroidIntentPlugin.kActionPickTypeImage,
+                  forcingChooser: true,
+                  chooserTitle: "测试标题",
+                ).then((value) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$value'),
+                    ),
+                  );
+                });
+              },
+              child: const Text("actionPick(Images)"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                AndroidIntentPlugin.actionPick(
+                  type: AndroidIntentPlugin.kActionPickTypeVideo,
+                  forcingChooser: true,
+                  chooserTitle: "测试标题",
+                ).then((value) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$value'),
+                    ),
+                  );
+                });
+              },
+              child: const Text("actionPick(Video)"),
+            ),
+            ElevatedButton(
               onPressed: () async {
                 final outputContentUri =
                     await AndroidMediaStorePlugin.insertImage();
-                await AndroidIntentPlugin.imageCapture(
+                await AndroidIntentPlugin.takePicture(
                   outputContentUri: outputContentUri!,
                 );
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -28,16 +76,16 @@ class IntentPage extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text("imageCapture()"),
+              child: const Text("takePicture()"),
             ),
             ElevatedButton(
               onPressed: () async {
                 final outputContentUri =
                     await AndroidMediaStorePlugin.insertVideo();
-                await AndroidIntentPlugin.videoCapture(
+                await AndroidIntentPlugin.captureVideo(
                   outputContentUri: outputContentUri!,
                   forcingChooser: true,
-                  chooserTitle: "请选择相机",
+                  chooserTitle: "测试标题",
                 );
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -45,7 +93,64 @@ class IntentPage extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text("videoCapture()"),
+              child: const Text("captureVideo()"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                AndroidIntentPlugin.createDocument(
+                  mimeType: "image/*",
+                  name: "测试名称",
+                ).then((value) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$value'),
+                    ),
+                  );
+                });
+              },
+              child: const Text("createDocument()"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                AndroidIntentPlugin.openDocument(
+                  mimeTypes: ["image/*", "audio/*"],
+                ).then((value) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$value'),
+                    ),
+                  );
+                });
+              },
+              child: const Text("openDocument()"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                AndroidIntentPlugin.openDocumentTree(
+                  initialLocation: null,
+                ).then((value) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$value'),
+                    ),
+                  );
+                });
+              },
+              child: const Text("openDocumentTree()"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                AndroidIntentPlugin.openMultipleDocuments(
+                  mimeTypes: ["image/*", "audio/*"],
+                ).then((value) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$value'),
+                    ),
+                  );
+                });
+              },
+              child: const Text("openMultipleDocuments()"),
             ),
           ],
         ),

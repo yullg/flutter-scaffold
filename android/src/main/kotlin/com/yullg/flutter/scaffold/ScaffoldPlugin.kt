@@ -9,8 +9,8 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware {
     private val useCaseArray = arrayOf(
         ToastUseCase,
         IntentUseCase,
-        ContentResolverUseCase,
         MediaStoreUseCase,
+        ContentResolverUseCase,
         PackageInstallUseCase(),
         DomainVerificationUseCase(),
         FileProviderUseCase(),
