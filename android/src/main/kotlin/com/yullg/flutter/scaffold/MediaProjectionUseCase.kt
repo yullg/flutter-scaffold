@@ -10,7 +10,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
 
 object MediaProjectionUseCase : BaseUseCase(
-        methodChannelName = "com.yullg.flutter.scaffold/media_projection"
+    methodChannelName = "com.yullg.flutter.scaffold/media_projection"
 ), PluginRegistry.ActivityResultListener {
 
     var mediaProjectionToken: MediaProjectionToken? = null
@@ -33,12 +33,12 @@ object MediaProjectionUseCase : BaseUseCase(
             "authorize" -> {
                 val activity = requiredActivityPluginBinding.activity
                 val manager = activity.getSystemService(
-                        MediaProjectionManager::class.java
+                    MediaProjectionManager::class.java
                 )
                 val intent = manager.createScreenCaptureIntent()
                 activity.startActivityForResult(
-                        intent,
-                        RequestCode.MEDIA_PROJECTION_CREATE_SCI.code
+                    intent,
+                    RequestCode.MEDIA_PROJECTION_CREATE_SCI.code
                 )
                 authorizeResult = result
             }

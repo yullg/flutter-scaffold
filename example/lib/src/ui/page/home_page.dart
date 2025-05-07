@@ -3,7 +3,9 @@ import 'package:scaffold/scaffold.dart';
 
 import 'scaffold/plugin/android/content_resolver_page.dart';
 import 'scaffold/plugin/android/intent_page.dart';
+import 'scaffold/plugin/android/media_projection_page.dart';
 import 'scaffold/plugin/android/media_store_page.dart';
+import 'scaffold/plugin/android/notification_page.dart';
 import 'scaffold/plugin/android/toast_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -71,6 +73,20 @@ class _HomeState extends State<HomePage> {
                               name: "content_resolver",
                               onClick: () =>
                                   to(context, const ContentResolverPage()),
+                            ),
+                          ),
+                          TreeSliverNode(
+                            TreeSliverNodeContent(
+                              name: "notification",
+                              onClick: () =>
+                                  to(context, const NotificationPage()),
+                            ),
+                          ),
+                          TreeSliverNode(
+                            TreeSliverNodeContent(
+                              name: "media_projection",
+                              onClick: () =>
+                                  to(context, const MediaProjectionPage()),
                             ),
                           ),
                         ],

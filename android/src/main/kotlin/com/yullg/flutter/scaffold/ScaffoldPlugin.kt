@@ -10,14 +10,14 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware {
         ToastUseCase,
         IntentUseCase,
         MediaStoreUseCase,
+        NotificationUseCase,
         ContentResolverUseCase,
+        MediaProjectionUseCase,
+        AudioRecordUseCase,
         PackageInstallUseCase(),
         DomainVerificationUseCase(),
         FileProviderUseCase(),
         DownloadUseCase(),
-        NotificationUseCase(),
-        MediaProjectionUseCase,
-        AudioRecordUseCase
     )
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
