@@ -17,6 +17,12 @@ abstract class PagedController<T> extends ChangeNotifier {
       : _data = <T>[],
         _status = PagedControllerStatus.idle;
 
+  /// 修改已加载的数据并通知监听器更新
+  void changeData(void Function(List<T> data) block) {
+    block(_data);
+    notifyListeners();
+  }
+
   void reset() {
     _resetId++;
     _data.clear();
