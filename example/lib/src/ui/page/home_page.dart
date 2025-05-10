@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
+import 'scaffold/plugin/android/android_audio_record_page.dart';
 import 'scaffold/plugin/android/content_resolver_page.dart';
 import 'scaffold/plugin/android/intent_page.dart';
 import 'scaffold/plugin/android/media_projection_page.dart';
@@ -87,6 +88,13 @@ class _HomeState extends State<HomePage> {
                               name: "media_projection",
                               onClick: () =>
                                   to(context, const MediaProjectionPage()),
+                            ),
+                          ),
+                          TreeSliverNode(
+                            TreeSliverNodeContent(
+                              name: "android_audio_record",
+                              onClick: () =>
+                                  to(context, const AndroidAudioRecordPage()),
                             ),
                           ),
                         ],

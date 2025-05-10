@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
 
+enum AndroidAudioRecordStatus { ready, started, stopped, released, unknown }
+
 class AndroidAudioRecordPlugin {
   static const _eventChannel =
       EventChannel("com.yullg.flutter.scaffold/audio_record_event");
@@ -8,19 +10,18 @@ class AndroidAudioRecordPlugin {
 
   static final eventStream = _eventChannel.receiveBroadcastStream();
 
-  static Future<void> startAudioPlaybackCapture({
-    required int notificationId,
-    required String notificationChannelId,
-    String? notificationContentTitle,
-    String? notificationContentText,
-  }) {
-    return _methodChannel.invokeMethod("startAudioPlaybackCapture", {
-      "notificationId": notificationId,
-      "notificationChannelId": notificationChannelId,
-      "notificationContentTitle": notificationContentTitle,
-      "notificationContentText": notificationContentText,
-    });
-  }
+  static final dataStream =
+      eventStream.where((e) => e is Uint8List).cast<Uint8List>();
+
+  static final statusStream = eventStream.where((e) {
+    return e is Map && e["event"] == "status";
+  }).map((e) => switch (e["value"]) {
+        "READY" => AndroidAudioRecordStatus.ready,
+        "STARTED" => AndroidAudioRecordStatus.started,
+        "STOPPED" => AndroidAudioRecordStatus.stopped,
+        "RELEASED" => AndroidAudioRecordStatus.released,
+        _ => AndroidAudioRecordStatus.unknown,
+      });
 
   static Future<void> resume() {
     return _methodChannel.invokeMethod("resume");
@@ -33,4 +34,6 @@ class AndroidAudioRecordPlugin {
   static Future<void> release() {
     return _methodChannel.invokeMethod("release");
   }
+
+  AndroidAudioRecordPlugin._();
 }

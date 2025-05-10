@@ -12,6 +12,7 @@ import androidx.core.app.ServiceCompat
 import androidx.core.content.IntentCompat
 import com.yullg.flutter.scaffold.AudioRecordUseCase
 import com.yullg.flutter.scaffold.R
+import org.json.JSONObject
 
 class MediaProjectionService : Service() {
 
@@ -23,20 +24,26 @@ class MediaProjectionService : Service() {
         try {
             val action = intent.getIntExtra("action", 0)
             if (ACTION_START_AUDIO_PLAYBACK_CAPTURE == action) {
-                val resultCode = intent.getIntExtra("resultCode", 0)
-                val data = IntentCompat.getParcelableExtra(intent, "data", Intent::class.java)!!
-                val notificationId = intent.getIntExtra("notificationId", 1)
-                val notificationChannelId = intent.getStringExtra("notificationChannelId")!!
-                val notificationContentTitle = intent.getStringExtra("notificationContentTitle")
-                val notificationContentText = intent.getStringExtra("notificationContentText")
+                val tokenResultCode = intent.getIntExtra("tokenResultCode", 0)
+                val tokenData =
+                    IntentCompat.getParcelableExtra(intent, "tokenData", Intent::class.java)!!
+                val notificationJson = JSONObject(intent.getStringExtra("notificationJson")!!)
+                val recorderJson = JSONObject(intent.getStringExtra("recorderJson")!!)
+                val notification =
+                    NotificationCompat.Builder(this, notificationJson.getString("channelId"))
+                        .apply {
+                            setSmallIcon(R.drawable.scaffold_media_projection_notification_small_icon)
+                            if (!notificationJson.isNull("contentTitle")) {
+                                setContentTitle(notificationJson.getString("contentTitle"))
+                            }
+                            if (!notificationJson.isNull("contentText")) {
+                                setContentText(notificationJson.getString("contentText"))
+                            }
+                        }.build()
                 ServiceCompat.startForeground(
                     this,
-                    notificationId,
-                    NotificationCompat.Builder(this, notificationChannelId)
-                        .setSmallIcon(R.drawable.scaffold_media_projection_notification_small_icon)
-                        .setContentTitle(notificationContentTitle)
-                        .setContentText(notificationContentText)
-                        .build(),
+                    notificationJson.getInt("id"),
+                    notification,
                     if (Build.VERSION.SDK_INT >= 29) {
                         ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
                     } else {
@@ -44,14 +51,13 @@ class MediaProjectionService : Service() {
                     }
                 )
                 val manager = getSystemService(MediaProjectionManager::class.java)
-                val mediaProjection = manager.getMediaProjection(resultCode, data)
-                AudioRecordUseCase.startAudioPlaybackCapture(mediaProjection)
+                val mediaProjection = manager.getMediaProjection(tokenResultCode, tokenData)
+                AudioRecordUseCase.startAudioPlaybackCapture(mediaProjection, recorderJson)
             } else {
                 stopSelf(startId)
-                return START_NOT_STICKY
             }
         } catch (e: Throwable) {
-            Log.e(TAG, "onStartCommand: ", e)
+            Log.e(TAG, "Command start failed", e)
         }
         return START_NOT_STICKY
     }

@@ -1,19 +1,21 @@
 package com.yullg.flutter.scaffold
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioPlaybackCaptureConfiguration
 import android.media.projection.MediaProjection
 import android.os.Build
-import android.util.Log
-import androidx.core.content.ContextCompat
-import com.yullg.flutter.scaffold.android.MediaProjectionService
 import com.yullg.flutter.scaffold.core.AudioRecorder
 import com.yullg.flutter.scaffold.core.BaseUseCase
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.nio.ByteBuffer
 
 object AudioRecordUseCase : BaseUseCase(
@@ -21,38 +23,11 @@ object AudioRecordUseCase : BaseUseCase(
     methodChannelName = "com.yullg.flutter.scaffold/audio_record_method"
 ), AudioRecorder.Listener {
 
-    private var audioRecorder: AudioRecorder? = null;
+    private var eventSink: EventChannel.EventSink? = null
+    private var audioRecorder: AudioRecorder? = null
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
-            "startAudioPlaybackCapture" -> {
-                val notificationId = call.argument<Int>("notificationId")!!
-                val notificationChannelId = call.argument<String>("notificationChannelId")!!
-                val notificationContentTitle = call.argument<String>("notificationContentTitle")
-                val notificationContentText = call.argument<String>("notificationContentText")
-                val token = MediaProjectionUseCase.mediaProjectionToken
-                if (token != null) {
-                    requiredFlutterPluginBinding.applicationContext.also {
-                        val intent = Intent(it, MediaProjectionService::class.java).apply {
-                            putExtra(
-                                "action",
-                                MediaProjectionService.ACTION_START_AUDIO_PLAYBACK_CAPTURE
-                            )
-                            putExtra("resultCode", token.resultCode)
-                            putExtra("data", token.data)
-                            putExtra("notificationId", notificationId)
-                            putExtra("notificationChannelId", notificationChannelId)
-                            putExtra("notificationContentTitle", notificationContentTitle)
-                            putExtra("notificationContentText", notificationContentText)
-                        }
-                        ContextCompat.startForegroundService(it, intent)
-                    }
-                    result.success(null)
-                } else {
-                    result.error(ERROR_CODE, "Not found media projection token!", null)
-                }
-            }
-
             "resume" -> {
                 audioRecorder?.start()
                 result.success(null)
@@ -71,16 +46,31 @@ object AudioRecordUseCase : BaseUseCase(
         }
     }
 
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+        eventSink = events
+    }
+
+    override fun onCancel(arguments: Any?) {
+        eventSink = null
+    }
+
     @SuppressLint("MissingPermission")
-    fun startAudioPlaybackCapture(mediaProjection: MediaProjection) {
+    fun startAudioPlaybackCapture(mediaProjection: MediaProjection, json: JSONObject) {
         if (Build.VERSION.SDK_INT < 29) return
         val format = AudioFormat.Builder()
             .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-            .setSampleRate(44100)
-            .setChannelMask(AudioFormat.CHANNEL_IN_STEREO)
-            .build()
+            .setSampleRate(json.getInt("sampleRate"))
+            .setChannelMask(
+                if (json.getBoolean("stereo")) {
+                    AudioFormat.CHANNEL_IN_STEREO
+                } else {
+                    AudioFormat.CHANNEL_IN_MONO
+                }
+            ).build()
         val config = AudioPlaybackCaptureConfiguration.Builder(mediaProjection)
-            .excludeUsage(AudioAttributes.USAGE_UNKNOWN)
+            .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
+            .addMatchingUsage(AudioAttributes.USAGE_GAME)
+            .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
             .build()
         audioRecorder = AudioRecorder(
             format = format,
@@ -91,16 +81,36 @@ object AudioRecordUseCase : BaseUseCase(
         audioRecorder?.start()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onStatus(status: AudioRecorder.Status) {
-        Log.i("AudioReordUserCase", "onStatus: $status")
+        eventSink?.also {
+            GlobalScope.launch(Dispatchers.Main) {
+                it.success(
+                    mapOf(
+                        "event" to "status",
+                        "value" to status.name
+                    )
+                )
+            }
+        }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onData(data: ByteBuffer) {
-        Log.i("AudioReordUserCase", "onData: $data")
+        eventSink?.also {
+            GlobalScope.launch(Dispatchers.Main) {
+                it.success(data.array())
+            }
+        }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onError(error: Throwable) {
-        Log.e("AudioReordUserCase", "onError: ", error)
+        eventSink?.also {
+            GlobalScope.launch(Dispatchers.Main) {
+                it.error(ERROR_CODE, error.message, null)
+            }
+        }
     }
 
 }

@@ -11,11 +11,11 @@ import java.nio.ByteOrder
 
 @SuppressLint("MissingPermission")
 class AudioRecorder(
-        format: AudioFormat,
-        source: Int? = null,
-        config: AudioPlaybackCaptureConfiguration? = null,
-        privacySensitive: Boolean? = null,
-        context: Context? = null
+    format: AudioFormat,
+    source: Int? = null,
+    config: AudioPlaybackCaptureConfiguration? = null,
+    privacySensitive: Boolean? = null,
+    context: Context? = null
 ) {
 
     private val locker = Object()
@@ -30,9 +30,9 @@ class AudioRecorder(
 
     init {
         val minBufferSize = AudioRecord.getMinBufferSize(
-                format.sampleRate,
-                format.channelMask,
-                format.encoding
+            format.sampleRate,
+            format.channelMask,
+            format.encoding
         )
         bufferSizeInBytes = minBufferSize * 2
         audioRecord = AudioRecord.Builder().apply {
@@ -109,7 +109,7 @@ class AudioRecorder(
                 AudioRecord.ERROR_BAD_VALUE -> messageSB.append("ERROR_BAD_VALUE: Failure due to the use of an invalid value.")
                 AudioRecord.ERROR_DEAD_OBJECT -> messageSB.append("ERROR_DEAD_OBJECT: Object is no longer valid and needs to be recreated.")
                 AudioRecord.ERROR -> messageSB.append("ERROR: Generic operation failure")
-                else -> messageSB.append("Unknown errorCode: (").append(messageSB).append(")")
+                else -> messageSB.append("Unknown errorCode: (").append(readResult).append(")")
             }
             throw RuntimeException(messageSB.toString())
         }
