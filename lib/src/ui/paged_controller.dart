@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 enum PagedControllerStatus { idle, loading, finished, failed }
 
 abstract class PagedController<T> extends ChangeNotifier {
+  int _resetId = 1;
   final List<T> _data;
   PagedControllerStatus _status;
 
@@ -12,15 +13,14 @@ abstract class PagedController<T> extends ChangeNotifier {
 
   PagedControllerStatus get status => _status;
 
-  PagedController({
-    Iterable<T>? initialData,
-    PagedControllerStatus? initialStatus,
-  })  : _data = [...?initialData],
-        _status = initialStatus ?? PagedControllerStatus.idle;
+  PagedController()
+      : _data = <T>[],
+        _status = PagedControllerStatus.idle;
 
-  /// 修改已加载的数据并通知监听器更新
-  void changeData(void Function(List<T> data) block) {
-    block(_data);
+  void reset() {
+    _resetId++;
+    _data.clear();
+    _status = PagedControllerStatus.idle;
     notifyListeners();
   }
 
@@ -31,7 +31,9 @@ abstract class PagedController<T> extends ChangeNotifier {
         case PagedControllerStatus.failed:
           _status = PagedControllerStatus.loading;
           notifyListeners();
+          final resetId = _resetId;
           doLoadMoreData(_data.length).then((moreData) {
+            if (resetId != _resetId) return;
             try {
               if (moreData != null) {
                 _data.addAll(moreData);
@@ -45,6 +47,7 @@ abstract class PagedController<T> extends ChangeNotifier {
               notifyListeners();
             }
           }, onError: (e) {
+            if (resetId != _resetId) return;
             _status = PagedControllerStatus.failed;
             notifyListeners();
           });
