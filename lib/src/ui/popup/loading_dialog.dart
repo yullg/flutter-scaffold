@@ -6,79 +6,77 @@ enum LoadingDialogMode { circular, linear }
 
 class LoadingDialog {
   final LoadingDialogMode _initialMode;
-  final bool _initialBarrierDismissible;
+  final bool _initialCancelable;
   final double? _initialProgress;
   final String? _initialMessage;
 
-  LoadingDialogMode _mode;
-  bool _barrierDismissible;
+  LoadingDialogMode mode;
+  bool cancelable;
   final _progressValueNotifier = ValueNotifier<double?>(null);
   final _messageValueNotifier = ValueNotifier<String?>(null);
 
   LoadingDialog({
-    LoadingDialogMode mode = LoadingDialogMode.circular,
-    bool barrierDismissible = false,
+    this.mode = LoadingDialogMode.circular,
+    this.cancelable = false,
     double? progress,
     String? message,
   })  : _initialMode = mode,
-        _initialBarrierDismissible = barrierDismissible,
+        _initialCancelable = cancelable,
         _initialProgress = progress,
-        _initialMessage = message,
-        _mode = mode,
-        _barrierDismissible = barrierDismissible {
+        _initialMessage = message {
     _progressValueNotifier.value = progress;
     _messageValueNotifier.value = message;
   }
 
   void resetMetadata() {
-    _mode = _initialMode;
-    _barrierDismissible = _initialBarrierDismissible;
+    mode = _initialMode;
+    cancelable = _initialCancelable;
     _progressValueNotifier.value = _initialProgress;
     _messageValueNotifier.value = _initialMessage;
   }
 
-  set mode(LoadingDialogMode value) {
-    _mode = value;
-  }
-
-  set barrierDismissible(bool value) {
-    _barrierDismissible = value;
-  }
+  double? get progress => _progressValueNotifier.value;
 
   set progress(double? value) {
     _progressValueNotifier.value = value;
   }
 
+  String? get message => _messageValueNotifier.value;
+
   set message(String? value) {
     _messageValueNotifier.value = value;
   }
 
-  OverlayEntry? _overlayEntry;
+  Future<void>? _dialogFuture;
+  bool _hasClose = false;
 
-  bool get isShowing => _overlayEntry != null;
+  bool get isShowing => _dialogFuture != null && !_hasClose;
 
-  void show(BuildContext context, {bool rootOverlay = false}) {
-    if (isShowing) return;
-    final overlayEntry = OverlayEntry(builder: (BuildContext context) {
-      return Material(
-        type: MaterialType.transparency,
-        child: Stack(
-          children: [
-            ModalBarrier(
-              color: Colors.black54,
-              dismissible: _barrierDismissible,
-              onDismiss: () => dismiss(),
-            ),
-            Center(
+  Future<void> show(BuildContext context) {
+    final previousDialogFuture = _dialogFuture;
+    if (previousDialogFuture != null) {
+      return previousDialogFuture;
+    }
+    _hasClose = false;
+    final dialogFuture = showDialog<void>(
+      context: context,
+      barrierDismissible: cancelable,
+      useRootNavigator: true,
+      builder: (context) {
+        final theme = Theme.of(context);
+        return PopScope(
+          canPop: cancelable,
+          child: Center(
+            child: Material(
+              type: MaterialType.transparency,
               child: Container(
-                margin: const EdgeInsets.all(24),
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
+                  color: theme.colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: LayoutBuilder(
-                  builder: (context, constraints) => switch (_mode) {
+                  builder: (context, constraints) => switch (mode) {
                     LoadingDialogMode.circular => ConstrainedBox(
                         constraints: BoxConstraints(
                           minWidth: 100,
@@ -95,7 +93,7 @@ class LoadingDialog {
                                 return CircularProgressIndicator(
                                   value: value,
                                   strokeCap: StrokeCap.round,
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                  color: theme.colorScheme.onPrimaryContainer,
                                 );
                               },
                             ),
@@ -107,9 +105,11 @@ class LoadingDialog {
                                     padding: const EdgeInsets.only(top: 16),
                                     child: Text(
                                       value,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                        color: theme.colorScheme.onPrimaryContainer,
                                       ),
                                     ),
                                   );
@@ -138,7 +138,7 @@ class LoadingDialog {
                                   value: value,
                                   minHeight: 8,
                                   borderRadius: BorderRadius.circular(4),
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                  color: theme.colorScheme.onPrimaryContainer,
                                 );
                               },
                             ),
@@ -150,9 +150,11 @@ class LoadingDialog {
                                     padding: const EdgeInsets.only(top: 16),
                                     child: Text(
                                       value,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                        color: theme.colorScheme.onPrimaryContainer,
                                       ),
                                     ),
                                   );
@@ -168,22 +170,25 @@ class LoadingDialog {
                 ),
               ),
             ),
-          ],
-        ),
-      );
+          ),
+        );
+      },
+    ).whenComplete(() {
+      _dialogFuture = null;
+      _hasClose = false;
     });
-    Overlay.of(context, rootOverlay: rootOverlay).insert(overlayEntry);
-    _overlayEntry = overlayEntry;
+    _dialogFuture = dialogFuture;
+    return dialogFuture;
   }
 
-  void dismiss() {
-    _overlayEntry?.remove();
-    _overlayEntry?.dispose();
-    _overlayEntry = null;
+  void close(BuildContext context) {
+    if (_dialogFuture != null && !_hasClose) {
+      Navigator.of(context, rootNavigator: true).pop();
+      _hasClose = true;
+    }
   }
 
   void dispose() {
-    dismiss();
     _progressValueNotifier.dispose();
     _messageValueNotifier.dispose();
   }

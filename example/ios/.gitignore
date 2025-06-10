@@ -7,6 +7,7 @@
 !/Runner/
 !/Runner.xcodeproj/
 
+/Flutter/ephemeral/
 /Flutter/Flutter.podspec
 /Flutter/flutter_export_environment.sh
 /Flutter/Generated.xcconfig

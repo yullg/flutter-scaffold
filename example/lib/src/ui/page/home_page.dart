@@ -8,6 +8,7 @@ import 'scaffold/plugin/android/media_projection_page.dart';
 import 'scaffold/plugin/android/media_store_page.dart';
 import 'scaffold/plugin/android/notification_page.dart';
 import 'scaffold/plugin/android/toast_page.dart';
+import 'scaffold/ui/popup/loading_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -65,42 +66,45 @@ class _HomeState extends State<HomePage> {
                           TreeSliverNode(
                             TreeSliverNodeContent(
                               name: "media_store",
-                              onClick: () =>
-                                  to(context, const MediaStorePage()),
+                              onClick: () => to(context, const MediaStorePage()),
                             ),
                           ),
                           TreeSliverNode(
                             TreeSliverNodeContent(
                               name: "content_resolver",
-                              onClick: () =>
-                                  to(context, const ContentResolverPage()),
+                              onClick: () => to(context, const ContentResolverPage()),
                             ),
                           ),
                           TreeSliverNode(
                             TreeSliverNodeContent(
                               name: "notification",
-                              onClick: () =>
-                                  to(context, const NotificationPage()),
+                              onClick: () => to(context, const NotificationPage()),
                             ),
                           ),
                           TreeSliverNode(
                             TreeSliverNodeContent(
                               name: "media_projection",
-                              onClick: () =>
-                                  to(context, const MediaProjectionPage()),
+                              onClick: () => to(context, const MediaProjectionPage()),
                             ),
                           ),
                           TreeSliverNode(
                             TreeSliverNodeContent(
                               name: "android_audio_record",
-                              onClick: () =>
-                                  to(context, const AndroidAudioRecordPage()),
+                              onClick: () => to(context, const AndroidAudioRecordPage()),
                             ),
                           ),
                         ],
                       ),
                     ],
                   ),
+                  TreeSliverNode(TreeSliverNodeContent(name: "ui"), children: [
+                    TreeSliverNode(
+                      TreeSliverNodeContent(
+                        name: "loading",
+                        onClick: () => to(context, const LoadingPage()),
+                      ),
+                    )
+                  ]),
                 ],
               ),
             ],
@@ -116,10 +120,8 @@ class _HomeState extends State<HomePage> {
     TreeSliverNode<Object?> node,
     AnimationStyle toggleAnimationStyle,
   ) {
-    final Duration animationDuration =
-        toggleAnimationStyle.duration ?? TreeSliver.defaultAnimationDuration;
-    final Curve animationCurve =
-        toggleAnimationStyle.curve ?? TreeSliver.defaultAnimationCurve;
+    final Duration animationDuration = toggleAnimationStyle.duration ?? TreeSliver.defaultAnimationDuration;
+    final Curve animationCurve = toggleAnimationStyle.curve ?? TreeSliver.defaultAnimationCurve;
     final int index = TreeSliverController.of(context).getActiveIndexFor(node)!;
     return InkWell(
       onTap: () {
