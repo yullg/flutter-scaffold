@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../architecture/generic_state.dart';
 import '../../config/scaffold_config.dart';
 import '../../config/scaffold_developer_option.dart';
 import '../../helper/format_helper.dart';
@@ -18,12 +17,10 @@ class DeveloperPreferencePage extends StatefulWidget {
   State<StatefulWidget> createState() => _DeveloperPreferenceState();
 }
 
-class _DeveloperPreferenceState extends GenericState<DeveloperPreferencePage> {
+class _DeveloperPreferenceState extends State<DeveloperPreferencePage> {
   @override
   Widget build(BuildContext context) {
-    final preferenceFieldList = [
-      ...?ScaffoldConfig.developerOption?.preferenceFields
-    ];
+    final preferenceFieldList = [...?ScaffoldConfig.developerOption?.preferenceFields];
     return Scaffold(
       appBar: AppBar(
         title: const Text("Preference"),
@@ -36,8 +33,7 @@ class _DeveloperPreferenceState extends GenericState<DeveloperPreferencePage> {
                 contentText: "Are you sure you want to reset all preferences?",
                 actions: [
                   AlertDialogAction(value: false, childText: "Cancel"),
-                  AlertDialogAction(
-                      value: true, childText: "OK", isDestructiveAction: true),
+                  AlertDialogAction(value: true, childText: "OK", isDestructiveAction: true),
                 ],
               ).then((value) {
                 if (value != true) return;
@@ -52,8 +48,7 @@ class _DeveloperPreferenceState extends GenericState<DeveloperPreferencePage> {
             },
             style: ButtonStyle(
               foregroundColor: WidgetStatePropertyAll(
-                  Theme.of(context).appBarTheme.foregroundColor ??
-                      Theme.of(context).colorScheme.onSurface),
+                  Theme.of(context).appBarTheme.foregroundColor ?? Theme.of(context).colorScheme.onSurface),
             ),
             icon: const Icon(Icons.cleaning_services),
             label: const Text("Reset"),
@@ -80,6 +75,12 @@ class _DeveloperPreferenceState extends GenericState<DeveloperPreferencePage> {
             ),
     );
   }
+
+  void setStateIfMounted() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 }
 
 class _DeveloperPreferenceFieldWidget extends StatefulWidget {
@@ -91,8 +92,7 @@ class _DeveloperPreferenceFieldWidget extends StatefulWidget {
   State<StatefulWidget> createState() => _DeveloperPreferenceFieldState();
 }
 
-class _DeveloperPreferenceFieldState
-    extends GenericState<_DeveloperPreferenceFieldWidget> {
+class _DeveloperPreferenceFieldState extends State<_DeveloperPreferenceFieldWidget> {
   TextEditingController? textEditingController;
   bool? boolFieldValue;
 
@@ -118,8 +118,7 @@ class _DeveloperPreferenceFieldState
         });
       case ScaffoldDOPreferenceFieldType.doubleField:
         textEditingController = TextEditingController();
-        DeveloperPreference().getDouble(widget.preferenceFiled.key).then(
-            (value) {
+        DeveloperPreference().getDouble(widget.preferenceFiled.key).then((value) {
           if (value != null) {
             textEditingController?.text = value.toString();
           }
@@ -128,8 +127,7 @@ class _DeveloperPreferenceFieldState
         });
       case ScaffoldDOPreferenceFieldType.stringField:
         textEditingController = TextEditingController();
-        DeveloperPreference().getString(widget.preferenceFiled.key).then(
-            (value) {
+        DeveloperPreference().getString(widget.preferenceFiled.key).then((value) {
           if (value != null) {
             textEditingController?.text = value;
           }
@@ -147,9 +145,7 @@ class _DeveloperPreferenceFieldState
           subtitleText: widget.preferenceFiled.description,
           value: boolFieldValue,
           onChanged: (value) {
-            DeveloperPreference()
-                .setBool(widget.preferenceFiled.key, value)
-                .then((_) {
+            DeveloperPreference().setBool(widget.preferenceFiled.key, value).then((_) {
               boolFieldValue = value;
               setStateIfMounted();
               _showSuccessSnackBar();
@@ -164,8 +160,7 @@ class _DeveloperPreferenceFieldState
           child: TextField(
             controller: textEditingController,
             textInputAction: TextInputAction.done,
-            keyboardType:
-                widget.preferenceFiled.keyboardType ?? TextInputType.number,
+            keyboardType: widget.preferenceFiled.keyboardType ?? TextInputType.number,
             decoration: InputDecoration(
               labelText: widget.preferenceFiled.name,
               hintText: widget.preferenceFiled.hintText,
@@ -175,9 +170,7 @@ class _DeveloperPreferenceFieldState
             onSubmitted: (value) {
               final newValue = FormatHelper.tryParseInt(value.trim());
               if (newValue != null) {
-                DeveloperPreference()
-                    .setInt(widget.preferenceFiled.key, newValue)
-                    .then((_) {
+                DeveloperPreference().setInt(widget.preferenceFiled.key, newValue).then((_) {
                   textEditingController?.text = newValue.toString();
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
@@ -185,8 +178,7 @@ class _DeveloperPreferenceFieldState
                   _showFailedSnackBar();
                 });
               } else {
-                DeveloperPreference().remove(widget.preferenceFiled.key).then(
-                    (_) {
+                DeveloperPreference().remove(widget.preferenceFiled.key).then((_) {
                   textEditingController?.clear();
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
@@ -202,8 +194,7 @@ class _DeveloperPreferenceFieldState
           child: TextField(
             controller: textEditingController,
             textInputAction: TextInputAction.done,
-            keyboardType:
-                widget.preferenceFiled.keyboardType ?? TextInputType.number,
+            keyboardType: widget.preferenceFiled.keyboardType ?? TextInputType.number,
             decoration: InputDecoration(
               labelText: widget.preferenceFiled.name,
               hintText: widget.preferenceFiled.hintText,
@@ -213,9 +204,7 @@ class _DeveloperPreferenceFieldState
             onSubmitted: (value) {
               final newValue = FormatHelper.tryParseDouble(value.trim());
               if (newValue != null) {
-                DeveloperPreference()
-                    .setDouble(widget.preferenceFiled.key, newValue)
-                    .then((_) {
+                DeveloperPreference().setDouble(widget.preferenceFiled.key, newValue).then((_) {
                   textEditingController?.text = newValue.toString();
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
@@ -223,8 +212,7 @@ class _DeveloperPreferenceFieldState
                   _showFailedSnackBar();
                 });
               } else {
-                DeveloperPreference().remove(widget.preferenceFiled.key).then(
-                    (_) {
+                DeveloperPreference().remove(widget.preferenceFiled.key).then((_) {
                   textEditingController?.clear();
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
@@ -250,9 +238,7 @@ class _DeveloperPreferenceFieldState
             onSubmitted: (value) {
               final newValue = StringHelper.trimToNull(value);
               if (newValue != null) {
-                DeveloperPreference()
-                    .setString(widget.preferenceFiled.key, newValue)
-                    .then((_) {
+                DeveloperPreference().setString(widget.preferenceFiled.key, newValue).then((_) {
                   textEditingController?.text = newValue;
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
@@ -260,8 +246,7 @@ class _DeveloperPreferenceFieldState
                   _showFailedSnackBar();
                 });
               } else {
-                DeveloperPreference().remove(widget.preferenceFiled.key).then(
-                    (_) {
+                DeveloperPreference().remove(widget.preferenceFiled.key).then((_) {
                   textEditingController?.clear();
                   _showSuccessSnackBar();
                 }, onError: (e, s) {
@@ -280,6 +265,12 @@ class _DeveloperPreferenceFieldState
     textEditingController?.dispose();
     super.dispose();
   }
+
+  void setStateIfMounted() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 }
 
 extension _ShowSnackBar on State {
@@ -291,8 +282,7 @@ extension _ShowSnackBar on State {
 
   void _showFailedSnackBar() {
     if (mounted) {
-      Messenger.showError(context,
-          message: "Operation failed, please try again!");
+      Messenger.showError(context, message: "Operation failed, please try again!");
     }
   }
 }

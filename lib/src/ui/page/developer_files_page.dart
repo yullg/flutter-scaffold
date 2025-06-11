@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:scaffold/scaffold_lang.dart';
 
-import '../../architecture/generic_state.dart';
 import '../../helper/format_helper.dart';
 import '../../internal/scaffold_logger.dart';
 import '../../plugin/document_manager_plugin.dart';
@@ -19,7 +18,7 @@ class DeveloperFilesPage extends StatefulWidget {
   State<StatefulWidget> createState() => _DeveloperFilesState();
 }
 
-class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
+class _DeveloperFilesState extends State<DeveloperFilesPage> {
   final _directoryStack = <_DirectoryWrapper>[];
   final _entities = <_FileSystemEntityWrapper>[];
   final _selectedFiles = <_FileWrapper>[];
@@ -50,8 +49,7 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
       final directory = _directoryStack.lastOrNull?.entity;
       final entities = <_FileSystemEntityWrapper>[];
       if (directory != null) {
-        await for (final entity
-            in directory.list(recursive: false, followLinks: false)) {
+        await for (final entity in directory.list(recursive: false, followLinks: false)) {
           if (entity is Directory) {
             entities.add(_DirectoryWrapper(
               entity: entity,
@@ -74,12 +72,10 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
       } else {
         if (Platform.isAndroid) {
           entities.add(_DirectoryWrapper(
-            entity: await getApplicationSupportDirectory()
-                .then((value) => value.parent),
+            entity: await getApplicationSupportDirectory().then((value) => value.parent),
             name: "Internal Storage",
           ));
-          final externalStorageDirectory = await getExternalStorageDirectory()
-              .then((value) => value?.parent);
+          final externalStorageDirectory = await getExternalStorageDirectory().then((value) => value?.parent);
           if (externalStorageDirectory != null) {
             entities.add(_DirectoryWrapper(
               entity: externalStorageDirectory,
@@ -175,9 +171,7 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
                           : Icon(_selectedFiles.contains(entity)
                               ? Icons.check_box_outlined
                               : Icons.check_box_outline_blank),
-                      onTap: _selectedFiles.isNotEmpty
-                          ? () => _toggleSelectedFile(entity)
-                          : null,
+                      onTap: _selectedFiles.isNotEmpty ? () => _toggleSelectedFile(entity) : null,
                       onLongPress: () => _toggleSelectedFile(entity),
                     );
                   } else {
@@ -211,9 +205,7 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
                       child: Text(
                         "${_selectedFiles.length} selected",
                         style: TextStyle(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSecondaryContainer,
+                          color: Theme.of(context).colorScheme.onSecondaryContainer,
                         ),
                       ),
                     ),
@@ -256,6 +248,12 @@ class _DeveloperFilesState extends GenericState<DeveloperFilesPage> {
       rethrow;
     }
   }
+
+  void setStateIfMounted() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 }
 
 extension _ShowSnackBar on State {
@@ -267,8 +265,7 @@ extension _ShowSnackBar on State {
 
   void _showFailedSnackBar() {
     if (mounted) {
-      Messenger.showError(context,
-          message: "Operation failed, please try again!");
+      Messenger.showError(context, message: "Operation failed, please try again!");
     }
   }
 }
