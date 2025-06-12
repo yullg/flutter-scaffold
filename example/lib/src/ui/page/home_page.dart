@@ -9,6 +9,7 @@ import 'scaffold/plugin/android/media_store_page.dart';
 import 'scaffold/plugin/android/notification_page.dart';
 import 'scaffold/plugin/android/toast_page.dart';
 import 'scaffold/ui/popup/loading_page.dart';
+import 'scaffold/ui/widget/polymorphic_text_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -99,11 +100,27 @@ class _HomeState extends State<HomePage> {
                   ),
                   TreeSliverNode(TreeSliverNodeContent(name: "ui"), children: [
                     TreeSliverNode(
-                      TreeSliverNodeContent(
-                        name: "loading",
-                        onClick: () => to(context, const LoadingPage()),
-                      ),
-                    )
+                      TreeSliverNodeContent(name: "popup"),
+                      children: [
+                        TreeSliverNode(
+                          TreeSliverNodeContent(
+                            name: "loading",
+                            onClick: () => to(context, const LoadingPage()),
+                          ),
+                        ),
+                      ],
+                    ),
+                    TreeSliverNode(
+                      TreeSliverNodeContent(name: "widget"),
+                      children: [
+                        TreeSliverNode(
+                          TreeSliverNodeContent(
+                            name: "polymorphic_text",
+                            onClick: () => to(context, const PolymorphicTextPage()),
+                          ),
+                        ),
+                      ],
+                    ),
                   ]),
                 ],
               ),

@@ -89,6 +89,7 @@ export 'src/ui/widget/lockable_icon_button.dart';
 export 'src/ui/widget/lockable_outlined_button.dart';
 export 'src/ui/widget/lockable_text_button.dart';
 export 'src/ui/widget/paged_list_widget.dart';
+export 'src/ui/widget/polymorphic_text.dart';
 export 'src/ui/widget/scrollable_column.dart';
 export 'src/ui/widget/scrollable_row.dart';
 export 'src/ui/widget/send_code_widget.dart';
