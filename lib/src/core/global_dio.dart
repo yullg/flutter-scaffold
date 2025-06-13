@@ -11,7 +11,7 @@ class GlobalDio extends DioForNative {
   }
 
   GlobalDio._() : super(ScaffoldConfig.dioOption?.globalDioOptions) {
-    ScaffoldConfig.dioOption?.globalDioInterceptors?.let((it) {
+    ScaffoldConfig.dioOption?.globalDioInterceptors?.also((it) {
       interceptors.addAll(it);
     });
   }
