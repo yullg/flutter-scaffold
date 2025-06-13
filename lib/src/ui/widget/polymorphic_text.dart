@@ -50,10 +50,11 @@ class _PolymorphicTextState extends State<PolymorphicText> {
           final collapseTextSpan = TextSpan(
             text: widget.textCollapse,
             style: widget.styleCollapse,
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                setState(() => _expanded = false);
-              },
+            recognizer:
+                TapGestureRecognizer()
+                  ..onTap = () {
+                    setState(() => _expanded = false);
+                  },
           );
           if (widget.maxLinesExpand != null) {
             final textPainter = TextPainter(
@@ -64,28 +65,23 @@ class _PolymorphicTextState extends State<PolymorphicText> {
             )..layout(maxWidth: constraints.maxWidth);
             if (textPainter.didExceedMaxLines) {
               return ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: textPainter.height,
-                ),
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: Text.rich(
-                    TextSpan(children: [
-                      textSpan,
-                      collapseTextSpan,
-                    ]),
-                    textScaler: textScaler,
-                    textDirection: textDirection,
+                constraints: BoxConstraints(maxHeight: textPainter.height),
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (_) => true,
+                  child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    child: Text.rich(
+                      TextSpan(children: [textSpan, collapseTextSpan]),
+                      textScaler: textScaler,
+                      textDirection: textDirection,
+                    ),
                   ),
                 ),
               );
             }
           }
           return Text.rich(
-            TextSpan(children: [
-              textSpan,
-              collapseTextSpan,
-            ]),
+            TextSpan(children: [textSpan, collapseTextSpan]),
             textScaler: textScaler,
             textDirection: textDirection,
           );
@@ -101,10 +97,11 @@ class _PolymorphicTextState extends State<PolymorphicText> {
             final expandTextSpan = TextSpan(
               text: widget.textExpand,
               style: widget.styleExpand,
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  setState(() => _expanded = true);
-                },
+              recognizer:
+                  TapGestureRecognizer()
+                    ..onTap = () {
+                      setState(() => _expanded = true);
+                    },
             );
             final lines = textPainter.computeLineMetrics();
             int endOffset = textPainter.getPositionForOffset(Offset(lines.last.width, lines.last.baseline)).offset;
@@ -133,20 +130,18 @@ class _PolymorphicTextState extends State<PolymorphicText> {
               }
             }
             return Text.rich(
-              TextSpan(children: [
-                TextSpan(text: widget.text.substring(0, endOffset), style: style),
-                ellipsisTextSpan,
-                expandTextSpan,
-              ]),
+              TextSpan(
+                children: [
+                  TextSpan(text: widget.text.substring(0, endOffset), style: style),
+                  ellipsisTextSpan,
+                  expandTextSpan,
+                ],
+              ),
               textScaler: textScaler,
               textDirection: textDirection,
             );
           } else {
-            return Text.rich(
-              textSpan,
-              textScaler: textScaler,
-              textDirection: textDirection,
-            );
+            return Text.rich(textSpan, textScaler: textScaler, textDirection: textDirection);
           }
         }
       },
