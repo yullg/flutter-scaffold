@@ -8,21 +8,18 @@ class DatabaseFactory {
   const DatabaseFactory(this.schema);
 
   Future<Database> createDatabase() => openDatabase(
-        schema.path,
-        version: schema.version,
-        onConfigure: _onConfigure,
-        onCreate: _onCreate,
-        onUpgrade: _onChange,
-        onDowngrade: _onChange,
-        onOpen: _onOpen,
-        readOnly: schema.readOnly,
-        singleInstance: schema.singleInstance,
-      );
+    schema.path,
+    version: schema.version,
+    onConfigure: _onConfigure,
+    onCreate: _onCreate,
+    onUpgrade: _onChange,
+    onDowngrade: _onChange,
+    onOpen: _onOpen,
+    readOnly: schema.readOnly,
+    singleInstance: schema.singleInstance,
+  );
 
-  Future<Database> createReadOnlyDatabase() => openReadOnlyDatabase(
-        schema.path,
-        singleInstance: schema.singleInstance,
-      );
+  Future<Database> createReadOnlyDatabase() => openReadOnlyDatabase(schema.path, singleInstance: schema.singleInstance);
 
   Future<void> _onConfigure(Database db) async {
     for (final sql in schema.configureSqls) {

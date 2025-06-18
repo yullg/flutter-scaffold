@@ -1,7 +1,7 @@
 import 'package:dio/io.dart';
 import 'package:scaffold/scaffold_lang.dart';
 
-import '../config/scaffold_config.dart';
+import '../../config/scaffold_config.dart';
 
 class GlobalDio extends DioForNative {
   static GlobalDio? _instance;
@@ -10,8 +10,8 @@ class GlobalDio extends DioForNative {
     return _instance ??= GlobalDio._();
   }
 
-  GlobalDio._() : super(ScaffoldConfig.dioOption?.globalDioOptions) {
-    ScaffoldConfig.dioOption?.globalDioInterceptors?.also((it) {
+  GlobalDio._() : super(ScaffoldConfig.httpOption?.globalDioOptions) {
+    ScaffoldConfig.httpOption?.globalDioInterceptors?.also((it) {
       interceptors.addAll(it);
     });
   }

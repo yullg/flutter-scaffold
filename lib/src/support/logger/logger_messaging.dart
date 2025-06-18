@@ -7,7 +7,6 @@ import 'logger.dart';
 extension LoggerMessagings on ILogger {
   LoggerMessaging messaging({
     String? library,
-    String? part,
     String? what,
     List<Object?>? args,
     Map<String, Object?>? namedArgs,
@@ -15,13 +14,10 @@ extension LoggerMessagings on ILogger {
   }) {
     final sb = StringBuffer();
     library?.also((it) {
-      sb.write("$it-");
-    });
-    part?.also((it) {
-      sb.write("$it ");
+      sb.write("$it\t");
     });
     what?.also((it) {
-      sb.write("# $it ");
+      sb.write("$it ");
     });
     final argStringList = <String>[];
     args?.forEach((e) {
@@ -31,9 +27,9 @@ extension LoggerMessagings on ILogger {
       argStringList.add("$key: ${_safeToString(value)}");
     });
     if (argStringList.isNotEmpty) {
-      sb.write("< ");
+      sb.write("( ");
       sb.writeAll(argStringList, ", ");
-      sb.write(" ");
+      sb.write(" ) ");
     }
     if (result is! _NoValueGiven) {
       sb.write("> ${_safeToString(result)}");
@@ -49,23 +45,17 @@ final class LoggerMessaging {
 
   LoggerMessaging(this._logger, this._message);
 
-  void trace([Object? error, StackTrace? trace]) =>
-      _logger.trace(_message, error, trace);
+  void trace([Object? error, StackTrace? trace]) => _logger.trace(_message, error, trace);
 
-  void debug([Object? error, StackTrace? trace]) =>
-      _logger.debug(_message, error, trace);
+  void debug([Object? error, StackTrace? trace]) => _logger.debug(_message, error, trace);
 
-  void info([Object? error, StackTrace? trace]) =>
-      _logger.info(_message, error, trace);
+  void info([Object? error, StackTrace? trace]) => _logger.info(_message, error, trace);
 
-  void warn([Object? error, StackTrace? trace]) =>
-      _logger.warn(_message, error, trace);
+  void warn([Object? error, StackTrace? trace]) => _logger.warn(_message, error, trace);
 
-  void error([Object? error, StackTrace? trace]) =>
-      _logger.error(_message, error, trace);
+  void error([Object? error, StackTrace? trace]) => _logger.error(_message, error, trace);
 
-  void fatal([Object? error, StackTrace? trace]) =>
-      _logger.fatal(_message, error, trace);
+  void fatal([Object? error, StackTrace? trace]) => _logger.fatal(_message, error, trace);
 }
 
 final class _NoValueGiven {

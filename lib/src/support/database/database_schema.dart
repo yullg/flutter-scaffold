@@ -20,16 +20,16 @@ class DatabaseSchema {
   }) : _changeSqls = changeSqls;
 
   DatabaseSchema.fromMap(Map<String, dynamic> map)
-      : this(
-          path: map["path"],
-          version: map["version"],
-          readOnly: map["readOnly"],
-          singleInstance: map["singleInstance"],
-          configureSqls: _parseConfigureSqls(map["configureSqls"]),
-          createSqls: _parseCreateSqls(map["createSqls"]),
-          changeSqls: _parseChangeSqls(map["changeSqls"]),
-          openSqls: _parseOpenSqls(map["openSqls"]),
-        );
+    : this(
+        path: map["path"],
+        version: map["version"],
+        readOnly: map["readOnly"],
+        singleInstance: map["singleInstance"],
+        configureSqls: _parseConfigureSqls(map["configureSqls"]),
+        createSqls: _parseCreateSqls(map["createSqls"]),
+        changeSqls: _parseChangeSqls(map["changeSqls"]),
+        openSqls: _parseOpenSqls(map["openSqls"]),
+      );
 
   Iterable<String>? getChangeSqls(({int oldVersion, int newVersion}) version) => _changeSqls[version];
 

@@ -9,17 +9,6 @@ class ContextUnmountedError extends Error {
   }
 }
 
-class NoConfigurationError extends Error {
-  final Object? message;
-
-  NoConfigurationError([this.message]);
-
-  @override
-  String toString() {
-    return 'NoConfigurationError{message: ${Error.safeToString(message)}}';
-  }
-}
-
 class CancellationError extends Error {
   final Object? message;
 
@@ -31,36 +20,13 @@ class CancellationError extends Error {
   }
 }
 
-class AuthenticationNotFoundError extends Error {
+class MissingConfigurationError extends Error {
   final Object? message;
 
-  AuthenticationNotFoundError({this.message});
+  MissingConfigurationError([this.message]);
 
   @override
   String toString() {
-    return 'AuthenticationNotFoundError{message: ${Error.safeToString(message)}}';
-  }
-}
-
-class IncorrectResultSizeDatabaseError extends Error {
-  final Object? message;
-  final int? expectedSize;
-  final int? actualSize;
-
-  IncorrectResultSizeDatabaseError(
-      {this.message, this.expectedSize, this.actualSize});
-
-  @override
-  String toString() {
-    return 'IncorrectResultSizeDatabaseError{message: ${Error.safeToString(message)}, expectedSize: $expectedSize, actualSize: $actualSize}';
-  }
-}
-
-class EmptyResultDatabaseError extends IncorrectResultSizeDatabaseError {
-  EmptyResultDatabaseError({super.message, super.expectedSize});
-
-  @override
-  String toString() {
-    return 'EmptyResultDatabaseError{message: ${Error.safeToString(message)}, expectedSize: $expectedSize}';
+    return 'MissingConfigurationError{message: ${Error.safeToString(message)}}';
   }
 }

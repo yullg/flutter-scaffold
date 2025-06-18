@@ -1,7 +1,7 @@
 import 'scaffold_cache_option.dart';
 import 'scaffold_database_option.dart';
 import 'scaffold_developer_option.dart';
-import 'scaffold_dio_option.dart';
+import 'scaffold_http_option.dart';
 import 'scaffold_logger_option.dart';
 import 'scaffold_messenger_option.dart';
 
@@ -10,48 +10,48 @@ class ScaffoldConfig {
   static const kDocumentManagerDirectory = "yullg/document";
   static const kSendCodeNameDefault = "yullg_send_code_default";
 
-  static ScaffoldDeveloperOption? _developerOption;
-  static ScaffoldCacheOption? _cacheOption;
+  static ScaffoldLoggerOption? _loggerOption;
+  static ScaffoldHttpOption? _httpOption;
   static ScaffoldDatabaseOption? _databaseOption;
   static ScaffoldMessengerOption? _messengerOption;
-  static ScaffoldLoggerOption? _loggerOption;
-  static ScaffoldDioOption? _dioOption;
+  static ScaffoldCacheOption? _cacheOption;
+  static ScaffoldDeveloperOption? _developerOption;
 
-  static ScaffoldDeveloperOption? get developerOption => _developerOption;
+  static ScaffoldLoggerOption? get loggerOption => _loggerOption;
 
-  static ScaffoldCacheOption? get cacheOption => _cacheOption;
+  static ScaffoldHttpOption? get httpOption => _httpOption;
 
   static ScaffoldDatabaseOption? get databaseOption => _databaseOption;
 
   static ScaffoldMessengerOption? get messengerOption => _messengerOption;
 
-  static ScaffoldLoggerOption? get loggerOption => _loggerOption;
+  static ScaffoldCacheOption? get cacheOption => _cacheOption;
 
-  static ScaffoldDioOption? get dioOption => _dioOption;
+  static ScaffoldDeveloperOption? get developerOption => _developerOption;
 
   static void apply({
-    ScaffoldDeveloperOption? developerOption,
-    ScaffoldCacheOption? cacheOption,
+    ScaffoldLoggerOption? loggerOption,
+    ScaffoldHttpOption? httpOption,
     ScaffoldDatabaseOption? databaseOption,
     ScaffoldMessengerOption? messengerOption,
-    ScaffoldLoggerOption? loggerOption,
-    ScaffoldDioOption? dioOption,
+    ScaffoldCacheOption? cacheOption,
+    ScaffoldDeveloperOption? developerOption,
   }) {
-    _developerOption = developerOption;
-    _cacheOption = cacheOption;
+    _loggerOption = loggerOption;
+    _httpOption = httpOption;
     _databaseOption = databaseOption;
     _messengerOption = messengerOption;
-    _loggerOption = loggerOption;
-    _dioOption = dioOption;
+    _cacheOption = cacheOption;
+    _developerOption = developerOption;
   }
 
   static void reset() {
-    _developerOption = null;
-    _cacheOption = null;
+    _loggerOption = null;
+    _httpOption = null;
     _databaseOption = null;
     _messengerOption = null;
-    _loggerOption = null;
-    _dioOption = null;
+    _cacheOption = null;
+    _developerOption = null;
   }
 
   ScaffoldConfig._();
