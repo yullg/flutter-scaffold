@@ -11,15 +11,19 @@ extension ExtensionTakeIf<T> on T {
 }
 
 extension ExtensionTakeUnless<T> on T {
-  T? takeUnless(bool Function(T value) predicate) =>
-      predicate(this) ? null : this;
+  T? takeUnless(bool Function(T value) predicate) => predicate(this) ? null : this;
 }
 
 extension ExtensionFuture<T> on Future<T> {
   Future<void> asyncIgnore() => then<void>(_ignore, onError: _ignore);
 
-  Future<T?> catchErrorToNull() =>
-      then<T?>((value) => value, onError: (_) => null);
+  Future<T?> catchErrorToNull([void Function(Object e, StackTrace s)? onError]) => then<T?>(
+    (value) => value,
+    onError: (e, s) {
+      onError?.call(e, s);
+      return null;
+    },
+  );
 
   static void _ignore(Object? _, [Object? __]) {}
 }
