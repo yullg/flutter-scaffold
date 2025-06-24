@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 extension ExtensionLet<T> on T {
   R let<R>(R Function(T it) block) => block(this);
 }
@@ -26,4 +28,27 @@ extension ExtensionFuture<T> on Future<T> {
   );
 
   static void _ignore(Object? _, [Object? __]) {}
+}
+
+extension ExtensionWidget on Widget {
+  Route<T> route<T>({
+    RouteSettings? settings,
+    bool? requestFocus,
+    bool maintainState = true,
+    bool fullscreenDialog = false,
+    bool allowSnapshotting = true,
+    bool barrierDismissible = false,
+    TraversalEdgeBehavior? traversalEdgeBehavior,
+    TraversalEdgeBehavior? directionalTraversalEdgeBehavior,
+  }) => MaterialPageRoute<T>(
+    builder: (context) => this,
+    settings: settings,
+    requestFocus: requestFocus,
+    maintainState: maintainState,
+    fullscreenDialog: fullscreenDialog,
+    allowSnapshotting: allowSnapshotting,
+    barrierDismissible: barrierDismissible,
+    traversalEdgeBehavior: traversalEdgeBehavior,
+    directionalTraversalEdgeBehavior: directionalTraversalEdgeBehavior,
+  );
 }
