@@ -6,14 +6,14 @@ import 'logger.dart';
 /// 为日志消息约定一致的格式。
 extension LoggerMessagings on ILogger {
   LoggerMessaging messaging({
-    String? library,
+    String? module,
     String? what,
     List<Object?>? args,
     Map<String, Object?>? namedArgs,
     Object? result = const _NoValueGiven(),
   }) {
     final sb = StringBuffer();
-    library?.also((it) {
+    module?.also((it) {
       sb.write("$it\t");
     });
     what?.also((it) {

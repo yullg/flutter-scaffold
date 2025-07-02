@@ -14,7 +14,7 @@ class LogFileManager {
   /// 删除过期的日志文件
   static Future<void> deleteExpiredLogFile() async {
     try {
-      ScaffoldLogger().messaging(library: _kLogLibrary, what: "DeleteExpiredLogFile - begin").info();
+      ScaffoldLogger().messaging(module: _kLogModule, what: "DeleteExpiredLogFile - begin").info();
       final logDirectory = await LogFileHandler.logDirectoryFuture;
       if (await logDirectory.exists()) {
         await for (FileSystemEntity entity in logDirectory.list(recursive: false, followLinks: false)) {
@@ -24,7 +24,7 @@ class LogFileManager {
             final fileNameMatch = _logFileNameRE.firstMatch(fileName);
             if (fileNameMatch == null) {
               ScaffoldLogger()
-                  .messaging(library: _kLogLibrary, what: "DeleteExpiredLogFile - File[$entity] not supported")
+                  .messaging(module: _kLogModule, what: "DeleteExpiredLogFile - File[$entity] not supported")
                   .warn();
               continue;
             }
@@ -39,7 +39,7 @@ class LogFileManager {
               await LogFileHandler(fileName).delete();
               ScaffoldLogger()
                   .messaging(
-                    library: _kLogLibrary,
+                    module: _kLogModule,
                     what: "DeleteExpiredLogFile - delete",
                     namedArgs: {"file": entity, "expiredDate": minDateTime.toIso8601String()},
                     result: "success",
@@ -49,7 +49,7 @@ class LogFileManager {
           } catch (e, s) {
             ScaffoldLogger()
                 .messaging(
-                  library: _kLogLibrary,
+                  module: _kLogModule,
                   what: "DeleteExpiredLogFile - delete",
                   namedArgs: {"file": entity},
                   result: "failed",
@@ -58,9 +58,9 @@ class LogFileManager {
           }
         }
       }
-      ScaffoldLogger().messaging(library: _kLogLibrary, what: "DeleteExpiredLogFile - end").info();
+      ScaffoldLogger().messaging(module: _kLogModule, what: "DeleteExpiredLogFile - end").info();
     } catch (e, s) {
-      ScaffoldLogger().messaging(library: _kLogLibrary, what: "DeleteExpiredLogFile - failed").error(e, s);
+      ScaffoldLogger().messaging(module: _kLogModule, what: "DeleteExpiredLogFile - failed").error(e, s);
       rethrow;
     }
   }
@@ -68,7 +68,7 @@ class LogFileManager {
   /// 上传所有日志文件。
   static Future<void> uploadAllLogFile() async {
     try {
-      ScaffoldLogger().messaging(library: _kLogLibrary, what: "UploadAllLogFile - begin").info();
+      ScaffoldLogger().messaging(module: _kLogModule, what: "UploadAllLogFile - begin").info();
       final logUploadDirectory = await LogFileHandler.logUploadDirectoryFuture;
       await _uploadAllLogFileInDirectory(logUploadDirectory);
       final logDirectory = await LogFileHandler.logDirectoryFuture;
@@ -81,7 +81,7 @@ class LogFileManager {
             if (await uploadFile.exists()) {
               ScaffoldLogger()
                   .messaging(
-                    library: _kLogLibrary,
+                    module: _kLogModule,
                     what: "UploadAllLogFile - clone",
                     namedArgs: {"file": entity},
                     result: "conflict",
@@ -92,7 +92,7 @@ class LogFileManager {
               await LogFileHandler(fileName).move(uploadFile.path);
               ScaffoldLogger()
                   .messaging(
-                    library: _kLogLibrary,
+                    module: _kLogModule,
                     what: "UploadAllLogFile - clone",
                     namedArgs: {"file": entity},
                     result: "success",
@@ -102,7 +102,7 @@ class LogFileManager {
           } catch (e, s) {
             ScaffoldLogger()
                 .messaging(
-                  library: _kLogLibrary,
+                  module: _kLogModule,
                   what: "UploadAllLogFile - clone",
                   namedArgs: {"file": entity},
                   result: "failed",
@@ -112,9 +112,9 @@ class LogFileManager {
         }
       }
       await _uploadAllLogFileInDirectory(logUploadDirectory);
-      ScaffoldLogger().messaging(library: _kLogLibrary, what: "UploadAllLogFile - end").info();
+      ScaffoldLogger().messaging(module: _kLogModule, what: "UploadAllLogFile - end").info();
     } catch (e, s) {
-      ScaffoldLogger().messaging(library: _kLogLibrary, what: "UploadAllLogFile - failed").error(e, s);
+      ScaffoldLogger().messaging(module: _kLogModule, what: "UploadAllLogFile - failed").error(e, s);
       rethrow;
     }
   }
@@ -128,7 +128,7 @@ class LogFileManager {
         final fileNameMatch = _logFileNameRE.firstMatch(fileName);
         if (fileNameMatch == null) {
           ScaffoldLogger()
-              .messaging(library: _kLogLibrary, what: "UploadAllLogFile - File[$entity] not supported")
+              .messaging(module: _kLogModule, what: "UploadAllLogFile - File[$entity] not supported")
               .warn();
           continue;
         }
@@ -136,7 +136,7 @@ class LogFileManager {
         final uploader = ScaffoldLoggerOption.uploader(name);
         if (uploader == null) {
           ScaffoldLogger()
-              .messaging(library: _kLogLibrary, what: "UploadAllLogFile - Uploader[$name] not provided")
+              .messaging(module: _kLogModule, what: "UploadAllLogFile - Uploader[$name] not provided")
               .warn();
           continue;
         }
@@ -144,7 +144,7 @@ class LogFileManager {
         await entity.delete();
         ScaffoldLogger()
             .messaging(
-              library: _kLogLibrary,
+              module: _kLogModule,
               what: "UploadAllLogFile - upload",
               namedArgs: {"file": entity},
               result: "success",
@@ -153,7 +153,7 @@ class LogFileManager {
       } catch (e, s) {
         ScaffoldLogger()
             .messaging(
-              library: _kLogLibrary,
+              module: _kLogModule,
               what: "UploadAllLogFile - upload",
               namedArgs: {"file": entity},
               result: "failed",
@@ -164,4 +164,4 @@ class LogFileManager {
   }
 }
 
-const _kLogLibrary = "logger";
+const _kLogModule = "logger";
