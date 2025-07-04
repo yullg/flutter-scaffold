@@ -37,42 +37,41 @@ class _DeveloperPreferenceState extends State<DeveloperPreferencePage> {
                 ],
               ).then((value) {
                 if (value != true) return;
-                DeveloperPreference().clear().then((_) {
-                  setStateIfMounted();
-                  _showSuccessSnackBar();
-                }, onError: (e, s) {
-                  ScaffoldLogger().error(null, e, s);
-                  _showFailedSnackBar();
-                });
+                DeveloperPreference().clear().then(
+                  (_) {
+                    setStateIfMounted();
+                    _showSuccessSnackBar();
+                  },
+                  onError: (e, s) {
+                    ScaffoldLogger().error(null, e, s);
+                    _showFailedSnackBar();
+                  },
+                );
               });
             },
             style: ButtonStyle(
               foregroundColor: WidgetStatePropertyAll(
-                  Theme.of(context).appBarTheme.foregroundColor ?? Theme.of(context).colorScheme.onSurface),
+                Theme.of(context).appBarTheme.foregroundColor ?? Theme.of(context).colorScheme.onSurface,
+              ),
             ),
             icon: const Icon(Icons.cleaning_services),
             label: const Text("Reset"),
           ),
         ],
       ),
-      body: preferenceFieldList.isNotEmpty
-          ? ListView.builder(
-              key: UniqueKey(),
-              itemCount: preferenceFieldList.length,
-              itemBuilder: (context, index) {
-                final preferenceFiled = preferenceFieldList[index];
-                return _DeveloperPreferenceFieldWidget(preferenceFiled);
-              },
-            )
-          : Center(
-              child: Text(
-                "No preference",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context).hintColor,
-                ),
+      body:
+          preferenceFieldList.isNotEmpty
+              ? ListView.builder(
+                key: UniqueKey(),
+                itemCount: preferenceFieldList.length,
+                itemBuilder: (context, index) {
+                  final preferenceFiled = preferenceFieldList[index];
+                  return _DeveloperPreferenceFieldWidget(preferenceFiled);
+                },
+              )
+              : Center(
+                child: Text("No preference", style: TextStyle(fontSize: 16, color: Theme.of(context).hintColor)),
               ),
-            ),
     );
   }
 
@@ -101,39 +100,59 @@ class _DeveloperPreferenceFieldState extends State<_DeveloperPreferenceFieldWidg
     super.initState();
     switch (widget.preferenceFiled.type) {
       case ScaffoldDOPreferenceFieldType.boolField:
-        DeveloperPreference().getBool(widget.preferenceFiled.key).then((value) {
-          boolFieldValue = value;
-          setStateIfMounted();
-        }, onError: (e, s) {
-          ScaffoldLogger().error(null, e, s);
-        });
+        DeveloperPreference()
+            .getBool(widget.preferenceFiled.key)
+            .then(
+              (value) {
+                boolFieldValue = value;
+                setStateIfMounted();
+              },
+              onError: (e, s) {
+                ScaffoldLogger().error(null, e, s);
+              },
+            );
       case ScaffoldDOPreferenceFieldType.intField:
         textEditingController = TextEditingController();
-        DeveloperPreference().getInt(widget.preferenceFiled.key).then((value) {
-          if (value != null) {
-            textEditingController?.text = value.toString();
-          }
-        }, onError: (e, s) {
-          ScaffoldLogger().error(null, e, s);
-        });
+        DeveloperPreference()
+            .getInt(widget.preferenceFiled.key)
+            .then(
+              (value) {
+                if (value != null) {
+                  textEditingController?.text = value.toString();
+                }
+              },
+              onError: (e, s) {
+                ScaffoldLogger().error(null, e, s);
+              },
+            );
       case ScaffoldDOPreferenceFieldType.doubleField:
         textEditingController = TextEditingController();
-        DeveloperPreference().getDouble(widget.preferenceFiled.key).then((value) {
-          if (value != null) {
-            textEditingController?.text = value.toString();
-          }
-        }, onError: (e, s) {
-          ScaffoldLogger().error(null, e, s);
-        });
+        DeveloperPreference()
+            .getDouble(widget.preferenceFiled.key)
+            .then(
+              (value) {
+                if (value != null) {
+                  textEditingController?.text = value.toString();
+                }
+              },
+              onError: (e, s) {
+                ScaffoldLogger().error(null, e, s);
+              },
+            );
       case ScaffoldDOPreferenceFieldType.stringField:
         textEditingController = TextEditingController();
-        DeveloperPreference().getString(widget.preferenceFiled.key).then((value) {
-          if (value != null) {
-            textEditingController?.text = value;
-          }
-        }, onError: (e, s) {
-          ScaffoldLogger().error(null, e, s);
-        });
+        DeveloperPreference()
+            .getString(widget.preferenceFiled.key)
+            .then(
+              (value) {
+                if (value != null) {
+                  textEditingController?.text = value;
+                }
+              },
+              onError: (e, s) {
+                ScaffoldLogger().error(null, e, s);
+              },
+            );
     }
   }
 
@@ -141,122 +160,157 @@ class _DeveloperPreferenceFieldState extends State<_DeveloperPreferenceFieldWidg
   Widget build(BuildContext context) {
     return switch (widget.preferenceFiled.type) {
       ScaffoldDOPreferenceFieldType.boolField => EasySwitchListTile(
-          titleText: widget.preferenceFiled.name,
-          subtitleText: widget.preferenceFiled.description,
-          value: boolFieldValue,
-          onChanged: (value) {
-            DeveloperPreference().setBool(widget.preferenceFiled.key, value).then((_) {
-              boolFieldValue = value;
-              setStateIfMounted();
-              _showSuccessSnackBar();
-            }, onError: (e, s) {
-              ScaffoldLogger().error(null, e, s);
-              _showFailedSnackBar();
-            });
+        titleText: widget.preferenceFiled.name,
+        subtitleText: widget.preferenceFiled.description,
+        value: boolFieldValue,
+        onChanged: (value) {
+          DeveloperPreference()
+              .setBool(widget.preferenceFiled.key, value)
+              .then(
+                (_) {
+                  boolFieldValue = value;
+                  setStateIfMounted();
+                  _showSuccessSnackBar();
+                },
+                onError: (e, s) {
+                  ScaffoldLogger().error(null, e, s);
+                  _showFailedSnackBar();
+                },
+              );
+        },
+      ),
+      ScaffoldDOPreferenceFieldType.intField => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: TextField(
+          controller: textEditingController,
+          textInputAction: TextInputAction.done,
+          keyboardType: widget.preferenceFiled.keyboardType ?? TextInputType.number,
+          decoration: InputDecoration(
+            labelText: widget.preferenceFiled.name,
+            hintText: widget.preferenceFiled.hintText,
+            helperText: widget.preferenceFiled.description,
+            helperMaxLines: 999,
+          ),
+          onSubmitted: (value) {
+            final newValue = FormatHelper.tryParseInt(value.trim());
+            if (newValue != null) {
+              DeveloperPreference()
+                  .setInt(widget.preferenceFiled.key, newValue)
+                  .then(
+                    (_) {
+                      textEditingController?.text = newValue.toString();
+                      _showSuccessSnackBar();
+                    },
+                    onError: (e, s) {
+                      ScaffoldLogger().error(null, e, s);
+                      _showFailedSnackBar();
+                    },
+                  );
+            } else {
+              DeveloperPreference()
+                  .remove(widget.preferenceFiled.key)
+                  .then(
+                    (_) {
+                      textEditingController?.clear();
+                      _showSuccessSnackBar();
+                    },
+                    onError: (e, s) {
+                      ScaffoldLogger().error(null, e, s);
+                      _showFailedSnackBar();
+                    },
+                  );
+            }
           },
         ),
-      ScaffoldDOPreferenceFieldType.intField => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: TextField(
-            controller: textEditingController,
-            textInputAction: TextInputAction.done,
-            keyboardType: widget.preferenceFiled.keyboardType ?? TextInputType.number,
-            decoration: InputDecoration(
-              labelText: widget.preferenceFiled.name,
-              hintText: widget.preferenceFiled.hintText,
-              helperText: widget.preferenceFiled.description,
-              helperMaxLines: 999,
-            ),
-            onSubmitted: (value) {
-              final newValue = FormatHelper.tryParseInt(value.trim());
-              if (newValue != null) {
-                DeveloperPreference().setInt(widget.preferenceFiled.key, newValue).then((_) {
-                  textEditingController?.text = newValue.toString();
-                  _showSuccessSnackBar();
-                }, onError: (e, s) {
-                  ScaffoldLogger().error(null, e, s);
-                  _showFailedSnackBar();
-                });
-              } else {
-                DeveloperPreference().remove(widget.preferenceFiled.key).then((_) {
-                  textEditingController?.clear();
-                  _showSuccessSnackBar();
-                }, onError: (e, s) {
-                  ScaffoldLogger().error(null, e, s);
-                  _showFailedSnackBar();
-                });
-              }
-            },
-          ),
-        ),
+      ),
       ScaffoldDOPreferenceFieldType.doubleField => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: TextField(
-            controller: textEditingController,
-            textInputAction: TextInputAction.done,
-            keyboardType: widget.preferenceFiled.keyboardType ?? TextInputType.number,
-            decoration: InputDecoration(
-              labelText: widget.preferenceFiled.name,
-              hintText: widget.preferenceFiled.hintText,
-              helperText: widget.preferenceFiled.description,
-              helperMaxLines: 999,
-            ),
-            onSubmitted: (value) {
-              final newValue = FormatHelper.tryParseDouble(value.trim());
-              if (newValue != null) {
-                DeveloperPreference().setDouble(widget.preferenceFiled.key, newValue).then((_) {
-                  textEditingController?.text = newValue.toString();
-                  _showSuccessSnackBar();
-                }, onError: (e, s) {
-                  ScaffoldLogger().error(null, e, s);
-                  _showFailedSnackBar();
-                });
-              } else {
-                DeveloperPreference().remove(widget.preferenceFiled.key).then((_) {
-                  textEditingController?.clear();
-                  _showSuccessSnackBar();
-                }, onError: (e, s) {
-                  ScaffoldLogger().error(null, e, s);
-                  _showFailedSnackBar();
-                });
-              }
-            },
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: TextField(
+          controller: textEditingController,
+          textInputAction: TextInputAction.done,
+          keyboardType: widget.preferenceFiled.keyboardType ?? TextInputType.number,
+          decoration: InputDecoration(
+            labelText: widget.preferenceFiled.name,
+            hintText: widget.preferenceFiled.hintText,
+            helperText: widget.preferenceFiled.description,
+            helperMaxLines: 999,
           ),
+          onSubmitted: (value) {
+            final newValue = FormatHelper.tryParseDouble(value.trim());
+            if (newValue != null) {
+              DeveloperPreference()
+                  .setDouble(widget.preferenceFiled.key, newValue)
+                  .then(
+                    (_) {
+                      textEditingController?.text = newValue.toString();
+                      _showSuccessSnackBar();
+                    },
+                    onError: (e, s) {
+                      ScaffoldLogger().error(null, e, s);
+                      _showFailedSnackBar();
+                    },
+                  );
+            } else {
+              DeveloperPreference()
+                  .remove(widget.preferenceFiled.key)
+                  .then(
+                    (_) {
+                      textEditingController?.clear();
+                      _showSuccessSnackBar();
+                    },
+                    onError: (e, s) {
+                      ScaffoldLogger().error(null, e, s);
+                      _showFailedSnackBar();
+                    },
+                  );
+            }
+          },
         ),
+      ),
       ScaffoldDOPreferenceFieldType.stringField => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: TextField(
-            controller: textEditingController,
-            textInputAction: TextInputAction.done,
-            keyboardType: widget.preferenceFiled.keyboardType,
-            decoration: InputDecoration(
-              labelText: widget.preferenceFiled.name,
-              hintText: widget.preferenceFiled.hintText,
-              helperText: widget.preferenceFiled.description,
-              helperMaxLines: 999,
-            ),
-            onSubmitted: (value) {
-              final newValue = StringHelper.trimToNull(value);
-              if (newValue != null) {
-                DeveloperPreference().setString(widget.preferenceFiled.key, newValue).then((_) {
-                  textEditingController?.text = newValue;
-                  _showSuccessSnackBar();
-                }, onError: (e, s) {
-                  ScaffoldLogger().error(null, e, s);
-                  _showFailedSnackBar();
-                });
-              } else {
-                DeveloperPreference().remove(widget.preferenceFiled.key).then((_) {
-                  textEditingController?.clear();
-                  _showSuccessSnackBar();
-                }, onError: (e, s) {
-                  ScaffoldLogger().error(null, e, s);
-                  _showFailedSnackBar();
-                });
-              }
-            },
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: TextField(
+          controller: textEditingController,
+          textInputAction: TextInputAction.done,
+          keyboardType: widget.preferenceFiled.keyboardType,
+          decoration: InputDecoration(
+            labelText: widget.preferenceFiled.name,
+            hintText: widget.preferenceFiled.hintText,
+            helperText: widget.preferenceFiled.description,
+            helperMaxLines: 999,
           ),
+          onSubmitted: (value) {
+            final newValue = StringHelper.trimToNull(value);
+            if (newValue != null) {
+              DeveloperPreference()
+                  .setString(widget.preferenceFiled.key, newValue)
+                  .then(
+                    (_) {
+                      textEditingController?.text = newValue;
+                      _showSuccessSnackBar();
+                    },
+                    onError: (e, s) {
+                      ScaffoldLogger().error(null, e, s);
+                      _showFailedSnackBar();
+                    },
+                  );
+            } else {
+              DeveloperPreference()
+                  .remove(widget.preferenceFiled.key)
+                  .then(
+                    (_) {
+                      textEditingController?.clear();
+                      _showSuccessSnackBar();
+                    },
+                    onError: (e, s) {
+                      ScaffoldLogger().error(null, e, s);
+                      _showFailedSnackBar();
+                    },
+                  );
+            }
+          },
         ),
+      ),
     };
   }
 

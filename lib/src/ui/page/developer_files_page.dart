@@ -51,50 +51,38 @@ class _DeveloperFilesState extends State<DeveloperFilesPage> {
       if (directory != null) {
         await for (final entity in directory.list(recursive: false, followLinks: false)) {
           if (entity is Directory) {
-            entities.add(_DirectoryWrapper(
-              entity: entity,
-              name: p.basename(entity.path),
-            ));
+            entities.add(_DirectoryWrapper(entity: entity, name: p.basename(entity.path)));
           } else if (entity is File) {
-            entities.add(_FileWrapper(
-              entity: entity,
-              name: p.basename(entity.path),
-              length: await entity.length().catchErrorToNull(),
-              lastModified: await entity.lastModified().catchErrorToNull(),
-            ));
+            entities.add(
+              _FileWrapper(
+                entity: entity,
+                name: p.basename(entity.path),
+                length: await entity.length().catchErrorToNull(),
+                lastModified: await entity.lastModified().catchErrorToNull(),
+              ),
+            );
           } else {
-            entities.add(_FileSystemEntityWrapper(
-              entity: entity,
-              name: p.basename(entity.path),
-            ));
+            entities.add(_FileSystemEntityWrapper(entity: entity, name: p.basename(entity.path)));
           }
         }
       } else {
         if (Platform.isAndroid) {
-          entities.add(_DirectoryWrapper(
-            entity: await getApplicationSupportDirectory().then((value) => value.parent),
-            name: "Internal Storage",
-          ));
+          entities.add(
+            _DirectoryWrapper(
+              entity: await getApplicationSupportDirectory().then((value) => value.parent),
+              name: "Internal Storage",
+            ),
+          );
           final externalStorageDirectory = await getExternalStorageDirectory().then((value) => value?.parent);
           if (externalStorageDirectory != null) {
-            entities.add(_DirectoryWrapper(
-              entity: externalStorageDirectory,
-              name: "External Storage",
-            ));
+            entities.add(_DirectoryWrapper(entity: externalStorageDirectory, name: "External Storage"));
           }
         } else if (Platform.isIOS || Platform.isMacOS) {
-          entities.add(_DirectoryWrapper(
-            entity: await getApplicationDocumentsDirectory(),
-            name: "Application Documents",
-          ));
-          entities.add(_DirectoryWrapper(
-            entity: await getApplicationSupportDirectory(),
-            name: "Application Support",
-          ));
-          entities.add(_DirectoryWrapper(
-            entity: await getApplicationCacheDirectory(),
-            name: "Application Caches",
-          ));
+          entities.add(
+            _DirectoryWrapper(entity: await getApplicationDocumentsDirectory(), name: "Application Documents"),
+          );
+          entities.add(_DirectoryWrapper(entity: await getApplicationSupportDirectory(), name: "Application Support"));
+          entities.add(_DirectoryWrapper(entity: await getApplicationCacheDirectory(), name: "Application Caches"));
         }
       }
       _entities.addAll(entities);
@@ -133,105 +121,100 @@ class _DeveloperFilesState extends State<DeveloperFilesPage> {
           if (didPop) return;
           _back().ignore();
         },
-        child: _entities.isNotEmpty
-            ? ListView.separated(
-                itemCount: _entities.length,
-                itemBuilder: (context, index) {
-                  final entity = _entities[index];
-                  if (entity is _DirectoryWrapper) {
-                    return EasyListTile(
-                      leadingIcon: Icons.folder_outlined,
-                      nameText: entity.name,
-                      onTap: () => _enterDirectory(entity),
-                    );
-                  } else if (entity is _FileWrapper) {
-                    return EasyListTile(
-                      leadingIcon: Icons.description_outlined,
-                      nameText: entity.name,
-                      description: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_formatDateTime(entity.lastModified)),
-                          Text(_formatBytes(entity.length)),
-                        ],
-                      ),
-                      trailing: _selectedFiles.isEmpty
-                          ? IconButton(
-                              onPressed: () {
-                                _export([entity]).then((value) {
-                                  if (value) {
-                                    _showSuccessSnackBar();
-                                  }
-                                }, onError: (_) {
-                                  _showFailedSnackBar();
-                                });
-                              },
-                              icon: const Icon(Icons.download_outlined),
-                            )
-                          : Icon(_selectedFiles.contains(entity)
-                              ? Icons.check_box_outlined
-                              : Icons.check_box_outline_blank),
-                      onTap: _selectedFiles.isNotEmpty ? () => _toggleSelectedFile(entity) : null,
-                      onLongPress: () => _toggleSelectedFile(entity),
-                    );
-                  } else {
-                    return EasyListTile(
-                      leadingIcon: Icons.help_center_outlined,
-                      nameText: entity.name,
-                    );
-                  }
-                },
-                separatorBuilder: (context, index) => const Divider(height: 0),
-              )
-            : Center(
-                child: Text(
-                  "No files",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).hintColor,
-                  ),
-                ),
-              ),
+        child:
+            _entities.isNotEmpty
+                ? ListView.separated(
+                  itemCount: _entities.length,
+                  itemBuilder: (context, index) {
+                    final entity = _entities[index];
+                    if (entity is _DirectoryWrapper) {
+                      return EasyListTile(
+                        leadingIcon: Icons.folder_outlined,
+                        nameText: entity.name,
+                        onTap: () => _enterDirectory(entity),
+                      );
+                    } else if (entity is _FileWrapper) {
+                      return EasyListTile(
+                        leadingIcon: Icons.description_outlined,
+                        nameText: entity.name,
+                        description: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [Text(_formatDateTime(entity.lastModified)), Text(_formatBytes(entity.length))],
+                        ),
+                        trailing:
+                            _selectedFiles.isEmpty
+                                ? IconButton(
+                                  onPressed: () {
+                                    _export([entity]).then(
+                                      (value) {
+                                        if (value) {
+                                          _showSuccessSnackBar();
+                                        }
+                                      },
+                                      onError: (_) {
+                                        _showFailedSnackBar();
+                                      },
+                                    );
+                                  },
+                                  icon: const Icon(Icons.download_outlined),
+                                )
+                                : Icon(
+                                  _selectedFiles.contains(entity)
+                                      ? Icons.check_box_outlined
+                                      : Icons.check_box_outline_blank,
+                                ),
+                        onTap: _selectedFiles.isNotEmpty ? () => _toggleSelectedFile(entity) : null,
+                        onLongPress: () => _toggleSelectedFile(entity),
+                      );
+                    } else {
+                      return EasyListTile(leadingIcon: Icons.help_center_outlined, nameText: entity.name);
+                    }
+                  },
+                  separatorBuilder: (context, index) => const Divider(height: 0),
+                )
+                : Center(child: Text("No files", style: TextStyle(fontSize: 16, color: Theme.of(context).hintColor))),
       ),
       bottomNavigationBar: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
-        child: _selectedFiles.isNotEmpty
-            ? Container(
-                color: Theme.of(context).colorScheme.secondaryContainer,
-                padding: const EdgeInsetsDirectional.fromSTEB(24, 6, 16, 6),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "${_selectedFiles.length} selected",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSecondaryContainer,
+        child:
+            _selectedFiles.isNotEmpty
+                ? Container(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  padding: const EdgeInsetsDirectional.fromSTEB(24, 6, 16, 6),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "${_selectedFiles.length} selected",
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        _export(_selectedFiles).then((value) {
-                          if (value) {
-                            _clearSelectedFiles();
-                            _showSuccessSnackBar();
-                          }
-                        }, onError: (_) {
-                          _showFailedSnackBar();
-                        });
-                      },
-                      icon: const Icon(Icons.download_outlined),
-                      tooltip: "Download",
-                    ),
-                    IconButton(
-                      onPressed: () => _clearSelectedFiles(),
-                      icon: const Icon(Icons.clear),
-                      tooltip: "Cancel",
-                    )
-                  ],
-                ),
-              )
-            : const SizedBox.shrink(),
+                      IconButton(
+                        onPressed: () {
+                          _export(_selectedFiles).then(
+                            (value) {
+                              if (value) {
+                                _clearSelectedFiles();
+                                _showSuccessSnackBar();
+                              }
+                            },
+                            onError: (_) {
+                              _showFailedSnackBar();
+                            },
+                          );
+                        },
+                        icon: const Icon(Icons.download_outlined),
+                        tooltip: "Download",
+                      ),
+                      IconButton(
+                        onPressed: () => _clearSelectedFiles(),
+                        icon: const Icon(Icons.clear),
+                        tooltip: "Cancel",
+                      ),
+                    ],
+                  ),
+                )
+                : const SizedBox.shrink(),
       ),
     );
   }
@@ -239,9 +222,7 @@ class _DeveloperFilesState extends State<DeveloperFilesPage> {
   Future<bool> _export(List<_FileWrapper> fileWrappers) async {
     try {
       final files = fileWrappers.map((e) => e.entity).toList();
-      final uris = await DocumentManagerPlugin.export(
-        files: files,
-      );
+      final uris = await DocumentManagerPlugin.export(files: files);
       return uris.isNotEmpty;
     } catch (e, s) {
       ScaffoldLogger().error(null, e, s);
@@ -295,10 +276,7 @@ class _FileSystemEntityWrapper<T extends FileSystemEntity> {
   final T entity;
   final String name;
 
-  _FileSystemEntityWrapper({
-    required this.entity,
-    required this.name,
-  });
+  _FileSystemEntityWrapper({required this.entity, required this.name});
 
   @override
   bool operator ==(Object other) =>
@@ -312,20 +290,12 @@ class _FileSystemEntityWrapper<T extends FileSystemEntity> {
 }
 
 class _DirectoryWrapper extends _FileSystemEntityWrapper<Directory> {
-  _DirectoryWrapper({
-    required super.entity,
-    required super.name,
-  });
+  _DirectoryWrapper({required super.entity, required super.name});
 }
 
 class _FileWrapper extends _FileSystemEntityWrapper<File> {
   final int? length;
   final DateTime? lastModified;
 
-  _FileWrapper({
-    required super.entity,
-    required super.name,
-    this.length,
-    this.lastModified,
-  });
+  _FileWrapper({required super.entity, required super.name, this.length, this.lastModified});
 }
