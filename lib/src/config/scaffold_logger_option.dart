@@ -12,7 +12,7 @@ class ScaffoldLoggerOption {
   static const kFallbackConsoleAppenderEnabled = kDebugMode;
   static const kFallbackConsoleAppenderLevel = LogLevel.trace;
   static const kFallbackFileAppenderEnabled = true;
-  static const kFallbackFileAppenderLevel = LogLevel.warn;
+  static const kFallbackFileAppenderLevel = LogLevel.info;
   static const kFallbackLogFileLifetime = Duration(days: 15);
 
   final ScaffoldLODetails? _defaultDetails;
