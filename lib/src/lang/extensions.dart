@@ -38,8 +38,6 @@ extension ExtensionWidget on Widget {
     bool fullscreenDialog = false,
     bool allowSnapshotting = true,
     bool barrierDismissible = false,
-    TraversalEdgeBehavior? traversalEdgeBehavior,
-    TraversalEdgeBehavior? directionalTraversalEdgeBehavior,
   }) => MaterialPageRoute<T>(
     builder: (context) => this,
     settings: settings,
@@ -48,7 +46,5 @@ extension ExtensionWidget on Widget {
     fullscreenDialog: fullscreenDialog,
     allowSnapshotting: allowSnapshotting,
     barrierDismissible: barrierDismissible,
-    traversalEdgeBehavior: traversalEdgeBehavior,
-    directionalTraversalEdgeBehavior: directionalTraversalEdgeBehavior,
   );
 }
