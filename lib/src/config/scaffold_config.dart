@@ -7,7 +7,7 @@ import 'scaffold_messenger_option.dart';
 
 class ScaffoldConfig {
   static const kCacheManagerKeyGlobal = "yullg_cache_manager_global";
-  static const kDocumentManagerDirectory = "yullg/document";
+  static const kDocumentManagerDirectory = "yullg/scaffold/document";
   static const kSendCodeNameDefault = "yullg_send_code_default";
 
   static ScaffoldLoggerOption? _loggerOption;

@@ -7,8 +7,8 @@ import 'scaffold_config.dart';
 class ScaffoldLoggerOption {
   static const kLoggerNameDefault = "yullg_logger_default";
   static const kLoggerNameScaffold = "yullg_logger_scaffold";
-  static const kLogDirectory = "yullg/log";
-  static const kLogUploadDirectory = "yullg/log/upload";
+  static const kLogDirectory = "yullg/scaffold/log";
+  static const kLogUploadDirectory = "yullg/scaffold/log/upload";
   static const kFallbackConsoleAppenderEnabled = kDebugMode;
   static const kFallbackConsoleAppenderLevel = LogLevel.trace;
   static const kFallbackFileAppenderEnabled = true;
@@ -18,15 +18,12 @@ class ScaffoldLoggerOption {
   final ScaffoldLODetails? _defaultDetails;
   final Map<String, ScaffoldLODetails> _namedDetails;
 
-  ScaffoldLoggerOption({
-    ScaffoldLODetails? defaultDetails,
-    Map<String, ScaffoldLODetails> namedDetails = const {},
-  })  : _defaultDetails = defaultDetails,
-        _namedDetails = Map.of(namedDetails);
+  ScaffoldLoggerOption({ScaffoldLODetails? defaultDetails, Map<String, ScaffoldLODetails> namedDetails = const {}})
+    : _defaultDetails = defaultDetails,
+      _namedDetails = Map.of(namedDetails);
 
   static bool consoleAppenderEnabled(String name) =>
-      ScaffoldConfig
-          .loggerOption?._namedDetails[name]?.consoleAppenderEnabled ??
+      ScaffoldConfig.loggerOption?._namedDetails[name]?.consoleAppenderEnabled ??
       ScaffoldConfig.loggerOption?._defaultDetails?.consoleAppenderEnabled ??
       kFallbackConsoleAppenderEnabled;
 
