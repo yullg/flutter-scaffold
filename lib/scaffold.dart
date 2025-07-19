@@ -84,6 +84,7 @@ export 'src/ui/popup/toast.dart';
 export 'src/ui/widget/easy_list_tile.dart';
 export 'src/ui/widget/easy_switch_list_tile.dart';
 export 'src/ui/widget/future_widget.dart';
+export 'src/ui/widget/global_dismiss_keyboard_widget.dart';
 export 'src/ui/widget/lockable_elevated_button.dart';
 export 'src/ui/widget/lockable_filled_button.dart';
 export 'src/ui/widget/lockable_icon_button.dart';
