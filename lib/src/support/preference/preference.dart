@@ -15,23 +15,17 @@ class Preference {
 
   Future<String?> getString(String key) => _sp.then((it) => it.read(key));
 
-  Future<List<String>?> getStringList(String key) =>
-      _sp.then((it) => it.read(key));
+  Future<List<String>?> getStringList(String key) => _sp.then((it) => it.read(key)?.cast<String>());
 
-  Future<void> setBool(String key, bool value) =>
-      _sp.then((it) => it.write(key, value));
+  Future<void> setBool(String key, bool value) => _sp.then((it) => it.write(key, value));
 
-  Future<void> setInt(String key, int value) =>
-      _sp.then((it) => it.write(key, value));
+  Future<void> setInt(String key, int value) => _sp.then((it) => it.write(key, value));
 
-  Future<void> setDouble(String key, double value) =>
-      _sp.then((it) => it.write(key, value));
+  Future<void> setDouble(String key, double value) => _sp.then((it) => it.write(key, value));
 
-  Future<void> setString(String key, String value) =>
-      _sp.then((it) => it.write(key, value));
+  Future<void> setString(String key, String value) => _sp.then((it) => it.write(key, value));
 
-  Future<void> setStringList(String key, List<String> value) =>
-      _sp.then((it) => it.write(key, value));
+  Future<void> setStringList(String key, List<String> value) => _sp.then((it) => it.write(key, value));
 
   Future<void> remove(String key) => _sp.then((it) => it.remove(key));
 
