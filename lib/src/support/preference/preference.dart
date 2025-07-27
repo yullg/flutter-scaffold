@@ -1,47 +1,43 @@
-import 'package:get_storage/get_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Preference {
   final String name;
+  final String _prefix;
 
-  Preference(this.name);
+  Preference(this.name) : _prefix = "${name}_";
 
-  Future<Iterable<String>> getKeys() => _sp.then((it) => it.getKeys());
+  String actualKey(String key) => "$_prefix$key";
 
-  Future<bool?> getBool(String key) => _sp.then((it) => it.read(key));
+  Future<bool> containsKey(String key) => _sp.containsKey(actualKey(key));
 
-  Future<int?> getInt(String key) => _sp.then((it) => it.read(key));
+  Future<Iterable<String>> getKeys() => _sp.getKeys().then((keys) => keys.where((key) => key.startsWith(_prefix)));
 
-  Future<double?> getDouble(String key) => _sp.then((it) => it.read(key));
+  Future<bool?> getBool(String key) => _sp.getBool(actualKey(key));
 
-  Future<String?> getString(String key) => _sp.then((it) => it.read(key));
+  Future<int?> getInt(String key) => _sp.getInt(actualKey(key));
 
-  Future<List<String>?> getStringList(String key) => _sp.then((it) => it.read(key)?.cast<String>());
+  Future<double?> getDouble(String key) => _sp.getDouble(actualKey(key));
 
-  Future<void> setBool(String key, bool value) => _sp.then((it) => it.write(key, value));
+  Future<String?> getString(String key) => _sp.getString(actualKey(key));
 
-  Future<void> setInt(String key, int value) => _sp.then((it) => it.write(key, value));
+  Future<List<String>?> getStringList(String key) => _sp.getStringList(actualKey(key));
 
-  Future<void> setDouble(String key, double value) => _sp.then((it) => it.write(key, value));
+  Future<void> setBool(String key, bool value) => _sp.setBool(actualKey(key), value);
 
-  Future<void> setString(String key, String value) => _sp.then((it) => it.write(key, value));
+  Future<void> setInt(String key, int value) => _sp.setInt(actualKey(key), value);
 
-  Future<void> setStringList(String key, List<String> value) => _sp.then((it) => it.write(key, value));
+  Future<void> setDouble(String key, double value) => _sp.setDouble(actualKey(key), value);
 
-  Future<void> remove(String key) => _sp.then((it) => it.remove(key));
+  Future<void> setString(String key, String value) => _sp.setString(actualKey(key), value);
 
-  Future<void> clear() => _sp.then((it) => it.erase());
+  Future<void> setStringList(String key, List<String> value) => _sp.setStringList(actualKey(key), value);
 
-  GetStorage? _storage;
+  Future<void> remove(String key) => _sp.remove(actualKey(key));
 
-  Future<GetStorage> get _sp async {
-    GetStorage? result = _storage;
-    if (result != null) {
-      return result;
-    } else {
-      result = GetStorage(name);
-      await result.initStorage;
-      _storage = result;
-      return result;
-    }
+  Future<void> clear() async {
+    final keys = await getKeys();
+    _sp.clear(allowList: keys.toSet());
   }
+
+  final _sp = SharedPreferencesAsync();
 }
