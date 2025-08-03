@@ -15,15 +15,11 @@ class LoadingDialog {
   final _progressValueNotifier = ValueNotifier<double?>(null);
   final _messageValueNotifier = ValueNotifier<String?>(null);
 
-  LoadingDialog({
-    this.mode = LoadingDialogMode.circular,
-    this.cancelable = false,
-    double? progress,
-    String? message,
-  })  : _initialMode = mode,
-        _initialCancelable = cancelable,
-        _initialProgress = progress,
-        _initialMessage = message {
+  LoadingDialog({this.mode = LoadingDialogMode.circular, this.cancelable = false, double? progress, String? message})
+    : _initialMode = mode,
+      _initialCancelable = cancelable,
+      _initialProgress = progress,
+      _initialMessage = message {
     _progressValueNotifier.value = progress;
     _messageValueNotifier.value = message;
   }
@@ -76,97 +72,98 @@ class LoadingDialog {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: LayoutBuilder(
-                  builder: (context, constraints) => switch (mode) {
-                    LoadingDialogMode.circular => ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: 100,
-                          minHeight: 100,
-                          maxWidth: min(300, constraints.maxWidth),
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ValueListenableBuilder<double?>(
-                              valueListenable: _progressValueNotifier,
-                              builder: (BuildContext context, double? value, Widget? child) {
-                                return CircularProgressIndicator(
-                                  value: value,
-                                  strokeCap: StrokeCap.round,
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                );
-                              },
-                            ),
-                            ValueListenableBuilder<String?>(
-                              valueListenable: _messageValueNotifier,
-                              builder: (BuildContext context, String? value, Widget? child) {
-                                if (value != null) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(top: 16),
-                                    child: Text(
-                                      value,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: theme.colorScheme.onPrimaryContainer,
-                                      ),
-                                    ),
+                  builder:
+                      (context, constraints) => switch (mode) {
+                        LoadingDialogMode.circular => ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minWidth: 100,
+                            minHeight: 100,
+                            maxWidth: min(240, constraints.maxWidth),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ValueListenableBuilder<double?>(
+                                valueListenable: _progressValueNotifier,
+                                builder: (BuildContext context, double? value, Widget? child) {
+                                  return CircularProgressIndicator(
+                                    value: value,
+                                    strokeCap: StrokeCap.round,
+                                    color: theme.colorScheme.onPrimaryContainer,
                                   );
-                                } else {
-                                  return const SizedBox.shrink();
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    LoadingDialogMode.linear => ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: 100,
-                          minHeight: 100,
-                          maxWidth: min(300, constraints.maxWidth),
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ValueListenableBuilder<double?>(
-                              valueListenable: _progressValueNotifier,
-                              builder: (BuildContext context, double? value, Widget? child) {
-                                return LinearProgressIndicator(
-                                  value: value,
-                                  minHeight: 8,
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                );
-                              },
-                            ),
-                            ValueListenableBuilder<String?>(
-                              valueListenable: _messageValueNotifier,
-                              builder: (BuildContext context, String? value, Widget? child) {
-                                if (value != null) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(top: 16),
-                                    child: Text(
-                                      value,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: theme.colorScheme.onPrimaryContainer,
+                                },
+                              ),
+                              ValueListenableBuilder<String?>(
+                                valueListenable: _messageValueNotifier,
+                                builder: (BuildContext context, String? value, Widget? child) {
+                                  if (value != null) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 16),
+                                      child: Text(
+                                        value,
+                                        maxLines: 6,
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                          color: theme.colorScheme.onPrimaryContainer,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                } else {
-                                  return const SizedBox.shrink();
-                                }
-                              },
-                            ),
-                          ],
+                                    );
+                                  } else {
+                                    return const SizedBox.shrink();
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                  },
+                        LoadingDialogMode.linear => ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minWidth: 100,
+                            minHeight: 100,
+                            maxWidth: min(240, constraints.maxWidth),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ValueListenableBuilder<double?>(
+                                valueListenable: _progressValueNotifier,
+                                builder: (BuildContext context, double? value, Widget? child) {
+                                  return LinearProgressIndicator(
+                                    value: value,
+                                    minHeight: 8,
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: theme.colorScheme.onPrimaryContainer,
+                                  );
+                                },
+                              ),
+                              ValueListenableBuilder<String?>(
+                                valueListenable: _messageValueNotifier,
+                                builder: (BuildContext context, String? value, Widget? child) {
+                                  if (value != null) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 16),
+                                      child: Text(
+                                        value,
+                                        maxLines: 6,
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                          color: theme.colorScheme.onPrimaryContainer,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    return const SizedBox.shrink();
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      },
                 ),
               ),
             ),
