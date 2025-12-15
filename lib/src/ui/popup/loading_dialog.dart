@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../config/scaffold_config.dart';
+
 enum LoadingDialogMode { circular, linear }
 
 class LoadingDialog {
@@ -44,16 +46,14 @@ class LoadingDialog {
   }
 
   Future<void>? _dialogFuture;
-  bool _hasClose = false;
 
-  bool get isShowing => _dialogFuture != null && !_hasClose;
+  bool get isShowing => _dialogFuture != null;
 
   Future<void> show(BuildContext context) {
     final previousDialogFuture = _dialogFuture;
     if (previousDialogFuture != null) {
       return previousDialogFuture;
     }
-    _hasClose = false;
     final dialogFuture = showDialog<void>(
       context: context,
       barrierDismissible: cancelable,
@@ -68,7 +68,7 @@ class LoadingDialog {
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
+                  color: ScaffoldConfig.uiOption?.popupLoadingBackgroundColor ?? theme.colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: LayoutBuilder(
@@ -90,7 +90,9 @@ class LoadingDialog {
                                   return CircularProgressIndicator(
                                     value: value,
                                     strokeCap: StrokeCap.round,
-                                    color: theme.colorScheme.onPrimaryContainer,
+                                    color:
+                                        ScaffoldConfig.uiOption?.popupLoadingForegroundColor ??
+                                        theme.colorScheme.onPrimaryContainer,
                                   );
                                 },
                               ),
@@ -106,7 +108,9 @@ class LoadingDialog {
                                         textAlign: TextAlign.center,
                                         overflow: TextOverflow.ellipsis,
                                         style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: theme.colorScheme.onPrimaryContainer,
+                                          color:
+                                              ScaffoldConfig.uiOption?.popupLoadingForegroundColor ??
+                                              theme.colorScheme.onPrimaryContainer,
                                         ),
                                       ),
                                     );
@@ -135,7 +139,9 @@ class LoadingDialog {
                                     value: value,
                                     minHeight: 8,
                                     borderRadius: BorderRadius.circular(4),
-                                    color: theme.colorScheme.onPrimaryContainer,
+                                    color:
+                                        ScaffoldConfig.uiOption?.popupLoadingForegroundColor ??
+                                        theme.colorScheme.onPrimaryContainer,
                                   );
                                 },
                               ),
@@ -151,7 +157,9 @@ class LoadingDialog {
                                         textAlign: TextAlign.center,
                                         overflow: TextOverflow.ellipsis,
                                         style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: theme.colorScheme.onPrimaryContainer,
+                                          color:
+                                              ScaffoldConfig.uiOption?.popupLoadingForegroundColor ??
+                                              theme.colorScheme.onPrimaryContainer,
                                         ),
                                       ),
                                     );
@@ -172,16 +180,14 @@ class LoadingDialog {
       },
     ).whenComplete(() {
       _dialogFuture = null;
-      _hasClose = false;
     });
     _dialogFuture = dialogFuture;
     return dialogFuture;
   }
 
   void close(BuildContext context) {
-    if (_dialogFuture != null && !_hasClose) {
+    if (_dialogFuture != null) {
       Navigator.of(context, rootNavigator: true).pop();
-      _hasClose = true;
     }
   }
 
