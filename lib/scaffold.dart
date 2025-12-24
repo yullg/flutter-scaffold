@@ -10,6 +10,7 @@ export 'src/core/error.dart';
 export 'src/core/error_print.dart';
 export 'src/core/global_cache_manager.dart';
 export 'src/core/localization_manager.dart';
+export 'src/core/paginated.dart';
 export 'src/core/resource.dart';
 export 'src/core/supplier.dart';
 export 'src/core/theme_mode_manager.dart';
