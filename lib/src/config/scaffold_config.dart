@@ -4,6 +4,7 @@ import 'scaffold_developer_option.dart';
 import 'scaffold_http_option.dart';
 import 'scaffold_logger_option.dart';
 import 'scaffold_messenger_option.dart';
+import 'scaffold_ui_option.dart';
 
 class ScaffoldConfig {
   static const kCacheManagerKeyGlobal = "yullg_cache_manager_global";
@@ -15,6 +16,7 @@ class ScaffoldConfig {
   static ScaffoldDatabaseOption? _databaseOption;
   static ScaffoldMessengerOption? _messengerOption;
   static ScaffoldCacheOption? _cacheOption;
+  static ScaffoldUiOption? _uiOption;
   static ScaffoldDeveloperOption? _developerOption;
 
   static ScaffoldLoggerOption? get loggerOption => _loggerOption;
@@ -27,6 +29,8 @@ class ScaffoldConfig {
 
   static ScaffoldCacheOption? get cacheOption => _cacheOption;
 
+  static ScaffoldUiOption? get uiOption => _uiOption;
+
   static ScaffoldDeveloperOption? get developerOption => _developerOption;
 
   static void apply({
@@ -35,6 +39,7 @@ class ScaffoldConfig {
     ScaffoldDatabaseOption? databaseOption,
     ScaffoldMessengerOption? messengerOption,
     ScaffoldCacheOption? cacheOption,
+    ScaffoldUiOption? uiOption,
     ScaffoldDeveloperOption? developerOption,
   }) {
     _loggerOption = loggerOption;
@@ -42,6 +47,7 @@ class ScaffoldConfig {
     _databaseOption = databaseOption;
     _messengerOption = messengerOption;
     _cacheOption = cacheOption;
+    _uiOption = uiOption;
     _developerOption = developerOption;
   }
 
@@ -51,6 +57,7 @@ class ScaffoldConfig {
     _databaseOption = null;
     _messengerOption = null;
     _cacheOption = null;
+    _uiOption = null;
     _developerOption = null;
   }
 

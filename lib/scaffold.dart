@@ -5,6 +5,7 @@ export 'src/config/scaffold_developer_option.dart';
 export 'src/config/scaffold_http_option.dart';
 export 'src/config/scaffold_logger_option.dart';
 export 'src/config/scaffold_messenger_option.dart';
+export 'src/config/scaffold_ui_option.dart';
 export 'src/core/error.dart';
 export 'src/core/error_print.dart';
 export 'src/core/global_cache_manager.dart';
