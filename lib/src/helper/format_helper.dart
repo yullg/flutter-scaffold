@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:decimal/decimal.dart';
+import 'package:intl/intl.dart';
+
 class FormatHelper {
   static int parseInt(Object source, {int? radix}) {
     if (source is num) return source.toInt();
@@ -198,33 +201,30 @@ class FormatHelper {
     }
   }
 
-  static String printNum(num number, {int minFractionDigits = 0, int maxFractionDigits = 3, bool round = true}) {
-    if (number.isFinite && number is double) {
-      maxFractionDigits = min(round ? 20 : 19, max(0, maxFractionDigits));
-      minFractionDigits = min(maxFractionDigits, max(0, minFractionDigits));
-      String result = number.toStringAsFixed(round ? maxFractionDigits : maxFractionDigits + 1);
-      if (!round && result.isNotEmpty) {
-        result = result.substring(0, result.length - 1);
-      }
-      final dotIndex = result.indexOf(".");
-      if (dotIndex >= 0) {
-        // 去掉多余的0
-        while (result.endsWith("0")) {
-          result = result.substring(0, result.length - 1);
-        }
-        // 如果小数点后位数小于最小值，则补0
-        while (result.length - 1 - dotIndex < minFractionDigits) {
-          result += "0";
-        }
-        // 在没有小数位时去掉末尾的小数点
-        while (result.endsWith(".")) {
-          result = result.substring(0, result.length - 1);
-        }
-      }
-      return result;
-    } else {
-      return number.toString();
+  static String printNum(
+    num number, {
+    int minFractionDigits = 0,
+    int maxFractionDigits = 3,
+    bool truncate = true,
+    bool useGrouping = true,
+  }) {
+    maxFractionDigits = min(20, max(0, maxFractionDigits));
+    minFractionDigits = min(maxFractionDigits, max(0, minFractionDigits));
+    if (number is int) {
+      return NumberFormat(useGrouping ? '#,##0' : '0', "en_US").format(number);
+    } else if (maxFractionDigits <= 0) {
+      return NumberFormat(useGrouping ? '#,##0' : '0', "en_US").format(truncate ? number.truncate() : number.round());
     }
+    if (truncate) {
+      final decimal = Decimal.tryParse(number.toStringAsFixed(min(20, maxFractionDigits + 6)));
+      if (decimal != null) {
+        number = decimal.truncate(scale: maxFractionDigits).toDouble();
+      }
+    }
+    return NumberFormat(
+      "${useGrouping ? '#,##0' : '0'}.${'0' * minFractionDigits}${'#' * (maxFractionDigits - minFractionDigits)}",
+      "en_US",
+    ).format(number);
   }
 
   FormatHelper._();
