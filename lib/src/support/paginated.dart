@@ -51,6 +51,14 @@ class PaginatedData<T> extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clear({bool? hasMore}) {
+    _items.clear();
+    if (hasMore != null) {
+      _hasMore = hasMore;
+    }
+    notifyListeners();
+  }
+
   void remove(T item, {bool? hasMore}) {
     _items.remove(item);
     if (hasMore != null) {
@@ -144,18 +152,20 @@ class PaginatedData<T> extends ChangeNotifier {
 mixin PaginatedMixin<T> {
   PaginatedData<T> get paginatedData;
 
-  Future<void> refresh() async {
+  Future<PaginatedData<T>> doRefresh() async {
     final items = await fetch(0);
     paginatedData.replaceAll(items, hasMore: items.isNotEmpty);
+    return paginatedData;
   }
 
-  Future<void> loadMore() async {
+  Future<PaginatedData<T>> doLoadMore() async {
     final moreItems = await fetch(paginatedData.length);
     if (moreItems.isNotEmpty) {
       paginatedData.addAll(moreItems, hasMore: true);
     } else {
       paginatedData.hasMore = false;
     }
+    return paginatedData;
   }
 
   @protected
