@@ -12,8 +12,8 @@ dependencies:
     sdk: flutter
   intl: any
   meta: any
-  async: any
-  collection: any
+  async: ^2.13.0
+  collection: ^1.19.1
   path: ^1.9.1
   path_provider: ^2.1.5
   flutter_cache_manager: ^3.4.1
