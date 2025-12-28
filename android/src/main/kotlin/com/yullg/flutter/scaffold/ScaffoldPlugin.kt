@@ -7,6 +7,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 class ScaffoldPlugin : FlutterPlugin, ActivityAware {
 
     private val useCaseArray = arrayOf(
+        BasicUseCase,
         ToastUseCase,
         IntentUseCase,
         MediaStoreUseCase,
