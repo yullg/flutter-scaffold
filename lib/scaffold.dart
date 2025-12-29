@@ -32,7 +32,6 @@ export 'src/plugin/android/android_media_projection_plugin.dart';
 export 'src/plugin/android/android_media_store_plugin.dart';
 export 'src/plugin/android/android_notification_plugin.dart';
 export 'src/plugin/android/android_package_install_plugin.dart';
-export 'src/plugin/android/android_toast_plugin.dart';
 export 'src/plugin/document_manager_plugin.dart';
 export 'src/plugin/gallery_save_plugin.dart';
 export 'src/plugin/ios/ios_basic_plugin.dart';

@@ -17,6 +17,18 @@ sealed class AndroidBasicMethod<T> {
   const AndroidBasicMethod(this.method, [this.arguments]);
 }
 
+class ToastABM extends AndroidBasicMethod<void> {
+  factory ToastABM.show(String text, {bool? longDuration}) {
+    return ToastABM._("ToastABM", <String, dynamic>{"method": "show", "text": text, "longDuration": longDuration});
+  }
+
+  factory ToastABM.cancel() {
+    return ToastABM._("ToastABM", <String, dynamic>{"method": "cancel"});
+  }
+
+  const ToastABM._(super.method, [super.arguments]);
+}
+
 class SystemClockABM<T> extends AndroidBasicMethod<T> {
   /// 返回自启动以来的毫秒数，不包括睡眠时间。
   static const kUptimeMillis = SystemClockABM<int>._("SystemClockABM", "uptimeMillis");

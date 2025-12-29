@@ -8,7 +8,6 @@ import 'scaffold/plugin/android/intent_page.dart';
 import 'scaffold/plugin/android/media_projection_page.dart';
 import 'scaffold/plugin/android/media_store_page.dart';
 import 'scaffold/plugin/android/notification_page.dart';
-import 'scaffold/plugin/android/toast_page.dart';
 import 'scaffold/ui/popup/loading_page.dart';
 import 'scaffold/ui/widget/polymorphic_text_page.dart';
 
@@ -59,12 +58,6 @@ class _HomeState extends State<HomePage> {
                       TreeSliverNode(
                         TreeSliverNodeContent(name: "android"),
                         children: [
-                          TreeSliverNode(
-                            TreeSliverNodeContent(
-                              name: "toast",
-                              onClick: () => to(context, const ToastPage()),
-                            ),
-                          ),
                           TreeSliverNode(
                             TreeSliverNodeContent(
                               name: "intent",
