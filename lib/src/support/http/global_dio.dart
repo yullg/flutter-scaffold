@@ -1,5 +1,5 @@
 import 'package:dio/io.dart';
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import '../../config/scaffold_config.dart';
 

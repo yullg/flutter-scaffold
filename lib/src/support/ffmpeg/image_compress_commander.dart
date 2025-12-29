@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import 'codec/libwebp_encoder.dart';
 import 'filter/filter.dart';
@@ -41,11 +41,7 @@ class ImageCompressCommander {
     result.add("-vframes");
     result.add("1");
     result.add("-vcodec");
-    final encoder = LibwebpEncoder(
-      lossless: lossless,
-      compressionLevel: compressionLevel,
-      quality: quality,
-    );
+    final encoder = LibwebpEncoder(lossless: lossless, compressionLevel: compressionLevel, quality: quality);
     result.add(encoder.name);
     encoder.options?.also((it) {
       result.addAll(it);
@@ -57,18 +53,22 @@ class ImageCompressCommander {
           height: maxHeight != null ? "min(ih, $maxHeight)" : "-1",
           forceOriginalAspectRatio: "decrease",
           forceDivisibleBy: forceDivisibleBy?.toString(),
-        )
+        ),
     ];
     if (filters.isNotEmpty) {
       result.add("-vf");
-      result.add(filters.map((filter) {
-        final options = filter.options;
-        if (options != null) {
-          return "${filter.name}='$options'";
-        } else {
-          return filter.name;
-        }
-      }).join(","));
+      result.add(
+        filters
+            .map((filter) {
+              final options = filter.options;
+              if (options != null) {
+                return "${filter.name}='$options'";
+              } else {
+                return filter.name;
+              }
+            })
+            .join(","),
+      );
     }
     result.add(output.absolute.path);
     return result;

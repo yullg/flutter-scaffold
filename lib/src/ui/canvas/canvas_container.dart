@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import 'adjust_boundary.dart';
 import 'canvas_container_controller.dart';
@@ -36,10 +36,7 @@ class CanvasContainer extends StatelessWidget {
         builder: (context, constraints) {
           final containerSize = constraints.biggest;
           final containerChild = builder(context, constraints);
-          controller.attach(
-            containerSize: containerSize,
-            containerChildSize: containerChild.size,
-          );
+          controller.attach(containerSize: containerSize, containerChildSize: containerChild.size);
           return ListenableBuilder(
             listenable: controller,
             builder: (context, _) {
@@ -103,14 +100,12 @@ class CanvasContainer extends StatelessWidget {
                                     containerChild.child,
                                     if (drawingBoardEnabled)
                                       DrawingBoard(
-                                        extension:
-                                            controller.drawingBoardExtension,
+                                        extension: controller.drawingBoardExtension,
                                         style: drawingBoardStyle,
                                       ),
                                     if (adjustBoundaryEnabled)
                                       AdjustBoundary(
-                                        extension:
-                                            controller.adjustBoundaryExtension,
+                                        extension: controller.adjustBoundaryExtension,
                                         style: adjustBoundaryStyle,
                                       ),
                                   ],
@@ -136,26 +131,17 @@ class CanvasContainerChild {
   final Size size;
   final Widget child;
 
-  CanvasContainerChild({
-    required this.size,
-    required this.child,
-  }) {
+  CanvasContainerChild({required this.size, required this.child}) {
     if (!size.isFinite) {
       throw ArgumentError("Size must be finite");
     }
   }
 
-  CanvasContainerChild.contain({
-    required Size boxSize,
-    required Size childSize,
-    required this.child,
-  }) : size = _calculateContainSize(boxSize, childSize);
+  CanvasContainerChild.contain({required Size boxSize, required Size childSize, required this.child})
+    : size = _calculateContainSize(boxSize, childSize);
 
-  CanvasContainerChild.cover({
-    required Size boxSize,
-    required Size childSize,
-    required this.child,
-  }) : size = _calculateCoverSize(boxSize, childSize);
+  CanvasContainerChild.cover({required Size boxSize, required Size childSize, required this.child})
+    : size = _calculateCoverSize(boxSize, childSize);
 
   static Size _calculateContainSize(Size boxSize, Size childSize) {
     if (!boxSize.isFinite) {
@@ -166,9 +152,8 @@ class CanvasContainerChild {
     }
     final boxAspectRatio = boxSize.width / boxSize.height;
     final childAspectRatio = childSize.width / childSize.height;
-    final scale = childAspectRatio > boxAspectRatio
-        ? boxSize.width / childSize.width
-        : boxSize.height / childSize.height;
+    final scale =
+        childAspectRatio > boxAspectRatio ? boxSize.width / childSize.width : boxSize.height / childSize.height;
     return Size(childSize.width * scale, childSize.height * scale);
   }
 

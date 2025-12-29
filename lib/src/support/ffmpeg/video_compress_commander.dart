@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import 'codec/encoder.dart';
 import 'filter/filter.dart';
@@ -65,18 +65,22 @@ class VideoCompressCommander {
           width: maxWidth != null ? "min(iw, $maxWidth)" : "-1",
           height: maxHeight != null ? "min(ih, $maxHeight)" : "-1",
           forceOriginalAspectRatio: "decrease",
-        )
+        ),
     ];
     if (filters.isNotEmpty) {
       result.add("-vf");
-      result.add(filters.map((filter) {
-        final options = filter.options;
-        if (options != null) {
-          return "${filter.name}='$options'";
-        } else {
-          return filter.name;
-        }
-      }).join(","));
+      result.add(
+        filters
+            .map((filter) {
+              final options = filter.options;
+              if (options != null) {
+                return "${filter.name}='$options'";
+              } else {
+                return filter.name;
+              }
+            })
+            .join(","),
+      );
     }
     result.add(output.absolute.path);
     return result;

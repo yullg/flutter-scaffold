@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import '../../config/scaffold_config.dart';
 import '../popup/text_input_dialog.dart';

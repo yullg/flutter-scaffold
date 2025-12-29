@@ -1,4 +1,4 @@
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import 'filter.dart';
 
@@ -11,14 +11,7 @@ class CropFilter implements Filter {
   final String? keepAspect;
   final String? exact;
 
-  const CropFilter({
-    this.w,
-    this.h,
-    this.x,
-    this.y,
-    this.keepAspect,
-    this.exact,
-  });
+  const CropFilter({this.w, this.h, this.x, this.y, this.keepAspect, this.exact});
 
   @override
   String get name => "crop";
@@ -60,13 +53,7 @@ class CropFilter implements Filter {
           exact == other.exact;
 
   @override
-  int get hashCode =>
-      w.hashCode ^
-      h.hashCode ^
-      x.hashCode ^
-      y.hashCode ^
-      keepAspect.hashCode ^
-      exact.hashCode;
+  int get hashCode => w.hashCode ^ h.hashCode ^ x.hashCode ^ y.hashCode ^ keepAspect.hashCode ^ exact.hashCode;
 
   @override
   String toString() {

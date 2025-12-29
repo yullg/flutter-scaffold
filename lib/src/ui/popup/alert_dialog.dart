@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 Future<T?> showAlertDialog<T>({
   required BuildContext context,
@@ -13,23 +13,26 @@ Future<T?> showAlertDialog<T>({
 }) {
   return showCupertinoDialog<T>(
     context: context,
-    builder: (context) => PopScope(
-      canPop: isDismissible,
-      child: CupertinoAlertDialog(
-        title: title ?? titleText?.let((it) => Text(it)),
-        content: content ?? contentText?.let((it) => Text(it)),
-        actions: actions
-            .map((action) => CupertinoDialogAction(
-                  onPressed: () {
-                    Navigator.of(context, rootNavigator: useRootNavigator).pop(action.value);
-                  },
-                  isDefaultAction: action.isDefaultAction,
-                  isDestructiveAction: action.isDestructiveAction,
-                  child: action.child ?? Text(action.childText ?? action.value.toString()),
-                ))
-            .toList(growable: false),
-      ),
-    ),
+    builder:
+        (context) => PopScope(
+          canPop: isDismissible,
+          child: CupertinoAlertDialog(
+            title: title ?? titleText?.let((it) => Text(it)),
+            content: content ?? contentText?.let((it) => Text(it)),
+            actions: actions
+                .map(
+                  (action) => CupertinoDialogAction(
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: useRootNavigator).pop(action.value);
+                    },
+                    isDefaultAction: action.isDefaultAction,
+                    isDestructiveAction: action.isDestructiveAction,
+                    child: action.child ?? Text(action.childText ?? action.value.toString()),
+                  ),
+                )
+                .toList(growable: false),
+          ),
+        ),
     useRootNavigator: useRootNavigator,
     barrierDismissible: isDismissible,
   );

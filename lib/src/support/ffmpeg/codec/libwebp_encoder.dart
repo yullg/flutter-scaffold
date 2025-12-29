@@ -1,4 +1,4 @@
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import 'encoder.dart';
 
@@ -9,12 +9,7 @@ class LibwebpEncoder implements Encoder {
   final double? quality;
   final String? preset;
 
-  const LibwebpEncoder({
-    this.lossless,
-    this.compressionLevel,
-    this.quality,
-    this.preset,
-  });
+  const LibwebpEncoder({this.lossless, this.compressionLevel, this.quality, this.preset});
 
   @override
   String get name => "libwebp";
@@ -52,11 +47,7 @@ class LibwebpEncoder implements Encoder {
           preset == other.preset;
 
   @override
-  int get hashCode =>
-      lossless.hashCode ^
-      compressionLevel.hashCode ^
-      quality.hashCode ^
-      preset.hashCode;
+  int get hashCode => lossless.hashCode ^ compressionLevel.hashCode ^ quality.hashCode ^ preset.hashCode;
 
   @override
   String toString() {

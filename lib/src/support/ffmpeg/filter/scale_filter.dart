@@ -1,4 +1,4 @@
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import 'filter.dart';
 
@@ -10,13 +10,7 @@ class ScaleFilter implements Filter {
   final String? forceOriginalAspectRatio;
   final String? forceDivisibleBy;
 
-  const ScaleFilter({
-    this.width,
-    this.height,
-    this.eval,
-    this.forceOriginalAspectRatio,
-    this.forceDivisibleBy,
-  });
+  const ScaleFilter({this.width, this.height, this.eval, this.forceOriginalAspectRatio, this.forceDivisibleBy});
 
   @override
   String get name => "scale";
@@ -53,11 +47,7 @@ class ScaleFilter implements Filter {
           forceOriginalAspectRatio == other.forceOriginalAspectRatio;
 
   @override
-  int get hashCode =>
-      width.hashCode ^
-      height.hashCode ^
-      eval.hashCode ^
-      forceOriginalAspectRatio.hashCode;
+  int get hashCode => width.hashCode ^ height.hashCode ^ eval.hashCode ^ forceOriginalAspectRatio.hashCode;
 
   @override
   String toString() {

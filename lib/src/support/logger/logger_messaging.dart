@@ -1,4 +1,4 @@
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import '../../helper/string_helper.dart';
 import 'logger.dart';

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import 'codec/encoder.dart';
 import 'ffmpeg_util.dart';
@@ -62,11 +62,7 @@ class VideoResizeCommander {
       });
     });
     final filters = <Filter>[
-      ScaleFilter(
-        width: "$width",
-        height: "$height",
-        forceOriginalAspectRatio: "decrease",
-      ),
+      ScaleFilter(width: "$width", height: "$height", forceOriginalAspectRatio: "decrease"),
       if (padding)
         PadFilter(
           width: "$width",
@@ -78,14 +74,18 @@ class VideoResizeCommander {
     ];
     if (filters.isNotEmpty) {
       result.add("-vf");
-      result.add(filters.map((filter) {
-        final options = filter.options;
-        if (options != null) {
-          return "${filter.name}='$options'";
-        } else {
-          return filter.name;
-        }
-      }).join(","));
+      result.add(
+        filters
+            .map((filter) {
+              final options = filter.options;
+              if (options != null) {
+                return "${filter.name}='$options'";
+              } else {
+                return filter.name;
+              }
+            })
+            .join(","),
+      );
     }
     result.add(output.absolute.path);
     return result;

@@ -1,4 +1,4 @@
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import 'filter.dart';
 
@@ -12,15 +12,7 @@ class PadFilter implements Filter {
   final String? eval;
   final String? aspect;
 
-  const PadFilter({
-    this.width,
-    this.height,
-    this.x,
-    this.y,
-    this.color,
-    this.eval,
-    this.aspect,
-  });
+  const PadFilter({this.width, this.height, this.x, this.y, this.color, this.eval, this.aspect});
 
   @override
   String get name => "pad";
@@ -67,13 +59,7 @@ class PadFilter implements Filter {
 
   @override
   int get hashCode =>
-      width.hashCode ^
-      height.hashCode ^
-      x.hashCode ^
-      y.hashCode ^
-      color.hashCode ^
-      eval.hashCode ^
-      aspect.hashCode;
+      width.hashCode ^ height.hashCode ^ x.hashCode ^ y.hashCode ^ color.hashCode ^ eval.hashCode ^ aspect.hashCode;
 
   @override
   String toString() {

@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
-import 'package:scaffold/scaffold_lang.dart';
+import 'package:scaffold/scaffold_sugar.dart';
 
 import 'canvas_container_controller_extensions.dart';
 
@@ -11,9 +11,7 @@ class DrawingBoardExtension extends ChangeNotifier {
   final CanvasContainerControllerExtensions _extensions;
   final paint = DrawingBoardPaint();
 
-  DrawingBoardExtension({
-    required CanvasContainerControllerExtensions extensions,
-  }) : _extensions = extensions;
+  DrawingBoardExtension({required CanvasContainerControllerExtensions extensions}) : _extensions = extensions;
 
   // ---------- 历史快照管理 ----------
   final _imageList = <ui.Image>[];
@@ -65,8 +63,7 @@ class DrawingBoardExtension extends ChangeNotifier {
     Alignment alignment = Alignment.center,
     BlendMode blendMode = BlendMode.srcOver,
   }) {
-    final containerChildSize =
-        _extensions.canvasContainerExtension.requiredContainerChildSize;
+    final containerChildSize = _extensions.canvasContainerExtension.requiredContainerChildSize;
     final pictureRecorder = ui.PictureRecorder();
     final canvas = Canvas(pictureRecorder);
     this.image?.let((it) {
@@ -75,8 +72,7 @@ class DrawingBoardExtension extends ChangeNotifier {
     canvas.scale(_kImageCanvasScale);
     paintImage(
       canvas: canvas,
-      rect: Rect.fromLTWH(0, 0, containerChildSize.width.toDouble(),
-          containerChildSize.height.toDouble()),
+      rect: Rect.fromLTWH(0, 0, containerChildSize.width.toDouble(), containerChildSize.height.toDouble()),
       image: image,
       fit: fit,
       alignment: alignment,
@@ -85,8 +81,9 @@ class DrawingBoardExtension extends ChangeNotifier {
     final picture = pictureRecorder.endRecording();
     try {
       final mergedImage = picture.toImageSync(
-          (containerChildSize.width * _kImageCanvasScale).floor(),
-          (containerChildSize.height * _kImageCanvasScale).floor());
+        (containerChildSize.width * _kImageCanvasScale).floor(),
+        (containerChildSize.height * _kImageCanvasScale).floor(),
+      );
       _addImage(mergedImage);
     } finally {
       picture.dispose();
@@ -124,8 +121,7 @@ class DrawingBoardExtension extends ChangeNotifier {
     _lastPointer = event.pointer;
     if (_inUsePointer == null) {
       _inUsePointer = event.pointer;
-      final pos = _extensions.canvasContainerExtension
-          .containerChildOffset(event.localPosition);
+      final pos = _extensions.canvasContainerExtension.containerChildOffset(event.localPosition);
       _inUsePath = Path()..moveTo(pos.dx, pos.dy);
       _inUsePosition = pos;
       notifyListeners();
@@ -136,8 +132,7 @@ class DrawingBoardExtension extends ChangeNotifier {
   void onPointerMove(PointerMoveEvent event) {
     if (isPaused) return;
     if (_inUsePointer != event.pointer || _inUsePointer != _lastPointer) return;
-    final pos = _extensions.canvasContainerExtension
-        .containerChildOffset(event.localPosition);
+    final pos = _extensions.canvasContainerExtension.containerChildOffset(event.localPosition);
     _inUsePath?.lineTo(pos.dx, pos.dy);
     _inUsePosition = pos;
     notifyListeners();
@@ -150,8 +145,7 @@ class DrawingBoardExtension extends ChangeNotifier {
       if (_inUsePointer == _lastPointer) {
         final path = _inUsePath;
         if (path != null) {
-          final containerChildSize =
-              _extensions.canvasContainerExtension.requiredContainerChildSize;
+          final containerChildSize = _extensions.canvasContainerExtension.requiredContainerChildSize;
           final pictureRecorder = ui.PictureRecorder();
           final canvas = Canvas(pictureRecorder);
           image?.let((it) {
@@ -162,8 +156,9 @@ class DrawingBoardExtension extends ChangeNotifier {
           final picture = pictureRecorder.endRecording();
           try {
             final mergedImage = picture.toImageSync(
-                (containerChildSize.width * _kImageCanvasScale).floor(),
-                (containerChildSize.height * _kImageCanvasScale).floor());
+              (containerChildSize.width * _kImageCanvasScale).floor(),
+              (containerChildSize.height * _kImageCanvasScale).floor(),
+            );
             _addImage(mergedImage);
           } finally {
             picture.dispose();
