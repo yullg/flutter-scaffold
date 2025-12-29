@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
@@ -16,7 +18,17 @@ class BasicPage extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {
-              SystemClockPlugin.elapsedRealtime().then((v) {
+              Future(() {
+                if (Platform.isAndroid) {
+                  return AndroidBasicPlugin.invoke(
+                    SystemClockABM.kElapsedRealtime,
+                  ).then((v) => v != null ? Duration(milliseconds: v) : Duration.zero);
+                } else {
+                  return IsoBasicPlugin.invoke(
+                    ProcessInfoIBM.kSystemUptime,
+                  ).then((v) => v != null ? Duration(seconds: v.round()) : Duration.zero);
+                }
+              }).then((v) {
                 Toast.showLong(context, "$v");
               });
             },
@@ -24,7 +36,17 @@ class BasicPage extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              SystemClockPlugin.uptime().then((v) {
+              Future(() {
+                if (Platform.isAndroid) {
+                  return AndroidBasicPlugin.invoke(
+                    SystemClockABM.kUptimeMillis,
+                  ).then((v) => v != null ? Duration(milliseconds: v) : Duration.zero);
+                } else {
+                  return IsoBasicPlugin.invoke(
+                    ProcessInfoIBM.kSystemUptime,
+                  ).then((v) => v != null ? Duration(seconds: v.round()) : Duration.zero);
+                }
+              }).then((v) {
                 Toast.showLong(context, "$v");
               });
             },
