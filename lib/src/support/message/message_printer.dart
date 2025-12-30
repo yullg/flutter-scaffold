@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../ui/popup/toast.dart';
 import 'message.dart';
 
 abstract interface class MessagePrinter {
@@ -21,6 +22,27 @@ class CompositeMessagePrinter implements MessagePrinter {
       }
     }
     return result;
+  }
+}
+
+class ToastPlainMessagePrinter implements MessagePrinter {
+  final bool? Function(BuildContext context, PlainMessage message)? longDuration;
+
+  const ToastPlainMessagePrinter({this.longDuration});
+
+  @override
+  bool print(BuildContext context, Message message) {
+    if (message is! PlainMessage) return false;
+    Toast.show(
+      context,
+      message.text,
+      longDuration?.call(context, message) ??
+          switch (message.type) {
+            PlainMessageType.warn || PlainMessageType.error => true,
+            _ => false,
+          },
+    );
+    return true;
   }
 }
 
