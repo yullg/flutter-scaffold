@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-
-import '../../plugin/android/android_basic_plugin.dart';
 
 class Toast {
   static void showShort(BuildContext context, String text) {
@@ -18,48 +15,38 @@ class Toast {
   static Timer? _timer;
 
   static void show(BuildContext context, String text, bool longDuration) {
-    if (Platform.isAndroid) {
-      AndroidBasicPlugin.invoke(ToastABM.show(text, longDuration: longDuration));
-    } else {
-      _dismissOverlayEntry();
-      final overlayEntry = OverlayEntry(
-        builder: (BuildContext context) {
-          return Material(
-            type: MaterialType.transparency,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: SafeArea(
-                child: Container(
-                  margin: const EdgeInsets.all(24),
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(8)),
-                  child: Text(
-                    text,
-                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
+    cancel();
+    final overlayEntry = OverlayEntry(
+      builder: (BuildContext context) {
+        return Material(
+          type: MaterialType.transparency,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: SafeArea(
+              child: Container(
+                margin: const EdgeInsets.all(24),
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(8)),
+                child: Text(
+                  text,
+                  maxLines: 5,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ),
             ),
-          );
-        },
-      );
-      Overlay.of(context).insert(overlayEntry);
-      _overlayEntry = overlayEntry;
-      _timer = Timer(Duration(seconds: longDuration ? 4 : 2), () {
-        _dismissOverlayEntry();
-      });
-    }
+          ),
+        );
+      },
+    );
+    Overlay.of(context).insert(overlayEntry);
+    _overlayEntry = overlayEntry;
+    _timer = Timer(Duration(seconds: longDuration ? 4 : 2), () {
+      cancel();
+    });
   }
 
   static void cancel() {
-    if (Platform.isAndroid) {
-      AndroidBasicPlugin.invoke(ToastABM.cancel());
-    } else {
-      _dismissOverlayEntry();
-    }
-  }
-
-  static void _dismissOverlayEntry() {
     _timer?.cancel();
     _timer = null;
     _overlayEntry?.remove();

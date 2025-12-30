@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:scaffold/src/support/message/message.dart';
 
 import '../../config/scaffold_config.dart';
 import '../../config/scaffold_developer_option.dart';
 import '../../helper/format_helper.dart';
 import '../../helper/string_helper.dart';
 import '../../internal/scaffold_logger.dart';
+import '../../support/message/messenger.dart';
 import '../../support/preference/developer_preference.dart';
 import '../popup/alert_dialog.dart';
-import '../popup/messenger.dart';
 import '../widget/easy_switch_list_tile.dart';
 
 class DeveloperPreferencePage extends StatefulWidget {
@@ -330,13 +331,13 @@ class _DeveloperPreferenceFieldState extends State<_DeveloperPreferenceFieldWidg
 extension _ShowSnackBar on State {
   void _showSuccessSnackBar() {
     if (mounted) {
-      Messenger.show(context, "Operation successful!");
+      Messenger.showPlain(context, "Operation successful!");
     }
   }
 
   void _showFailedSnackBar() {
     if (mounted) {
-      Messenger.showError(context, message: "Operation failed, please try again!");
+      Messenger.show(context, PlainMessage.error("Operation failed, please try again!"));
     }
   }
 }

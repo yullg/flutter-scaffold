@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:scaffold/scaffold.dart';
 
 import 'scaffold/plugin/android/android_audio_record_page.dart';
 import 'scaffold/plugin/android/basic_page.dart';
@@ -19,20 +18,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-    ScaffoldConfig.apply(
-      messengerOption: ScaffoldMessengerOption(
-        errorStyle: FunctionSupplier((context) => SnackBarMessageStyle(
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
-              showCloseIcon: true,
-            )),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

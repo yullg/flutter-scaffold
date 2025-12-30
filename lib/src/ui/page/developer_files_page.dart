@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:scaffold/scaffold_sugar.dart';
+import 'package:scaffold/src/support/message/message.dart';
 
 import '../../helper/format_helper.dart';
 import '../../internal/scaffold_logger.dart';
 import '../../plugin/document_manager_plugin.dart';
-import '../popup/messenger.dart';
+import '../../support/message/messenger.dart';
 import '../widget/easy_list_tile.dart';
 
 class DeveloperFilesPage extends StatefulWidget {
@@ -240,13 +241,13 @@ class _DeveloperFilesState extends State<DeveloperFilesPage> {
 extension _ShowSnackBar on State {
   void _showSuccessSnackBar() {
     if (mounted) {
-      Messenger.show(context, "Operation successful!");
+      Messenger.showPlain(context, "Operation successful!");
     }
   }
 
   void _showFailedSnackBar() {
     if (mounted) {
-      Messenger.showError(context, message: "Operation failed, please try again!");
+      Messenger.show(context, PlainMessage.error("Operation failed, please try again!"));
     }
   }
 }
