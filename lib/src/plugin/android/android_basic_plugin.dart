@@ -19,10 +19,34 @@ sealed class AndroidBasicMethod<T> {
 
 class SystemClockABM<T> extends AndroidBasicMethod<T> {
   /// 返回自启动以来的毫秒数，不包括睡眠时间。
-  static const kUptimeMillis = SystemClockABM<int>._("SystemClockABM", "uptimeMillis");
+  static const kUptimeMillis = SystemClockABM<int>._("SystemClockABM.uptimeMillis");
 
   /// 返回自启动以来经过的毫秒数，包括睡眠时间。
-  static const kElapsedRealtime = SystemClockABM<int>._("SystemClockABM", "elapsedRealtime");
+  static const kElapsedRealtime = SystemClockABM<int>._("SystemClockABM.elapsedRealtime");
 
   const SystemClockABM._(super.method, [super.arguments]);
+}
+
+class NotificationChannelABM<T> extends AndroidBasicMethod<T> {
+  /// 创建通知通道
+  /// 参数说明请参考[官方文档](https://developer.android.com/reference/kotlin/androidx/core/app/NotificationChannelCompat.Builder)
+  static NotificationChannelABM<void> create({
+    required String id,
+    required int importance,
+    required String name,
+    String? description,
+    bool? vibrationEnabled,
+    bool? lightsEnabled,
+    bool? showBadge,
+  }) => NotificationChannelABM<void>._("NotificationChannelABM.create", {
+    "id": id,
+    "importance": importance,
+    "name": name,
+    "description": description,
+    "vibrationEnabled": vibrationEnabled,
+    "lightsEnabled": lightsEnabled,
+    "showBadge": showBadge,
+  });
+
+  const NotificationChannelABM._(super.method, [super.arguments]);
 }

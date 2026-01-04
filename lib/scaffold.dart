@@ -29,7 +29,6 @@ export 'src/plugin/android/android_file_provider_plugin.dart';
 export 'src/plugin/android/android_intent_plugin.dart';
 export 'src/plugin/android/android_media_projection_plugin.dart';
 export 'src/plugin/android/android_media_store_plugin.dart';
-export 'src/plugin/android/android_notification_plugin.dart';
 export 'src/plugin/android/android_package_install_plugin.dart';
 export 'src/plugin/document_manager_plugin.dart';
 export 'src/plugin/gallery_save_plugin.dart';

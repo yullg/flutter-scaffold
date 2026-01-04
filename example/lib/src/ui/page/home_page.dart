@@ -6,7 +6,6 @@ import 'scaffold/plugin/android/content_resolver_page.dart';
 import 'scaffold/plugin/android/intent_page.dart';
 import 'scaffold/plugin/android/media_projection_page.dart';
 import 'scaffold/plugin/android/media_store_page.dart';
-import 'scaffold/plugin/android/notification_page.dart';
 import 'scaffold/ui/popup/loading_page.dart';
 import 'scaffold/ui/widget/polymorphic_text_page.dart';
 
@@ -59,12 +58,6 @@ class _HomeState extends State<HomePage> {
                             TreeSliverNodeContent(
                               name: "content_resolver",
                               onClick: () => to(context, const ContentResolverPage()),
-                            ),
-                          ),
-                          TreeSliverNode(
-                            TreeSliverNodeContent(
-                              name: "notification",
-                              onClick: () => to(context, const NotificationPage()),
                             ),
                           ),
                           TreeSliverNode(

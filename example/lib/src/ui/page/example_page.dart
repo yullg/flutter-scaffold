@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:scaffold/scaffold.dart';
 
@@ -17,6 +19,7 @@ class _ExampleState extends State<ExamplePage> {
   void initState() {
     super.initState();
     allGroups.addAll([
+      basicExampleItem,
       ExampleItemGroup(title: "Toast", children: [
         ExampleItemAction(
           title: "showShort",
@@ -38,6 +41,28 @@ class _ExampleState extends State<ExamplePage> {
         ),
       ]),
     ]);
+  }
+
+  ExampleItem get basicExampleItem {
+    if (Platform.isAndroid) {
+      return ExampleItemGroup(title: "Basic", children: [
+        ExampleItemAction(
+          title: "NotificationChannelABM.create",
+          onAction: () {
+            AndroidBasicPlugin.invoke(NotificationChannelABM.create(id: "test", importance: 3, name: "测试"));
+          },
+        ),
+      ]);
+    } else {
+      return ExampleItemGroup(title: "Basic", children: [
+        ExampleItemAction(
+          title: "test",
+          onAction: () {
+            Toast.showShort(context, "测试");
+          },
+        ),
+      ]);
+    }
   }
 
   @override
