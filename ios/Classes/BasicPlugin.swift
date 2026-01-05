@@ -1,9 +1,9 @@
 import Flutter
 
 class BasicPlugin: NSObject, FlutterPlugin {
-
+    
     private let regex = try! NSRegularExpression(pattern: "^(.+?)(\\.(.+))?$")
-
+    
     public static func register(with registrar: FlutterPluginRegistrar) {
         let methodChannel = FlutterMethodChannel(
             name: "com.yullg.flutter.scaffold/basic",
@@ -28,14 +28,14 @@ class BasicPlugin: NSObject, FlutterPlugin {
                     throw ScaffoldPluginError.illegalArgument
                 }
             default:
-                result(FlutterMethodNotImplemented)
+                throw ScaffoldPluginError.illegalArgument
             }
         } catch {
             result(FlutterError(code: "BasicPluginError", message: error.localizedDescription, details: nil))
         }
     }
-
-    private static func group(_ index: Int, in match: NSTextCheckingResult, of string: String) -> String? {
+    
+    private func group(_ index: Int, in match: NSTextCheckingResult, of string: String) -> String? {
         let range = match.range(at: index)
         guard range.location != NSNotFound, let swiftRange = Range(range, in: string) else {
             return nil
