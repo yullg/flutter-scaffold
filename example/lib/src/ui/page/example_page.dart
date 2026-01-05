@@ -56,13 +56,17 @@ class _ExampleState extends State<ExamplePage> {
     } else {
       return ExampleItemGroup(title: "Basic", children: [
         ExampleItemAction(
-          title: "test",
+          title: "ProcessInfoIBM.systemUptime",
           onAction: () {
-            Toast.showShort(context, "测试");
+            IsoBasicPlugin.invoke(ProcessInfoIBM.kSystemUptime).then(_show);
           },
         ),
       ]);
     }
+  }
+
+  void _show(Object? obj) {
+    Toast.showLong(context, "$obj");
   }
 
   @override

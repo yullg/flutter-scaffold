@@ -19,7 +19,7 @@ sealed class IosBasicMethod<T> {
 
 class ProcessInfoIBM<T> extends IosBasicMethod<T> {
   /// 自上次重启以来，系统已保持唤醒状态的时间。
-  static const kSystemUptime = ProcessInfoIBM<double>._("ProcessInfoIBM", "systemUptime");
+  static const kSystemUptime = ProcessInfoIBM<double>._("ProcessInfoIBM.systemUptime");
 
   const ProcessInfoIBM._(super.method, [super.arguments]);
 }
