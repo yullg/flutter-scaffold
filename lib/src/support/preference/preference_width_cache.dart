@@ -1,16 +1,16 @@
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PreferenceWidthCache {
+class PreferenceWithCache {
   final String name;
 
   @protected
-  PreferenceWidthCache.instance(this.name);
+  PreferenceWithCache.instance(this.name);
 
-  static final _instances = <String, PreferenceWidthCache>{};
+  static final _instances = <String, PreferenceWithCache>{};
 
-  factory PreferenceWidthCache(String name) {
-    return _instances.putIfAbsent(name, () => PreferenceWidthCache.instance(name));
+  factory PreferenceWithCache(String name) {
+    return _instances.putIfAbsent(name, () => PreferenceWithCache.instance(name));
   }
 
   late SharedPreferencesWithCache _sp;
@@ -52,9 +52,9 @@ class PreferenceWidthCache {
   Future<void> clear() => _sp.clear();
 }
 
-mixin EnumPreferenceWidthCacheMixin on Enum {
+mixin EnumPreferenceWithCacheMixin on Enum {
   @protected
-  PreferenceWidthCache get preference;
+  PreferenceWithCache get preference;
 
   bool exists() => preference.containsKey(name);
 
