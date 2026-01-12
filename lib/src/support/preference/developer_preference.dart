@@ -7,5 +7,5 @@ class DeveloperPreference extends Preference {
     return _instance ??= DeveloperPreference._();
   }
 
-  DeveloperPreference._() : super("yullg_preference_developer");
+  DeveloperPreference._() : super.instance("yg_preference_developer");
 }

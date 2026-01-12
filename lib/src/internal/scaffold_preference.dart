@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+
 import '../support/preference/preference.dart';
 
 class ScaffoldPreference extends Preference {
@@ -7,5 +9,17 @@ class ScaffoldPreference extends Preference {
     return _instance ??= ScaffoldPreference._();
   }
 
-  ScaffoldPreference._() : super("yullg_preference_scaffold");
+  ScaffoldPreference._() : super.instance("yg_preference_scaffold");
+}
+
+enum ScaffoldPreferences with EnumPreferenceMixin {
+  guid,
+  themeMode,
+  localizationLanguageCode,
+  localizationCountryCode,
+  localizationScriptCode;
+
+  @override
+  @protected
+  Preference get preference => ScaffoldPreference();
 }

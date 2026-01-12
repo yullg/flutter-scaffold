@@ -7,5 +7,5 @@ class DefaultPreference extends Preference {
     return _instance ??= DefaultPreference._();
   }
 
-  DefaultPreference._() : super("yullg_preference_default");
+  DefaultPreference._() : super.instance("yg_preference_default");
 }

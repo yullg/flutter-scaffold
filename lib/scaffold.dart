@@ -66,6 +66,7 @@ export 'src/support/paginated.dart';
 export 'src/support/preference/default_preference.dart';
 export 'src/support/preference/developer_preference.dart';
 export 'src/support/preference/preference.dart';
+export 'src/support/preference/preference_width_cache.dart';
 export 'src/support/storage/storage_directory.dart';
 export 'src/support/storage/storage_file.dart';
 export 'src/support/storage/storage_support.dart';
