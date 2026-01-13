@@ -1,3 +1,4 @@
+import 'package:scaffold/scaffold_sugar.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'database_schema.dart';
@@ -10,40 +11,23 @@ class DatabaseFactory {
   Future<Database> createDatabase() => openDatabase(
     schema.path,
     version: schema.version,
-    onConfigure: _onConfigure,
-    onCreate: _onCreate,
-    onUpgrade: _onChange,
-    onDowngrade: _onChange,
-    onOpen: _onOpen,
+    onConfigure: schema.configureSQLSupplier?.let((it) => (db) => _executeSqls(db, it())),
+    onCreate: schema.createSQLSupplier?.let((it) => (db, version) => _executeSqls(db, it(version))),
+    onUpgrade: schema.upgradeSQLSupplier?.let(
+      (it) => (db, oldVersion, newVersion) => _executeSqls(db, it(oldVersion, newVersion)),
+    ),
+    onDowngrade: schema.downgradeSQLSupplier?.let(
+      (it) => (db, oldVersion, newVersion) => _executeSqls(db, it(oldVersion, newVersion)),
+    ),
+    onOpen: schema.openSQLSupplier?.let((it) => (db) => _executeSqls(db, it())),
     readOnly: schema.readOnly,
     singleInstance: schema.singleInstance,
   );
 
   Future<Database> createReadOnlyDatabase() => openReadOnlyDatabase(schema.path, singleInstance: schema.singleInstance);
 
-  Future<void> _onConfigure(Database db) async {
-    for (final sql in schema.configureSqls) {
-      await db.execute(sql);
-    }
-  }
-
-  Future<void> _onCreate(Database db, int version) async {
-    for (final sql in schema.createSqls) {
-      await db.execute(sql);
-    }
-  }
-
-  Future<void> _onChange(Database db, int oldVersion, int newVersion) async {
-    final sqls = schema.getChangeSqls((oldVersion: oldVersion, newVersion: newVersion));
-    if (sqls != null) {
-      for (final sql in sqls) {
-        await db.execute(sql);
-      }
-    }
-  }
-
-  Future<void> _onOpen(Database db) async {
-    for (final sql in schema.openSqls) {
+  Future<void> _executeSqls(Database db, Iterable<String> sqls) async {
+    for (final sql in sqls) {
       await db.execute(sql);
     }
   }

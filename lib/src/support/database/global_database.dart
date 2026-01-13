@@ -3,40 +3,47 @@ import 'package:sqflite/sqflite.dart';
 import '../../config/scaffold_config.dart';
 import '../../core/error.dart';
 import 'database_factory.dart' as my;
-import 'database_schema.dart';
 
 class GlobalDatabase {
-  static Database? _database;
+  static GlobalDatabase? _instance;
 
-  static Future<void> initialize({DatabaseSchema? schema}) async {
-    final localSchema = schema ?? ScaffoldConfig.databaseOption?.globalDatabaseSchema;
-    if (localSchema == null) {
-      throw MissingConfigurationError();
-    }
-    _database = await my.DatabaseFactory(localSchema).createDatabase();
+  factory GlobalDatabase() {
+    return _instance ??= GlobalDatabase._();
   }
 
-  static Database get database => _database!;
+  GlobalDatabase._();
 
-  static bool get isOpen => database.isOpen;
+  Database? _database;
 
-  static String get path => database.path;
+  Future<void> initialize() async {
+    final schema = ScaffoldConfig.databaseOption?.globalDatabaseSchema;
+    if (schema == null) {
+      throw MissingConfigurationError();
+    }
+    _database = await my.DatabaseFactory(schema).createDatabase();
+  }
 
-  static Batch batch() => database.batch();
+  Database get database => _database!;
 
-  static Future<int> delete(String table, {String? where, List<Object?>? whereArgs}) =>
+  bool get isOpen => database.isOpen;
+
+  String get path => database.path;
+
+  Batch batch() => database.batch();
+
+  Future<int> delete(String table, {String? where, List<Object?>? whereArgs}) =>
       database.delete(table, where: where, whereArgs: whereArgs);
 
-  static Future<void> execute(String sql, [List<Object?>? arguments]) => database.execute(sql, arguments);
+  Future<void> execute(String sql, [List<Object?>? arguments]) => database.execute(sql, arguments);
 
-  static Future<int> insert(
+  Future<int> insert(
     String table,
     Map<String, Object?> values, {
     String? nullColumnHack,
     ConflictAlgorithm? conflictAlgorithm,
   }) => database.insert(table, values, nullColumnHack: nullColumnHack, conflictAlgorithm: conflictAlgorithm);
 
-  static Future<List<Map<String, Object?>>> query(
+  Future<List<Map<String, Object?>>> query(
     String table, {
     bool? distinct,
     List<String>? columns,
@@ -60,7 +67,7 @@ class GlobalDatabase {
     offset: offset,
   );
 
-  static Future<QueryCursor> queryCursor(
+  Future<QueryCursor> queryCursor(
     String table, {
     bool? distinct,
     List<String>? columns,
@@ -86,22 +93,24 @@ class GlobalDatabase {
     bufferSize: bufferSize,
   );
 
-  static Future<int> rawDelete(String sql, [List<Object?>? arguments]) => database.rawDelete(sql, arguments);
+  Future<int> rawDelete(String sql, [List<Object?>? arguments]) => database.rawDelete(sql, arguments);
 
-  static Future<int> rawInsert(String sql, [List<Object?>? arguments]) => database.rawInsert(sql, arguments);
+  Future<int> rawInsert(String sql, [List<Object?>? arguments]) => database.rawInsert(sql, arguments);
 
-  static Future<List<Map<String, Object?>>> rawQuery(String sql, [List<Object?>? arguments]) =>
+  Future<List<Map<String, Object?>>> rawQuery(String sql, [List<Object?>? arguments]) =>
       database.rawQuery(sql, arguments);
 
-  static Future<QueryCursor> rawQueryCursor(String sql, List<Object?>? arguments, {int? bufferSize}) =>
+  Future<QueryCursor> rawQueryCursor(String sql, List<Object?>? arguments, {int? bufferSize}) =>
       database.rawQueryCursor(sql, arguments, bufferSize: bufferSize);
 
-  static Future<int> rawUpdate(String sql, [List<Object?>? arguments]) => database.rawUpdate(sql, arguments);
+  Future<int> rawUpdate(String sql, [List<Object?>? arguments]) => database.rawUpdate(sql, arguments);
 
-  static Future<T> transaction<T>(Future<T> Function(Transaction txn) action, {bool? exclusive}) =>
+  Future<T> readTransaction<T>(Future<T> Function(Transaction txn) action) => database.readTransaction(action);
+
+  Future<T> transaction<T>(Future<T> Function(Transaction txn) action, {bool? exclusive}) =>
       database.transaction(action, exclusive: exclusive);
 
-  static Future<int> update(
+  Future<int> update(
     String table,
     Map<String, Object?> values, {
     String? where,
@@ -109,10 +118,8 @@ class GlobalDatabase {
     ConflictAlgorithm? conflictAlgorithm,
   }) => database.update(table, values, where: where, whereArgs: whereArgs, conflictAlgorithm: conflictAlgorithm);
 
-  static Future<void> destroy() async {
+  Future<void> close() async {
     await _database?.close();
     _database = null;
   }
-
-  GlobalDatabase._();
 }
