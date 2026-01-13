@@ -18,6 +18,7 @@ class PreferenceWithCache {
   String actualKey(String key) => "${name}_$key";
 
   Future<void> initialize({required Set<String> keys}) async {
+    keys = keys.map((key) => actualKey(key)).toSet();
     _sp = await SharedPreferencesWithCache.create(cacheOptions: SharedPreferencesWithCacheOptions(allowList: keys));
   }
 
