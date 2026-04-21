@@ -1,0 +1,29 @@
+plugins {
+    id("com.android.library")
+    id("kotlin-android")
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+android {
+    namespace = "com.yullg.flutter.scaffold"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 25
+    }
+}
+
+dependencies {
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.activity:activity-ktx:1.9.1")
+    implementation("androidx.documentfile:documentfile:1.0.1")
+}

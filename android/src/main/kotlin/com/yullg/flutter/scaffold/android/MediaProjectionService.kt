@@ -51,8 +51,9 @@ class MediaProjectionService : Service() {
                     }
                 )
                 val manager = getSystemService(MediaProjectionManager::class.java)
-                val mediaProjection = manager.getMediaProjection(tokenResultCode, tokenData)
-                AudioRecordUseCase.startAudioPlaybackCapture(mediaProjection, recorderJson)
+                manager.getMediaProjection(tokenResultCode, tokenData)?.let {
+                    AudioRecordUseCase.startAudioPlaybackCapture(it, recorderJson)
+                }
             } else {
                 stopSelf(startId)
             }
