@@ -1,35 +1,69 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../internal/scaffold_logger.dart';
+import '../logger/default_logger.dart';
 
 const _kRequestBeginTime = "ScaffoldRequestBeginTime";
 
 class DioLogInterceptor extends Interceptor {
-  final void Function(String log) logPrint;
+  @protected
+  final bool initialEnabled;
+  @protected
+  final bool initialRequestHeader;
+  @protected
+  final bool initialRequestBody;
+  @protected
+  final bool initialResponseHeader;
+  @protected
+  final bool initialResponseBody;
 
-  final bool requestHeader;
-  final bool requestBody;
-  final bool responseHeader;
-  final bool responseBody;
+  bool get enabled => initialEnabled;
+
+  bool get requestHeader => initialRequestHeader;
+
+  bool get requestBody => initialRequestBody;
+
+  bool get responseHeader => initialResponseHeader;
+
+  bool get responseBody => initialResponseBody;
 
   const DioLogInterceptor({
-    required this.logPrint,
-    this.requestHeader = false,
-    this.requestBody = true,
-    this.responseHeader = false,
-    this.responseBody = true,
+    this.initialEnabled = true,
+    this.initialRequestHeader = false,
+    this.initialRequestBody = true,
+    this.initialResponseHeader = false,
+    this.initialResponseBody = true,
   });
+
+  @protected
+  void logOnResponse(String log) {
+    DefaultLogger().info(log);
+  }
+
+  @protected
+  void logOnError(String log) {
+    DefaultLogger().error(log);
+  }
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    if (!enabled) {
+      super.onRequest(options, handler);
+      return;
+    }
     options.extra[_kRequestBeginTime] = DateTime.now();
     super.onRequest(options, handler);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
+    if (!enabled) {
+      super.onResponse(response, handler);
+      return;
+    }
     try {
       final DateTime? beginTime = response.requestOptions.extra[_kRequestBeginTime];
       final duration = beginTime != null ? DateTime.now().difference(beginTime) : null;
@@ -49,7 +83,7 @@ class DioLogInterceptor extends Interceptor {
       if (responseBody) {
         sb.writeln("Response-Body: ${_responseDataToString(response.data)}");
       }
-      logPrint(sb.toString());
+      logOnResponse(sb.toString());
     } catch (e, s) {
       ScaffoldLogger().error(null, e, s);
     }
@@ -58,6 +92,10 @@ class DioLogInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
+    if (!enabled) {
+      super.onError(err, handler);
+      return;
+    }
     try {
       final options = err.requestOptions;
       final DateTime? beginTime = options.extra[_kRequestBeginTime];
@@ -82,7 +120,7 @@ class DioLogInterceptor extends Interceptor {
         }
       }
       sb.writeln("Error: $err");
-      logPrint(sb.toString());
+      logOnError(sb.toString());
     } catch (e, s) {
       ScaffoldLogger().error(null, e, s);
     }
