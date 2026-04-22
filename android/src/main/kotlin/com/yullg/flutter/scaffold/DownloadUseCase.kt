@@ -35,11 +35,14 @@ class DownloadUseCase : BaseUseCase(
                     call.argument<Map<String, String>>("requestHeader")?.onEach { (key, value) ->
                         addRequestHeader(key, value)
                     }
+                    call.argument<String>("mimeType")?.also {
+                        setMimeType(it)
+                    }
                     call.argument<String>("destination")?.also {
                         when (it) {
                             "externalFilesDir" -> setDestinationInExternalFilesDir(
                                 applicationContext,
-                                null,
+                                Environment.DIRECTORY_DOWNLOADS,
                                 filename
                             )
 
@@ -83,7 +86,7 @@ class DownloadUseCase : BaseUseCase(
                 if (downloadId != -1L) {
                     result.success(downloadId)
                 } else {
-                    result.error(ERROR_CODE, null, null)
+                    result.error(ERROR_CODE, "Failed to enqueue download request.", null)
                 }
             }
 
@@ -121,7 +124,7 @@ class DownloadUseCase : BaseUseCase(
                                 if (!cursor.isNull(it)) {
                                     val value = cursor.getLong(it)
                                     if (value >= 0) {
-                                        map["totalSize"] = value
+                                        map["totalSizeBytes"] = value
                                     }
                                 }
                             }
@@ -130,7 +133,7 @@ class DownloadUseCase : BaseUseCase(
                                 if (!cursor.isNull(it)) {
                                     val value = cursor.getLong(it)
                                     if (value >= 0) {
-                                        map["bytesSoFar"] = value
+                                        map["bytesDownloadedSoFar"] = value
                                     }
                                 }
                             }

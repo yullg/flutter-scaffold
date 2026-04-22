@@ -4,8 +4,8 @@
 GeneratedPluginRegistrant.java
 !/gradle/
 !/.gitignore
-!/build.gradle
+!/build.gradle.kts
 !/gradle.properties
 !/gradlew
 !/gradlew.bat
-!/settings.gradle
+!/settings.gradle.kts

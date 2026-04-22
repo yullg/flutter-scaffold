@@ -19,6 +19,7 @@ class AndroidDownloadPlugin {
     required Uri uri,
     String? filename,
     Map<String, String>? requestHeader,
+    String? mimeType,
     String? destination,
     bool? allowedOverMetered,
     bool? allowedOverRoaming,
@@ -28,19 +29,22 @@ class AndroidDownloadPlugin {
     String? title,
     String? description,
   }) {
-    return _methodChannel.invokeMethod<int>("enqueue", {
-      "uri": uri.toString(),
-      "filename": filename,
-      "requestHeader": requestHeader,
-      "destination": destination,
-      "allowedOverMetered": allowedOverMetered,
-      "allowedOverRoaming": allowedOverRoaming,
-      "requiresCharging": requiresCharging,
-      "requiresDeviceIdle": requiresDeviceIdle,
-      "notificationVisibility": notificationVisibility,
-      "title": title,
-      "description": description,
-    }).then<int>((value) => value!);
+    return _methodChannel
+        .invokeMethod<int>("enqueue", {
+          "uri": uri.toString(),
+          "filename": filename,
+          "requestHeader": requestHeader,
+          "mimeType": mimeType,
+          "destination": destination,
+          "allowedOverMetered": allowedOverMetered,
+          "allowedOverRoaming": allowedOverRoaming,
+          "requiresCharging": requiresCharging,
+          "requiresDeviceIdle": requiresDeviceIdle,
+          "notificationVisibility": notificationVisibility,
+          "title": title,
+          "description": description,
+        })
+        .then<int>((value) => value!);
   }
 
   static Future<AndroidDownloadInfo?> find(int id) {
@@ -49,8 +53,8 @@ class AndroidDownloadPlugin {
         return AndroidDownloadInfo(
           status: EnumHelper.fromString(AndroidDownloadStatus.values, value["status"]),
           localUri: FormatHelper.tryParseUri(value["localUri"]),
-          totalSize: value["totalSize"],
-          bytesSoFar: value["bytesSoFar"],
+          totalSizeBytes: value["totalSizeBytes"],
+          bytesDownloadedSoFar: value["bytesDownloadedSoFar"],
         );
       } else {
         return null;
@@ -100,15 +104,10 @@ enum AndroidDownloadStatus { failed, paused, pending, running, successful, unkno
 class AndroidDownloadInfo {
   final AndroidDownloadStatus status;
   final Uri? localUri;
-  final int? totalSize;
-  final int? bytesSoFar;
+  final int? totalSizeBytes;
+  final int? bytesDownloadedSoFar;
 
-  AndroidDownloadInfo({
-    required this.status,
-    this.localUri,
-    this.totalSize,
-    this.bytesSoFar,
-  });
+  AndroidDownloadInfo({required this.status, this.localUri, this.totalSizeBytes, this.bytesDownloadedSoFar});
 
   @override
   bool operator ==(Object other) =>
@@ -117,14 +116,14 @@ class AndroidDownloadInfo {
           runtimeType == other.runtimeType &&
           status == other.status &&
           localUri == other.localUri &&
-          totalSize == other.totalSize &&
-          bytesSoFar == other.bytesSoFar;
+          totalSizeBytes == other.totalSizeBytes &&
+          bytesDownloadedSoFar == other.bytesDownloadedSoFar;
 
   @override
-  int get hashCode => status.hashCode ^ localUri.hashCode ^ totalSize.hashCode ^ bytesSoFar.hashCode;
+  int get hashCode => status.hashCode ^ localUri.hashCode ^ totalSizeBytes.hashCode ^ bytesDownloadedSoFar.hashCode;
 
   @override
   String toString() {
-    return 'AndroidDownloadInfo{status: $status, localUri: $localUri, totalSize: $totalSize, bytesSoFar: $bytesSoFar}';
+    return 'AndroidDownloadInfo{status: $status, localUri: $localUri, totalSizeBytes: $totalSizeBytes, bytesDownloadedSoFar: $bytesDownloadedSoFar}';
   }
 }
