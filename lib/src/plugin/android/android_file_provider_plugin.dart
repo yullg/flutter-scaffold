@@ -6,7 +6,7 @@ class AndroidFileProviderPlugin {
   static const _methodChannel = MethodChannel("com.yullg.flutter.scaffold/file_provider");
 
   static const kModeFlagRead = "read";
-  static const kModeFlatWrite = "write";
+  static const kModeFlagWrite = "write";
   static const kModeFlagPersistable = "persistable";
   static const kModeFlagPrefix = "prefix";
 
@@ -36,14 +36,14 @@ class AndroidFileProviderPlugin {
     await _methodChannel.invokeMethod("grantUriPermission", {
       "toPackage": toPackage,
       "contentUri": contentUri.toString(),
-      "modeFlags": modeFlags,
+      "modeFlags": modeFlags.toList(),
     });
   }
 
   static Future<void> revokeUriPermission({required Uri contentUri, required Iterable<String> modeFlags}) async {
     await _methodChannel.invokeMethod("revokeUriPermission", {
       "contentUri": contentUri.toString(),
-      "modeFlags": modeFlags,
+      "modeFlags": modeFlags.toList(),
     });
   }
 

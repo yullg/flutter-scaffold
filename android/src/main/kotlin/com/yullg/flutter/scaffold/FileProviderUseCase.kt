@@ -1,6 +1,7 @@
 package com.yullg.flutter.scaffold
 
 import android.net.Uri
+import android.content.Intent
 import androidx.core.content.FileProvider
 import com.yullg.flutter.scaffold.core.BaseUseCase
 import io.flutter.plugin.common.MethodCall
@@ -38,7 +39,7 @@ class FileProviderUseCase : BaseUseCase(
                 val applicationContext = requiredFlutterPluginBinding.applicationContext
                 val toPackage = call.argument<String>("toPackage")!!
                 val contentUri = Uri.parse(call.argument<String>("contentUri")!!)
-                val modeFlags = call.argument<Int>("modeFlags")!!
+                val modeFlags = call.parseModeFlags()
                 applicationContext.grantUriPermission(
                     toPackage,
                     contentUri,
@@ -47,10 +48,10 @@ class FileProviderUseCase : BaseUseCase(
                 result.success(null)
             }
 
-            "revokeUriPermission " -> {
+            "revokeUriPermission" -> {
                 val applicationContext = requiredFlutterPluginBinding.applicationContext
                 val contentUri = Uri.parse(call.argument<String>("contentUri")!!)
-                val modeFlags = call.argument<Int>("modeFlags")!!
+                val modeFlags = call.parseModeFlags()
                 applicationContext.revokeUriPermission(
                     contentUri,
                     modeFlags
@@ -91,3 +92,16 @@ class FileProviderUseCase : BaseUseCase(
 }
 
 private const val ERROR_CODE = "FileProviderUseCaseError"
+
+private fun MethodCall.parseModeFlags(): Int {
+    val modeFlags = argument<List<String>>("modeFlags").orEmpty()
+    return modeFlags.fold(0) { flags, modeFlag ->
+        flags or when (modeFlag) {
+            "read" -> Intent.FLAG_GRANT_READ_URI_PERMISSION
+            "write" -> Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            "persistable" -> Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+            "prefix" -> Intent.FLAG_GRANT_PREFIX_URI_PERMISSION
+            else -> throw IllegalArgumentException("unsupported mode flag: $modeFlag")
+        }
+    }
+}
