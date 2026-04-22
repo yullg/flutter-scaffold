@@ -11,8 +11,6 @@ class ScaffoldPlugin : FlutterPlugin, ActivityAware {
         IntentUseCase,
         MediaStoreUseCase,
         ContentResolverUseCase,
-        MediaProjectionUseCase,
-        AudioRecordUseCase,
         PackageInstallUseCase(),
         DomainVerificationUseCase(),
         FileProviderUseCase(),

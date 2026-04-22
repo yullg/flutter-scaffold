@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'scaffold/plugin/android/android_audio_record_page.dart';
 import 'scaffold/plugin/android/basic_page.dart';
 import 'scaffold/plugin/android/content_resolver_page.dart';
 import 'scaffold/plugin/android/intent_page.dart';
-import 'scaffold/plugin/android/media_projection_page.dart';
 import 'scaffold/plugin/android/media_store_page.dart';
 import 'scaffold/ui/popup/loading_page.dart';
 import 'scaffold/ui/widget/polymorphic_text_page.dart';
@@ -58,18 +56,6 @@ class _HomeState extends State<HomePage> {
                             TreeSliverNodeContent(
                               name: "content_resolver",
                               onClick: () => to(context, const ContentResolverPage()),
-                            ),
-                          ),
-                          TreeSliverNode(
-                            TreeSliverNodeContent(
-                              name: "media_projection",
-                              onClick: () => to(context, const MediaProjectionPage()),
-                            ),
-                          ),
-                          TreeSliverNode(
-                            TreeSliverNodeContent(
-                              name: "android_audio_record",
-                              onClick: () => to(context, const AndroidAudioRecordPage()),
                             ),
                           ),
                         ],
