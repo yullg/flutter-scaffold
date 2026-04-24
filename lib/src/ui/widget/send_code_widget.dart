@@ -24,11 +24,11 @@ class SendCodeWidget extends StatelessWidget {
 }
 
 class SendCodeController extends ChangeNotifier {
-  static const kSendCodeNameDefault = "yg_send_code_default";
-
-  final String name;
+  final String? name;
   final Duration resendInterval;
   final Duration callbackInterval;
+
+  String get preferenceKey => name ?? ScaffoldPreferences.sendCodeKeyDefault.name;
 
   bool _isInitialized = false;
 
@@ -52,12 +52,12 @@ class SendCodeController extends ChangeNotifier {
   Timer? _resendIntervalTimer;
 
   SendCodeController({
-    this.name = kSendCodeNameDefault,
+    this.name,
     this.resendInterval = const Duration(seconds: 60),
     this.callbackInterval = const Duration(seconds: 1),
   }) {
     ScaffoldPreference()
-        .getInt(name)
+        .getInt(preferenceKey)
         .then(
           (value) {
             _lastSendTime = value != null ? DateTime.fromMillisecondsSinceEpoch(value) : null;
@@ -79,7 +79,7 @@ class SendCodeController extends ChangeNotifier {
       final result = await future;
       final nowTime = DateTime.now();
       _lastSendTime = nowTime;
-      ScaffoldPreference().setInt(name, nowTime.millisecondsSinceEpoch).ignore();
+      ScaffoldPreference().setInt(preferenceKey, nowTime.millisecondsSinceEpoch).ignore();
       _startResendIntervalTimer();
       return result;
     } finally {

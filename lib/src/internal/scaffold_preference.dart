@@ -17,7 +17,8 @@ enum ScaffoldPreferences with EnumPreferenceMixin {
   themeMode,
   localizationLanguageCode,
   localizationCountryCode,
-  localizationScriptCode;
+  localizationScriptCode,
+  sendCodeKeyDefault;
 
   @override
   @protected
